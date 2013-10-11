@@ -143,7 +143,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             path = new google.maps.Polyline({
                 path: data.track,
                 strokeColor: 'blue',
-                strokeOpacity: data.select ? 0.7 : 0.5,
+                strokeOpacity: 0.5, //data.select ? 0.7 : 0.5,
                 strokeWeight: data.select ? 2 : 5,
                 // editable: true,
                 icons: [{
@@ -179,6 +179,10 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             if(data.select){
                 var start = data.select.start_index;
                 var stop = data.select.stop_index;
+                if(data.select.type === "MOVE") {
+                    start = Math.max(0, start-1);
+                    stop = Math.min(data.track.length-1, stop+1);
+                }
                 var fragment = data.track.slice(start, stop);
                 var bounds = new google.maps.LatLngBounds(fragment[0], fragment[0]);
 
@@ -192,7 +196,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     select = new google.maps.Polyline({
                         path: fragment,
                         strokeColor: 'green',
-                        strokeOpacity: 0.6,
+                        strokeOpacity: 0.8,
                         strokeWeight: 7,
                         map: map
                     });

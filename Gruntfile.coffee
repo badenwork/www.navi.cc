@@ -22,6 +22,47 @@ module.exports = (grunt) ->
       #less: ['src/less/*.less']  # recess:build doesn't accept ** in its file patterns
       less: ['src/less/main.less']  # recess:build doesn't accept ** in its file patterns
 
+    bowerful:
+      dist:
+        packages:
+          bootstrap: "~3.0"
+          # jquery: ""  # TODO: Test with v2
+          jquery: "~1"
+          "jquery-ui": ""
+          d3: ""
+          # angular: ""
+          # "angular-unstable": "~1.2.0-rc2"
+          angular: "v1.2.0-rc.2"
+          "angular-route": "v1.2.0-rc.2"
+          "angular-resource": "v1.2.0-rc.2"
+          "angular-animate": "v1.2.0-rc.2"
+          "angular-ui-sortable": ""
+          "angular-ui-bootstrap": ""  # Search for 3.0 tag/branch
+          # "https://raw.github.com/angular-ui/ui-utils/master/modules/ie-shiv/ie-shiv.js": ""
+          #   name: "some-lib"
+          # "some-lib": "https://raw.github.com/angular-ui/ui-utils/master/modules/ie-shiv/ie-shiv.js"
+          # name:
+          "angular-translate": ""
+          # "bootstrap-datepicker": ""  # Не совместим с bootstrap 3.x
+          "bootstrap3-datepicker": ""   # Форк предыдущего с поддерхкой twbs3
+          # "angular-strap": ""       # Не совместим с bootstrap 3.x
+          # "angular-virtual-scroll": ""    # Сомнительная производительность
+          "angular-bindonce": ""
+          "components-font-awesome": ""
+          moment:
+            select: ["moment.js", "ru.js"]
+          jszip:
+            select: [ 'jszip.js', 'jszip-deflate.js' ]
+          "https://github.com/stephen-hardy/xlsx.js.git": ""
+          # "sockjs-client": ""
+
+          # Для поддержки старых браузеров. Проверить это вообще помогает?
+          "angular-ui-utils": ""
+          "es5-shim": ""
+          json3: ""
+        store: 'components'
+        # dest: 'public'
+
     # CoffeeScript
     coffee:
       dist:
@@ -42,6 +83,13 @@ module.exports = (grunt) ->
           dest: '<%= distdir %>/'
           src: ['**']
           cwd: 'src/assets/'
+          expand: true
+        ]
+      conponents:
+        files: [
+          dest: '<%= distdir %>/components'
+          src: ['**']
+          cwd: 'components/'
           expand: true
         ]
       templates:
@@ -217,6 +265,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-contrib-livereload"
   grunt.loadNpmTasks "grunt-regarde"
   grunt.loadNpmTasks "grunt-oversprite"
+  grunt.loadNpmTasks "grunt-bowerful"
 
   # grunt-contrib-watch now not work with livereload :(
   #grunt.loadNpmTasks "grunt-contrib-watch"
@@ -234,7 +283,7 @@ module.exports = (grunt) ->
   # Build
   grunt.registerTask "build", [
     # "clean", "jade", "less", "copy", "html2js", "index", "concat"
-    "clean", "jade", "less", "copy", "index", "concat"
+    "clean", "jade", "less", "bowerful", "copy", "index", "concat"
   ]
 
   # Development server

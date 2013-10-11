@@ -1,4 +1,4 @@
-angular.module('logs', ['ngRoute', 'resources.account', 'resources.system', 'resources.logs'])
+angular.module('logs', ['ngRoute', 'resources.account', 'resources.system', 'resources.logs', 'pasvaz.bindonce'])
 
 .config(['$routeProvider', function ($routeProvider) {
   $routeProvider.when('/logs', {

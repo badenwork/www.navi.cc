@@ -1,4 +1,4 @@
-angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'resources.geogps', 'app.filters', 'config.system.params.master'])
+angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'resources.geogps', 'app.filters', 'config.system.params.master', 'pasvaz.bindonce'])
 
 .config(['$routeProvider', function ($routeProvider) {
   $routeProvider.when('/gps', {
@@ -40,7 +40,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
 
 }])
 
-.controller('GPSViewCtrl', ['$scope', '$route', '$routeParams', '$location', 'account', 'systems', 'GeoGPS', function ($scope, $route, $routeParams, $location, account, systems, GeoGPS) {
+.controller('GPSViewCtrl', ['$scope', '$route', '$routeParams', '$location', 'account', 'systems', 'GeoGPS', '$filter', function ($scope, $route, $routeParams, $location, account, systems, GeoGPS, $filter) {
   var day = $scope.day = $routeParams['day'] || 0;
 
   $scope.skey = $routeParams['skey'];
@@ -107,7 +107,6 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
     GeoGPS.select($scope.skey);
     GeoGPS.getTrack(hourfrom, hourfrom+23)
         .then(function(data){
-            // console.log(["getTrack: ", data]);
             $scope.track = data;
             /*$scope.track = data;
             $scope.points = data.track.length;

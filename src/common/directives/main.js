@@ -97,11 +97,11 @@ angular.module('directives.lists', [])
                 }
             });
             element.bind('blur', function() {
-                //console.log("blur", ngModel.$viewValue, element.html());
-                if($.trim(element.text()) === '') {
-                    element.text(ngModel.$viewValue);
-                    //scope.$apply();
-                }
+                console.log("blur", ngModel.$viewValue, element.html());
+                // if($.trim(element.text()) === '') {
+                //     element.text(ngModel.$viewValue);
+                //     //scope.$apply();
+                // }
                 if (ngModel.$viewValue !== $.trim(element.text())) {
                     return scope.$apply(read);
                 }

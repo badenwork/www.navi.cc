@@ -43,8 +43,8 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
 
     var dp = $('#datepicker').datepicker({
         beforeShowDay: function(date) {
-            var hour = date.valueOf()/1000/3600,
-                day = hour/24;
+            var hour = (date.valueOf()/1000/3600) | 0,
+                day = (hour/24) | 0;
             // console.log("beforeShowDay", day, (hour%2 === 0)?'enabled':'disabled');
             return GeoGPS.checkDay(day)?'enabled':'disabled';
         }

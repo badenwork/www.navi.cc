@@ -10,7 +10,6 @@ angular.module('directives.timeline', [])
             width = element.width() - 50 - margin.left - margin.right,
             height = 32 - margin.top - margin.bottom;
 
-        console.log(width);
         var svg = d3.select(element[0]).select(".timeline")
             .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -56,6 +55,11 @@ angular.module('directives.timeline', [])
             // console.log("draw", data);
             if(data == null) return;
 
+            // avar
+            svg.select('g').remove();
+
+            if(data.length === 0) return;
+
             var start = new Date(data[0].start.dt * 1000),
                 stop = new Date(data[data.length-1].stop.dt * 1000);
 
@@ -68,7 +72,7 @@ angular.module('directives.timeline', [])
                 .tickSubdivide(3)
                 .tickSize(15, 8, 0)
                 .orient("bottom")
-                .ticks((width / 90) | 0)
+                .ticks((width / 120) | 0)
                 .tickFormat(d3.time.format("%H:%M:%S"));
 
             zoom = d3.behavior.zoom()
@@ -76,8 +80,6 @@ angular.module('directives.timeline', [])
                 .scaleExtent([1, 1024])   // TODO: Необходимо также ограничить translate
                 .on("zoom", zoomed);
 
-            // avar
-            svg.select('g').remove();
 
             var chart = svg
                     .append("g")

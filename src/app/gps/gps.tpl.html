@@ -7,12 +7,12 @@
         </select>
 
         <div class="btn-group" ng-show="!!skey && (skey !== '+') && (skey != null)">
-            <button class="btn" ng-class="{active: (day==0)}" ng-click="selectday(0)">Сегодня</button>
-            <button class="btn" ng-class="{active: (day==-1)}" ng-click="selectday(-1)">Вчера</button>
+            <button class="btn btn-primary" ng-class="{active: (day==0)}" ng-click="selectday(0)">Сегодня</button>
+            <button class="btn btn-primary" ng-class="{active: (day==-1)}" ng-click="selectday(-1)">Вчера</button>
             <!-- <button class="btn" ng-click="selectday('choose')">Выбрать...</button> -->
             <!-- <input id="datepicker" data-date-language="ru" data-date-weekstart="1"></input> -->
             <!-- <a href="#" class="btn small" id="inputDate" data-date-language="ru" data-date-weekstart="1">Выбрать...</a> -->
-            <button href="#" class="btn small dropdown-toggle" ng-class="{active: ((day!=0) && (day!=-1))}"  id="inputDate"><span ng-show="(day == 0) || (day == -1)">Выбрать</span><span ng-hide="(day == 0) || (day == -1)">{{ datetime | datetime:false:'date' }}</span> <span class="caret"></span></button>
+            <button href="#" class="btn btn-primary small dropdown-toggle" ng-class="{active: ((day!=0) && (day!=-1))}"  id="inputDate"><span ng-show="(day == 0) || (day == -1)">Выбрать</span><span ng-hide="(day == 0) || (day == -1)">{{ datetime | datetime:false:'date' }}</span> <span class="caret"></span></button>
             <!-- <input class="inputDate" id="inputDate" value="06/14/2008" style="width: 100px"> -->
         </div>
     </form>
@@ -39,14 +39,14 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="g in track.points" ng-mouseover="onMouseOver(g)">
-                <td>{{ g.dt | datetime:true:"time" }}</td>
-                <td>{{ g.lat | number:3 }},{{ g.lon | number:3 }}</td>
-                <td>{{ g.sats }}</td>
-                <td>{{ g.speed | number:1 }}</td>
-                <td>{{ g.vout | number:1 }}</td>
-                <td>{{ g.vin | number:2 }}</td>
-                <td title="{{ (g.fsource | fsource).title }}" style="color:grey"><i class="{{s}}" ng-repeat="s in (g.fsource | fsource).icons" style="padding-left:2px"></i></td>
+            <tr bindonce ng-repeat="g in track.points" ng-mouseover="onMouseOver(g)">
+                <td bo-text="g.dt | datetime:true:'time'"></td>
+                <td><span bo-text="g.lat | number:3"></span>,<span bo-text="g.lon | number:3"></span></td>
+                <td bo-text="g.sats"></td>
+                <td bo-text="g.speed | number:1"></td>
+                <td bo-text="g.vout | number:1"></td>
+                <td bo-text="g.vin | number:2"></td>
+                <td bo-title="(g.fsource | fsource).title" style="color:grey"><i bo-class="s" ng-repeat="s in (g.fsource | fsource).icons" style="padding-left:2px"></i></td>
             </tr>
         </tbody>
     </table>

@@ -5,7 +5,7 @@ angular.module('directives.language', ['i18n'])
         restrict: 'E',
         replace: true,
         // template: '<div class="btn-group" data-toggle="buttons-radio"><button type="button" class="btn" ng-class="{active: l.code == active}" ng-repeat="l in langs" title="{{ l.title }}" ng-click="onSet(l)">{{ l.text }}</button></div>',
-        template: '<div class="btn-group"><button type="button" class="btn" ng-class="{active: l.code == active}" ng-repeat="l in langs" title="{{ l.title }}" ng-click="onSet(l)">{{ l.text }}</button></div>',
+        template: '<div class="btn-group"><button type="button" class="btn btn-primary" ng-class="{active: l.code == active}" ng-repeat="l in langs" title="{{ l.title }}" ng-click="onSet(l)">{{ l.text }}</button></div>',
         // template:   '<select ng-model="lang">'+
         //             '<option value="">Выберите язык</option>'+
         //             '<option ng-repeat="l in langs" value="{{l.lang}}">{{l.title}}</option>'+

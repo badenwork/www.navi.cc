@@ -16,20 +16,19 @@
 
 <!-- {{ logs }} -->
 
-<table class="table table-bordered table-condensed table-striped table-hover" ng-show="skey">
+<table class="table table-condensed table-striped table-hover" ng-show="skey">
     <thead>
     <tr>
         <th>Дата и время</th>
         <th>Событие</th>
-        <th>Примечания</th>
+        <!-- <th>Примечания</th> -->
     </tr>
     </thead>
     <tbody>
     <!-- <tr ng-repeat="l in logs | filter:isFiltered"> -->
-    <tr ng-repeat="l in logs">
+    <tr bindonce ng-repeat="l in logs">
         <td><datetime datetime="{{l.dt}}"></datetime></td>
-        <td ng-bind-html-unsafe="l.text"><!-- {{l.text}} --><!--i class="icon-filter cmd" title="Показать только события данного типа" ng-click="filtered=!filtered"></i--></td>
-        <td>{{l.text}}</td>
+        <td bo-html="l.text">
     </tr>
     <tr ng-show="!logs.length">
         <td colspan="7">{{ comment }}</td>
