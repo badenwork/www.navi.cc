@@ -56,25 +56,29 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
         angular.copy(value || {}, this);
         this.$name = name;
     }
-
-    Models.prototype.$add = function(data){
-        // var model = new Model(that.name, data);
-        var id = data.id;
-        if (data.dynamic) {
-            switch(data.dynamic.fsource){
+    
+    var removeSysErrors = function(sys) {
+        if (sys.dynamic) {
+            switch(sys.dynamic.fsource){
                 case 2:
                 case 3:
                 case 4:   
                 case 7:
-                    data.dynamic.speed = 0;
+                    sys.dynamic.speed = 0;
                     break;
                 default: 
                     break; 
              }
         }
         //if (angular.isUndefined(data.car.hasFuelSensor))
-        if (data.car && angular.isUndefined(data.car.hasFuelSensor))
-            data.car.hasFuelSensor = false;
+        if (sys.car && angular.isUndefined(sys.car.hasFuelSensor))
+            sys.car.hasFuelSensor = false;
+    }
+
+    Models.prototype.$add = function(data){
+        // var model = new Model(that.name, data);
+        var id = data.id;
+        removeSysErrors(data);
         if(this.hasOwnProperty(id)){
             angular.extend(this[id], data);
         } else {
@@ -97,6 +101,7 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
 
             if(that.models.hasOwnProperty(message.id)){
                 // console.log("extend");
+                removeSysErrors(message.data);
                 if(message.data === null){  // Неизвестна степень изменений, требуется перезагрузить данные
                     console.log("Full update", that);
                     that.get(message.id, true);
