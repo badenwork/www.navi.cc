@@ -321,8 +321,8 @@ angular.module('resources.geogps', [])
                     var hour = data.hours[i];
                     var date = new Date(hour * 3600 * 1000);
                     date.setHours(0); date.setMinutes(0); date.setSeconds(0); date.setMilliseconds(0);
-                    var dayhour = date.getTime()/1000/3600; // Первый час суток
-                    var dateepoch = +(new Date(date.toDateString() + " GMT")) / 1000 / 3600 / 24;
+                    //var dayhour = date.getTime()/1000/3600; // Первый час суток
+                    var dateepoch = (new Date(date.toDateString() + " GMT")) / 1000 / 3600 / 24;
                     if(dateepoch in days){
                         days[dateepoch] += 1;
                         // console.log("set", days);
