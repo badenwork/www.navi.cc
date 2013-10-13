@@ -133,7 +133,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 }
                 return point;
             }
-        scope.infowindow = null;
+        scope.infowindow = new google.maps.InfoWindow();
 
         var showTrack = function(data){
 
@@ -168,11 +168,9 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 console.log(point);
                 if (scope.infowindow != null)
                     scope.infowindow.close();
-                scope.infowindow = new google.maps.InfoWindow({
-                    content: "egethryh",
-                    position: new google.maps.LatLng(point.lat, point.long)
-                });
-                //scope.infowindow.open(map);
+                scope.infowindow.content = "gegethteh";
+                scope.infowindow.position = event.latLng;//new google.maps.LatLng(point.lat, point.lon)
+                scope.infowindow.open(map);
             });
 
 
