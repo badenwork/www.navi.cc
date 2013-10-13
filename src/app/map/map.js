@@ -47,7 +47,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             var hour = (date.valueOf()/1000/3600) | 0,
                 day = (hour/24) | 0;
              //console.log("beforeShowDay", day, (hour%2 === 0)?'enabled':'disabled');
-            return GeoGPS.checkDay(day)?'enabled':'disabled';
+            return GeoGPS.checkDay(day)? 'enabled':'disabled';
         }
     }).on('changeDate', function(ev){
         var date = ev.date;
