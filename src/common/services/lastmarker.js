@@ -65,10 +65,10 @@ angular.module('services.lastmarker', ['newgps.services'])
         
         var sysTime = function(sys) {
             if (sys && sys.dynamic) {
-                var tz = (new Date()).getTimezoneOffset()/60;
-                var now = Math.round((new Date()).valueOf() / 1000);
-                var delta = now - sys.dynamic.lastping;
-                value = Math.floor(delta / 60);
+                //var tz = (new Date()).getTimezoneOffset()/60;
+                //var now = Math.round((new Date()).valueOf() / 1000);
+                //var delta = now - sys.dynamic.lastping;
+                //value = Math.floor(delta / 60);
               return moment((new Date((sys.dynamic.dt * 1000)))).format("DD/MM/YYYY : hh:mm");
             } else
                 return '-';

@@ -136,10 +136,10 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
         scope.infowindow = new google.maps.InfoWindow();
 
         var showTrack = function(data){
-
-            // console.log("showTrack", data);
+             //console.log("showTrack", data);
+            if (scope.infowindow != null)
+                scope.infowindow.close();
             updatePoints (data.points);
-            console.log("ShowTrack");
             path = new google.maps.Polyline({
                 path: data.track,
                 strokeColor: 'blue',
@@ -165,11 +165,20 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             {
                 //console.log(event);
                 var point = scope.findNearestPoint({lat:event.latLng.lb, lon:event.latLng.mb});
+                if (point == null)
+                    return;
                 console.log(point);
-                if (scope.infowindow != null)
-                    scope.infowindow.close();
-                scope.infowindow.content = "gegethteh";
-                scope.infowindow.position = event.latLng;//new google.maps.LatLng(point.lat, point.lon)
+                var timeStr = moment(new Date((point.dt * 1000))).format("DD/MM/YYYY : hh:mm");
+                var lat = Math.round(point.lat * 100000) / 100000;
+                var lon = Math.round(point.lon * 100000) / 100000;
+                var sats = point.sats;
+                var speed = Math.round(point.speed * 10) / 10;
+                var vin = Math.round(point.vin * 100) / 100;
+                var vout = Math.round(point.vout * 100) / 100;
+                var content = '<div class="info-header">' + timeStr+ '</div><table id="tbl_info" width="100%"><tbody><tr><td>Долгота:</td><td><b>' + lat + '</b></td></tr><tr><td>Широта:</td><td><b>' + lon + '</b></td></tr><tr><td>Спутники</td><td><b>' + sats + '</b></td></tr><tr><td>Скорость</td><td><b>' + speed +'км/ч</b></td></tr><tr><td>Основное питание</td><td><b>' + vout + 'В</b></td></tr><tr><td>Резервное питание</td><td><b>' + vin + 'В</b></td></tr></tbody></table>';
+                scope.infowindow.setContent(content);
+                scope.infowindow.setPosition(new google.maps.LatLng(point.lat, point.lon));
+                //scope.infowindow.setPosition(event.latLng);
                 scope.infowindow.open(map);
             });
 
