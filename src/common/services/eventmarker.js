@@ -91,7 +91,7 @@ EventMarker.prototype.draw = function() {
                 return d.title;
             });*/
             var control = label.append('div').attr("class", "lastmarker-control");
-            var table = control.append('table').attr('class','hide').attr('id',function(d) {return 'eventMarkerID_' + d.point.course + d.point.dt});
+            var table = control.append('table').attr('id',function(d) {return 'eventMarkerID_' + d.point.course + d.point.dt});
             var tbody = table.append('tbody');
             //tbody = table.append('tbody');
             var timeLine = tbody.append('tr');
@@ -101,7 +101,7 @@ EventMarker.prototype.draw = function() {
             
 
 
-	div.on('mouseout', function(d){
+	/*div.on('mouseout', function(d){
         var lastM = document.getElementById('eventMarkerID_' +  + d.point.course + d.point.dt);
         lastM.setAttribute('class','hide');
 	});
@@ -111,7 +111,7 @@ EventMarker.prototype.draw = function() {
 
         var lastM = document.getElementById('eventMarkerID_' +  + d.point.course + d.point.dt);
         lastM.setAttribute('class','');
-	}); 
+	}); */
 
     /*div.append("span").text(function(d){
         return d.title;
