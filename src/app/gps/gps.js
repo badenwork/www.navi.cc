@@ -1,4 +1,4 @@
-angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'resources.geogps', 'app.filters', 'config.system.params.master', 'pasvaz.bindonce'])
+angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'resources.geogps', 'app.filters', 'config.system.params.master', 'pasvaz.bindonce', 'infinite-scroll'])
 
 .config(['$routeProvider', function ($routeProvider) {
   $routeProvider.when('/gps', {
@@ -108,6 +108,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
     GeoGPS.getTrack(hourfrom, hourfrom+23)
         .then(function(data){
             $scope.track = data;
+            $scope.myPagingFunction();
             /*$scope.track = data;
             $scope.points = data.track.length;
             fake_timeline();*/
@@ -118,6 +119,56 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
       //console.log('onmouseover', g);
     };
   }
+
+
+    var items = $scope.items = [];
+    var ITEMS = 100;    // По идее нужно вычислять в зависимости от высоты страницы
+    $scope.myPagingFunction = function(){
+        if(!$scope.track) return;
+        var offset = items.length;
+        // console.log('myPagingFunction', items, $scope.track );
+        items.push.apply(items, $scope.track.points.slice(offset, offset+ITEMS));
+
+        // for(var i=0; i<5; i++){
+        //     var obj = {a: 5};
+        //     items.push(obj);
+        // }
+    }
+    // $scope.myPagingFunction();
+
+    var Scroll = function() {
+        this.items = [];
+        this.busy = false;
+        this.after = '';
+    };
+
+    Scroll.prototype.addMoreItems = function() {
+        if (this.busy) return;
+        this.busy = true;
+        var offset = this.items.length;
+        console.log("addMoreItems d=", this, $scope.track, offset);
+
+        // this.items.push($scope.track.points.slice(offset, offset+8));
+        for(var i=0; i<100; i++)
+            this.items.push({a:1});
+        this.busy = false;
+
+        // var url = "http://api.reddit.com/hot?after=" + this.after + "&jsonp=JSON_CALLBACK";
+        // $http.jsonp(url).success(function(data) {
+        //     var items = data.data.children;
+        //     for (var i = 0; i < items.length; i++) {
+        //         this.items.push(items[i].data);
+        //     }
+        //     this.after = "t3_" + this.items[this.items.length - 1].id;
+        //     this.busy = false;
+        // }.bind(this));
+    };
+
+    $scope.scroll = new Scroll();
+
+    // $scope.addMoreItems = function(d){
+    //     console.log("addMoreItems d=", d, this);
+    // }
 
   var dp = $('#inputDate').datepicker({
     // date: "12-02-2012",

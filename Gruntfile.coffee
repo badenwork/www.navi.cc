@@ -47,6 +47,10 @@ module.exports = (grunt) ->
           "bootstrap3-datepicker": ""   # Форк предыдущего с поддерхкой twbs3
           # "angular-strap": ""       # Не совместим с bootstrap 3.x
           # "angular-virtual-scroll": ""    # Сомнительная производительность
+          # ngInfiniteScroll: ""
+          # "https://github.com/tcard/ngInfiniteScroll.git": ""
+          "https://github.com/baden/ngInfiniteScroll.git": "1.0.1-pre1"
+          # "ngInfiniteScroll": "https://github.com/baden/ngInfiniteScroll.git" # Оригинальный не поддерживает скроллинг в контейнере, только в top
           "angular-bindonce": ""
           "components-font-awesome": ""
           moment:

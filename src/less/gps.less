@@ -2,21 +2,44 @@ div#geos_head {
     position: absolute;
     top: 60px;
     width: 470px;
-    height: 176px;
+    height: 100px;
     overflow: hidden;
     padding-top: 6px;
 }
 
 div#geos_body {
     position: absolute;
-    top: 120px;
+    top: 160px;
     bottom: 0px;
-    left: 0px;
+    left: 10px;
     right: 0px;
     width: 470px;
     overflow-x: hidden;
-    overflow-y: auto;
+    // overflow-y: auto;
+    overflow-y: scroll;
+
 }
+
+    .georow {
+        &:hover {
+            background-color: lightgrey;
+        }
+
+        >span {
+            padding: 0px 8px 0px 8px;
+            margin: 0;
+            display: inline-block;
+            // border: 1px solid blue;
+            text-align: right;
+        }
+
+        >span:first-child { width: 80px; }
+        >span:nth-child(2) { width: 110px; }
+        >span:nth-child(3) { width: 40px; }
+        >span:nth-child(4) { width: 50px; }
+        >span:nth-child(5) { width: 50px; }
+        >span:nth-child(6) { width: 50px; }
+    }
 
    #geos_viewtype .ui-button-text { /*-only .ui-button-text {*/
     /*padding-top: 10px;
