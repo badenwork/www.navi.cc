@@ -102,17 +102,17 @@ angular.module('resources.geogps', [])
             // vin,                    # B: Напряжение внутреннего аккумулятора 1/100 B
             var vin = packet[22] * 4;
             // adc1,                   # B: АЦП1 - температура
-            var adc1 = packet[24] * 4;
+            var adc1 = packet[23] * 4;
             // adc2,                   # B: АЦП2 - уровень топлива
-            var adc2 = packet[25] * 4;
+            var adc2 = packet[24] * 4;
             // 0,                      # B: Младшие биты полей: vout, vin, adc1, adc2
-            var lsbs = packet[26];
+            var lsbs = packet[25];
             vout += lsbs & 3;
             vin += (lsbs >> 2) & 3;
             adc1 += (lsbs >> 4) & 3;
             adc2 += (lsbs >> 6) & 3;
             // 5 байт резерв           # B: Флаги
-            packet[27]; packet[28]; packet[29]; packet[30];
+            packet[26]; packet[27]; packet[28]; packet[29]; packet[30];
             // 0                       # D15: Локальная CRC (пока не используется)
             var lcrc = packet[31];
 
