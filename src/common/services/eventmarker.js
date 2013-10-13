@@ -54,6 +54,10 @@ EventMarker.prototype.onRemove = function() {
     this.div = null;
 }
 
+var eventDuration = function(d) {
+    return moment(new Date((d.point.dt * 1000))).format("DD/MM/YYYY : hh:mm");;
+};
+
 EventMarker.prototype.draw = function() {
     var overlayProjection = this.getProjection();
     if(!overlayProjection) return;
@@ -78,10 +82,40 @@ EventMarker.prototype.draw = function() {
         .on('click', function(d) {
             console.log(d3.select(this), d);
         });
-
     div.append("span").text(function(d){
         return d.title;
     });
+    var label = div.append("span").attr("class", "title");
+
+            /*var label = div.append("div").attr("class", "lastmarker-label").text(function(d) {
+                return d.title;
+            });*/
+            var control = label.append('div').attr("class", "lastmarker-control");
+            var table = control.append('table').attr('class','hide').attr('id',function(d) {return 'eventMarkerID_' + d.point.course + d.point.dt});
+            var tbody = table.append('tbody');
+            //tbody = table.append('tbody');
+            var timeLine = tbody.append('tr');
+            timeLine.append('td').text(function(d) { return 'Время:';});
+            timeLine.append('td').text(function(d) { return eventDuration(d)});
+            
+            
+
+
+	div.on('mouseout', function(d){
+        var lastM = document.getElementById('eventMarkerID_' +  + d.point.course + d.point.dt);
+        lastM.setAttribute('class','hide');
+	});
+            
+            
+        div.on('mouseover', function(d){
+
+        var lastM = document.getElementById('eventMarkerID_' +  + d.point.course + d.point.dt);
+        lastM.setAttribute('class','');
+	}); 
+
+    /*div.append("span").text(function(d){
+        return d.title;
+    });*/
 
     points
         .attr("class", function(d){
