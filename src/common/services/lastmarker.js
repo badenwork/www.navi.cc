@@ -183,7 +183,7 @@ angular.module('services.lastmarker', ['newgps.services'])
             
 
 
-	div.on('mouseout', function(e){
+	/*div.on('mouseout', function(e){
         var lastM = document.getElementById('lastmarkerID_' + e.key);
         lastM.setAttribute('class','hide');
 	});
@@ -193,7 +193,7 @@ angular.module('services.lastmarker', ['newgps.services'])
 
         var lastM = document.getElementById('lastmarkerID_' + e.key);
         lastM.setAttribute('class','');
-	}); 
+	}); */
             
 ///////////////////
             
