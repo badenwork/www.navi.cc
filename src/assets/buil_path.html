@@ -347,7 +347,7 @@
 // D30  Зарезервировано =0
 // D31 Зарезервировано =0
 
-      var fuel = (document.getElementById("fuel").value * 2048 / 100) | 0;
+      var fuel = (document.getElementById("fuel").value * 2047 / 100) | 0;
 
       // Уровень топлива
       packet[30] = fuel % 256;
