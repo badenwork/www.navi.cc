@@ -35,7 +35,7 @@
       <select name="server" id="server" value="http://localhost:8181">
         <!-- <option value="http://localhost:8981">Локальный</option> -->
         <option value="http://gpsapi05.navi.cc:8981">Отладочный</option>
-        <option value="http://point.new.navi.cc:8981">Боевой</option>
+        <option value="http://point.new.navi.cc">Боевой</option>
         <!--option value="http://point.gps.navi.cc">За деньги!!!</option-->
       </select><br/>
       <input type="date" id="start_date"></input><br/>
@@ -50,7 +50,8 @@
       <a id="run" class="cmdbtn" href="#">Запустить!</a><br/>
       <input type="checkbox" name="stop" id="stop"></input><label for="stop">Стоянка</label><br/>
       Топливо: <input type="number" name="fuel" id="fuel" min="0" max="100" value="50" size="3" maxlength="3"/>%<br/>
-      Uрез: <input type="number" name="Ures" id="Ures" min="0" max="660" value="420" size="3" maxlength="3"/>%<br/>
+      Uрез: <input type="number" name="Ures" id="Ures" min="0" max="660" value="420" size="3" maxlength="3"/>ADC<br/>
+      GSM: <input type="number" name="csq" id="csq" min="0" max="31" value="7" size="2" maxlength="2"/><br/>
     </span>
 
     <!-- <a id="run" class="cmdbtn" href="#">Стоянка!</a> -->
@@ -416,7 +417,10 @@
       var req = new XMLHttpRequest();
       var url = document.getElementById("server").value;
       var IMEI = document.getElementById("imei").value;
-      req.open("POST", url + "/bingps?imei=" + IMEI, true);
+      var csq = document.getElementById("csq").value;
+      req.open("POST", url + "/bingps?imei=" + IMEI + "&csq=" + csq, true);
+      // &vout=00&vin=3980&dataid=000009B3
+
       // set headers and mime-type appropriately
       req.setRequestHeader("Content-Length", pack_len + 2);
       req.setRequestHeader('Content-Type', 'application/octet-stream')
