@@ -42,7 +42,7 @@
             <dt>Выход 1</dt><dd>?</dd>
             <dt>Выход 2</dt><dd>?</dd>
             <dt ng-show="system.car.hasFuelSensor">
-                Уровень топлива</dt><dd ng-show="system.car.hasFuelSensor">{{ system.dynamic.fuel }} л
+                Уровень топлива</dt><dd ng-show="system.car.hasFuelSensor">{{ system.dynamic.fuel | number:1 }} л
                 <a href="#/config/{{skey}}/params/fuel"><i class="icon-wrench"></i></a>
             </dd>
         </dl>

@@ -49,6 +49,7 @@
             Резервное питание: {{ item.dynamic.vin | vin }}<br>
             Координаты: <input class="clone" value="{{ item.dynamic.latitude | number:4 }}, {{ item.dynamic.longitude | number:4}}"/><br>
             Дата метки: <datetime datetime="{{ item.dynamic.dt }}"></datetime><br>
+<!--
             Высота над ур.моря: ? м<br>
             Температура: ? &deg;С<br>
             Корпус: ?<br>
@@ -57,6 +58,7 @@
             Вход 3: ?<br>
             Выход 1: ?<br>
             Выход 2: ?<br>
-            <div ng-show="system.car.hasFuelSensor">Уровень топлива: {{ item.dynamic.fuel }} л<br></div>
+-->
+            <div ng-show="item.car.hasFuelSensor">Уровень топлива: {{ item.dynamic.fuel | number:1 }} л<br></div>
     </div>
 </li>

@@ -366,16 +366,22 @@ div.mapcalendar {
         &:hover{
             z-index: 1001;
             //.scale(2);
+            span.label {
+            }
+            span.label>.lastmarker-control  {
+                display: block;
+            }
+
         }
 
-        span.title {
+        span.label {
             display: block;
             position: absolute;
             white-space: nowrap;
             left: 20px;
             bottom: 20px;
             border: 1px solid #ddd;
-            // color: white;
+            color: black;
             // background-color: white;
             // font-size: 1.4em;
             // font-weight: bold;
@@ -386,10 +392,31 @@ div.mapcalendar {
             border-bottom-right-radius: 10px 10px;
             border-top-right-radius: 10px 10px;
             box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+
+            span.title {
+                // color: black;
+            }
+
+            .lastmarker-control {
+                display: none;          // :hover parent set visible
+                padding-top: 8px;
+                padding-bottom: 4px;
+
+                table>tbody>tr {
+                    td:first-child {
+                        text-align: right;
+                        &:after {
+                            content: ':'
+                        }
+                    }
+                    td:nth-child(2) {
+                        text-align: left;
+                        font-weight: bold;
+                    }
+                }
+            }
         }
-
     }
-
 }
 
 

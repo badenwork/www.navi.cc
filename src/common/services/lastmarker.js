@@ -7,7 +7,8 @@ angular.module('services.lastmarker', ['newgps.services'])
 
 .factory('LastMarker', [
     "$freshmark",
-    function($freshmark) {
+    "$filter",
+    function($freshmark, $filter) {
         // console.log(":: LastMarker:run", $freshmark);
 
         function LastMarker(map) {
@@ -31,7 +32,7 @@ angular.module('services.lastmarker', ['newgps.services'])
             div.marker = this;
             var panes = this.getPanes();
             this.panes = panes;
-            
+
 
 
 
@@ -58,11 +59,11 @@ angular.module('services.lastmarker', ['newgps.services'])
             this.arrdiv = null;
             this.div = null;
         }
-        
+
         var sysTitle = function(sys) {
             return sys.title;
         };
-        
+
         var sysTime = function(sys) {
             if (sys && sys.dynamic) {
                 //var tz = (new Date()).getTimezoneOffset()/60;
@@ -73,134 +74,122 @@ angular.module('services.lastmarker', ['newgps.services'])
             } else
                 return '-';
         };
-        
+
         var sysSpeed = function(sys) {
             if (sys && sys.dynamic)
                 return Math.round(sys.dynamic.speed * 10) / 10;
             else
                 return '-';
         };
-        
+
         var sysVout = function(sys) {
             if (sys && sys.dynamic)
                 return Math.round(sys.dynamic.vout * 100) / 100;
             else
                 return '-';
         };
-        
+
         var sysVin = function(sys) {
             if (sys && sys.dynamic)
                 return Math.round(sys.dynamic.vin * 100)/100;
             else
                 return '-';
         };
-        
+
         var sysSats = function(sys) {
             if (sys && sys.dynamic)
                 return sys.dynamic.sats;
             else
                 return '-';
         };
-        
+
         var sysFuel = function(sys) {
-            if(sys.params && sys.params.fuel && sys.dynamic) {
-                var fuelMap = sys.params.fuel;
-                var fuel = sys.dynamic.fuel;
-                var voltage = data * fuelMap[$scope.fuelMap.length-1].voltage/1024;
-  
-                for(var i = 1; i < fuelMap.length; i++){
-                if(voltage==fuelMap[i-1].voltage) 
-                    return fuelMap[i].liters;
-                if(fuelMap[i-1].voltage<voltage && voltage<fuelMap[i].voltage){
-                    var otnosh = (voltage - fuelMap[i-1].voltage)/(fuelMap[i].voltage - fuelMap[i-1].voltage)
-                    var liters = fuelMap[i-1].liters + otnosh*(fuelMap[i].liters - fuelMap[i-1].liters)
-                    return liters
-                }
-              }
-            }
-            return '-';
+            if (sys && sys.dynamic){
+                console.log("->", sys);
+                return $filter('number')(sys.dynamic.fuel, 1);
+            }else
+                return '-';
+            // if(sys.params && sys.params.fuel && sys.dynamic) {
+            //     var fuelMap = sys.params.fuel;
+            //     var fuel = sys.dynamic.fuel;
+            //     var voltage = data * fuelMap[$scope.fuelMap.length-1].voltage/1024;
+
+            //     for(var i = 1; i < fuelMap.length; i++){
+            //     if(voltage==fuelMap[i-1].voltage)
+            //         return fuelMap[i].liters;
+            //     if(fuelMap[i-1].voltage<voltage && voltage<fuelMap[i].voltage){
+            //         var otnosh = (voltage - fuelMap[i-1].voltage)/(fuelMap[i].voltage - fuelMap[i-1].voltage)
+            //         var liters = fuelMap[i-1].liters + otnosh*(fuelMap[i].liters - fuelMap[i-1].liters)
+            //         return liters
+            //     }
+            //   }
+            // }
+            // return '-';
         };
 
         LastMarker.prototype.draw = function() {
             var overlayProjection = this.getProjection();
-            
+
             if (!overlayProjection) return;
 
             // var divpx = overlayProjection.fromLatLngToDivPixel(this.position);
             var div = this.div;
 
- 
+
             // var x = divpx.x;
             // var y = divpx.y;
 
             var track = d3.select(this.div);
             var points = track.selectAll(".marker")
                 .data(this.data);
+
+            ///////////////////////
+            // Создание. Тут можно особо не заполнять данными, лишь бы структуру создать, ниже все равно будет обновление.
+            ///////////////////////
+
             var div = points.enter().append("div")
                 .attr("class", "marker")
-            // .attr("style", function(d){
-            //     var px = overlayProjection.fromLatLngToDivPixel(d.pos);
-            //     // console.log("d=", d, "px=", px);
-            //     return "left: " + (px.x) + "px; top: " + (px.y) + "px";
-            // })
-            .on('click', function(d) {
-                console.log(d3.select(this), d);
-            });
-///////////////////
-            
-             // div.append("i").attr("class", "icon-shopping-cart icon-large");
-            div.append("i"); //.attr("class", function(d){ return d.icon + " icon-large"});
-            var label = div.append("span").attr("class", "title").text(function(d) {
-                return sysTitle(d);
-            });
+                .on('click', function(d) {
+                    console.log(d3.select(this), d);
+                });
+                // oO жестяк!!! через CSS это делается намного проще (см map.less)
+                // .on('mouseout', function(e){
+                //     var lastM = document.getElementById('lastmarkerID_' + e.key);
+                //     lastM.setAttribute('class','hide');
+                // })
+                // .on('mouseover', function(e){
+                //     var lastM = document.getElementById('lastmarkerID_' + e.key);
+                //     lastM.setAttribute('class','');
+                // });
 
-            /*var label = div.append("div").attr("class", "lastmarker-label").text(function(d) {
-                return d.title;
-            });*/
-            var control = label.append('div').attr("class", "lastmarker-control");
-            var table = control.append('table').attr('class','hide').attr('id',function(d) {return 'lastmarkerID_' + d.key});
-            var tbody = table.append('tbody').attr('id',function(d) {return 'lastmarker_tbodyID_' + d.key});
-            //tbody = table.append('tbody');
-            var timeLine = tbody.append('tr');
-            timeLine.append('td').text(function(d) { return 'Время';});
-            timeLine.append('td').attr('class', 'lastmarkerTime').text(function(d) { return sysTime(d)});
-            var speedLine = tbody.append('tr');
-            speedLine.append('td').text(function(d) { return 'Скорость';});
-            speedLine.append('td').attr('class', 'lastmarkerSpeed').text(function(d) { return sysSpeed(d)});
-            var voutLine = tbody.append('tr');
-            voutLine.append('td').text(function(d) { return 'Осн.питание';});
-            voutLine.append('td').attr('class', 'lastmarkerVout').text(function(d) { return sysVout(d)});
-            var vinLine = tbody.append('tr');
-            vinLine.append('td').text(function(d) { return 'Рез.питание';});
-            vinLine.append('td').attr('class', 'lastmarkerVin').text(function(d) { return sysVin(d)});
-            var statsLine = tbody.append('tr');
-            statsLine.append('td').text(function(d) { return 'Спутники';});
-            statsLine.append('td').attr('class', 'lastmarkerSats').text(function(d) { return sysSats(d)});
-            var fuelLine = tbody.append('tr');
-            fuelLine.append('td').attr('class', function(d) { return d.hasFuelSensor ? "" : "hide";}).text(function(d) { return 'Топливо';});
-            fuelLine.append('td').attr('class', function(d) { return d.hasFuelSensor ? "lastmarkerFuel" : "hide";}).text(function(d) { return sysFuel(d)});
-            
-            
+            div.append("i");
+            var label = div.append("span")
+                .attr("class", "label");
 
+            label.append("span")
+                    .attr("class", "title");
 
-	div.on('mouseout', function(e){
-        var lastM = document.getElementById('lastmarkerID_' + e.key);
-        lastM.setAttribute('class','hide');
-	});
-            
-            
-        div.on('mouseover', function(e){
+            var tbody = label.append('div')
+                .attr("class", "lastmarker-control")
+                    .append('table')
+                        .append('tbody');
 
-        var lastM = document.getElementById('lastmarkerID_' + e.key);
-        lastM.setAttribute('class','');
-	}); 
-            
-///////////////////
-            
-           
-            
-            
-            
+            var controlline = function(classname, title){
+                return function() {
+                    this.attr('class', classname);
+                    this.append('td').text(title);
+                    this.append('td').text("TBD");
+                }
+            }
+
+            tbody.append('tr').call(controlline('lastmarkerTime',  'Время'));        // TODO: ngTranslate
+            tbody.append('tr').call(controlline('lastmarkerSpeed', 'Скорость'));
+            tbody.append('tr').call(controlline('lastmarkerVout',  'Осн.питание'));
+            tbody.append('tr').call(controlline('lastmarkerVin',   'Рез.питание'));
+            tbody.append('tr').call(controlline('lastmarkerSats',  'Спутники'));
+            tbody.append('tr').call(controlline('lastmarkerFuel',  'Топливо'))
+                .attr('style', function(d){return d.hasFuelSensor ? "" : "display: none"});
+
             div.append("svg")
                 .attr("style", 'position:absolute; left: -5px; top: -5px')
                 .attr("width", 32)
@@ -210,8 +199,11 @@ angular.module('services.lastmarker', ['newgps.services'])
                     .append('path')
                         .attr("d", "M -9,-10 0,-15 9,-10 0,-13 -9,-10")
                         .attr("style", "fill:none; stroke:black; stroke-width: 2px; stroke-linecap:round; stroke-linejoin:round; stroke-opacity:1");
-                        // .attr("transform", "rotate(" + 90 + ")");
 
+
+            ///////////////////////
+            // Обновление
+            ///////////////////////
 
             points
                 .attr("style", function(d) {
@@ -226,50 +218,23 @@ angular.module('services.lastmarker', ['newgps.services'])
                 .attr('class', function(d){
                     return d.icon + " icon-large " + $freshmark.get(d.dynamic).class;
                 });
+
+            label = points.select("span.label");
+
+            label.select("span.title").text(function(d) {return sysTitle(d);});
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerTime>td+td").text(function(d)  { return sysTime(d)});
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerSpeed>td+td").text(function(d) { return sysSpeed(d)});
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerVout>td+td").text(function(d)  { return sysVout(d)});
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerVin>td+td").text(function(d)   { return sysVin(d)});
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerSats>td+td").text(function(d)  { return sysSats(d)});
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerFuel>td+td").text(function(d)  { return sysFuel(d)});
+
+            ///////////////////////
+            // Удаление лишних
+            ///////////////////////
+
             points.exit().remove();
-            
-            var sp = d3.select("span");
-            var title = sp.selectAll(".title").data(this.data);
-            title.enter();
-            title.text(function(d) { return sysTitle(d)});
-            title.exit().remove();
-            
-            var body = d3.select("body");
-            
-            var time = body.selectAll(".lastmarkerTime").data(this.data);
-            time.enter();
-            time.text(function(d) { return sysTime(d)});
-            time.exit().remove();
-            
-            var speed = body.selectAll(".lastmarkerSpeed").data(this.data);
-            speed.enter();
-            speed.text(function(d) { return sysSpeed(d)});
-            speed.exit().remove();
-            
-            var vout = body.selectAll(".lastmarkerVout").data(this.data);
-            vout.enter();
-            vout.text(function(d) { return sysVout(d)});
-            vout.exit().remove();
-            
-            var vin = body.selectAll(".lastmarkerVin").data(this.data);
-            vin.enter();
-            vin.text(function(d) { return sysVin(d)});
-            vin.exit().remove();
-            
-            var sats = body.selectAll(".lastmarkerSats").data(this.data);
-            sats.enter();
-            sats.text(function(d) { return sysSats(d)});
-            sats.exit().remove();
-            
-            var fuel = body.selectAll(".lastmarkerFuel").data(this.data);
-            fuel.enter();
-            fuel.text(function(d) { return sysFuel(d)});
-            fuel.exit().remove();
         }
-
-
-
-
 
         return LastMarker;
     }
