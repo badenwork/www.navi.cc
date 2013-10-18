@@ -9,8 +9,6 @@ angular.module('services.lastmarker', ['newgps.services'])
     "$freshmark",
     "$filter",
     function($freshmark, $filter) {
-        // console.log(":: LastMarker:run", $freshmark);
-
         function LastMarker(map) {
             this.map = map;
             this.div = null;
@@ -33,28 +31,15 @@ angular.module('services.lastmarker', ['newgps.services'])
             var panes = this.getPanes();
             this.panes = panes;
 
-
-
-
-            // var marker = d3.select(svg);
-
-            // console.log('market div', div);
             panes.overlayImage.appendChild(div);
         }
 
-        // LastMarker.prototype.setPosition = function(position) {
-        //     this.position = position;
-        //     // this.point = point;
-        //     this.draw();
-        // }
         LastMarker.prototype.setData = function(data) {
-            // console.log('LastMarker.prototype.setData', data);
             this.data = data;
             this.draw();
         }
 
         LastMarker.prototype.onRemove = function() {
-            // this.div.removeChild(this.arrdiv);
             this.div.parentNode.removeChild(this.div);
             this.arrdiv = null;
             this.div = null;
@@ -105,7 +90,6 @@ angular.module('services.lastmarker', ['newgps.services'])
 
         var sysFuel = function(sys) {
             if (sys && sys.dynamic){
-                console.log("->", sys);
                 return $filter('number')(sys.dynamic.fuel, 1);
             }else
                 return '-';
@@ -150,7 +134,7 @@ angular.module('services.lastmarker', ['newgps.services'])
             var div = points.enter().append("div")
                 .attr("class", "marker")
                 .on('click', function(d) {
-                    console.log(d3.select(this), d);
+                    console.log("TODO", d3.select(this), d);
                 });
                 // oO жестяк!!! через CSS это делается намного проще (см map.less)
                 // .on('mouseout', function(e){
@@ -208,7 +192,6 @@ angular.module('services.lastmarker', ['newgps.services'])
             points
                 .attr("style", function(d) {
                     var px = overlayProjection.fromLatLngToDivPixel(new google.maps.LatLng(d.dynamic.latitude, d.dynamic.longitude));
-                    // console.log("d=", d, "px=", px);
                     return "left: " + (px.x) + "px; top: " + (px.y) + "px";
                 })
                 .select('svg g path')
