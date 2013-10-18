@@ -120,19 +120,37 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
     };
   }
 
-
     var items = $scope.items = [];
     var ITEMS = 100;    // По идее нужно вычислять в зависимости от высоты страницы
+
+    var last_target;
+    $scope.onMouse = function(e){
+      var target = e.target;
+      for(var i=0; (i<10) && !target.className.match(/georow/); i++){    // Не самое элегантное решение, но сойдет.
+        target = target.parentNode;
+      }
+      if(last_target !== target){
+        last_target = target;
+        var index = target.getAttribute('index');
+        $scope.center = items[index];
+      }
+    }
+
+
     $scope.myPagingFunction = function(){
         if(!$scope.track) return;
         var offset = items.length;
         // console.log('myPagingFunction', items, $scope.track );
-        items.push.apply(items, $scope.track.points.slice(offset, offset+ITEMS));
+        // items.push.apply(items, $scope.track.points.slice(offset, offset+ITEMS));
 
-        // for(var i=0; i<5; i++){
-        //     var obj = {a: 5};
-        //     items.push(obj);
-        // }
+        // Нужен обратный порядок.
+        var l = $scope.track.points.length;
+        var start = Math.max(0, l - offset - 1);
+        var stop = Math.max(0, l - offset - 1 - ITEMS);
+        if((start===0) && (stop===0)) return;
+        for(var i = start; i >= stop; i--){
+            items.push($scope.track.points[i]);
+        }
     }
     // $scope.myPagingFunction();
 
