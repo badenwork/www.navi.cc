@@ -196,7 +196,7 @@ angular.module('directives.lists', [])
             account: "=",
             systems: "="
         },
-        template: '<div><button class="btn btn-primary" ng-click="addform=!addform;"><i class="icon-plus-sign"></i><span translate>add_system</span></button>' +
+        template: '<div><button class="btn btn-primary" ng-click="showForm()"><i class="icon-plus-sign"></i><span translate>add_system</span></button>' +
                     '<span ng-show="addform">' +
                     '   <br><form class="form-inline" style="display: inline-block; margin:0;" name="form" ng-submit="onAdd(newimei)">' +
                     '        <label style="display:inline">IMEI</label>' +
@@ -209,7 +209,7 @@ angular.module('directives.lists', [])
         replace: true,
         link: function(scope, element, attr, ngModel) {
         },
-        controller: ["$scope", "Account", function($scope, Account){
+        controller: ["$scope", "Account", "$timeout", function($scope, Account, $timeout){
             $scope.addform = false;
 
             var add = function(imeis){
@@ -218,6 +218,13 @@ angular.module('directives.lists', [])
                     // $scope.systems[system.id] = System.add(system);
                     // System.add(system);
                     $scope.systems.$add(system);
+                });
+            }
+
+            $scope.showForm = function(){
+                $scope.addform =! $scope.addform;
+                $timeout(function(){
+                    $('ul.mapsyslist').scrollTop($(document).height());
                 });
             }
 
