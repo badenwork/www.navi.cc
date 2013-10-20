@@ -33,8 +33,9 @@
             <li config-map-item item="mapconfig.numbers" icon-off="map-marker" icon-on="map-marker">{{ 'STOP_NUMBERS' | translate}}</li>
         </ul>
     </div>
+    <a onclick="document.documentElement.webkitRequestFullScreen()" title="На весь экран"><i class="icon-fullscreen icon-large"></i></a>
     <button ng-click="revertVisibleTrack()" class="btn">{{!hideTrack ?'Hide track':'Show track' | translate}}</button>
-    {{'points_in_track' | translate:{value: points} }}
+    <!-- {{'points_in_track' | translate:{value: points} }} -->
     <!--chooselang></chooselang-->
 </div>
 
