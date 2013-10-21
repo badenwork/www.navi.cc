@@ -1,0 +1,98 @@
+
+/* When hiding an element */
+.error-alert.ng-hide-add {
+  -webkit-transition:0.5s linear all;
+  -moz-transition:0.5s linear all;
+  -o-transition:0.5s linear all;
+  transition:0.5s linear all;
+
+  opacity:1;
+}
+
+.error-alert.ng-hide-add.ng-hide-add-active {
+  opacity:0;
+}
+
+/* When showing an element */
+.error-alert.ng-hide-remove {
+  -webkit-transition:0.5s linear all;
+  -moz-transition:0.5s linear all;
+  -o-transition:0.5s linear all;
+  transition:0.5s linear all;
+
+  /* this needs to be here to make it visible during the animation
+     since the .ng-hide class is already on the element rendering
+     it as hidden. */
+  display:block!important;
+  opacity:0;
+}
+
+.error-alert,
+.error-alert.ng-hide-remove.ng-hide-remove-active {
+  opacity:1;
+}
+
+
+
+/* starting animations */
+.addons.ng-enter {
+    -webkit-transition:0.3s linear all;
+    -moz-transition:0.3s linear all;
+    -o-transition:0.3s linear all;
+    transition:0.3s linear all;
+    opacity:0;
+
+    // transition: height 0.5s;
+    height: 0px;
+    overflow: hidden;
+}
+
+/* destination animations */
+.addons.ng-enter.ng-enter-active {
+  // background:blue;
+    opacity:1;
+    height: 58px;
+}
+
+// .addons.ng-leave {
+//   -webkit-transition:1.0s linear all;
+//   -moz-transition:1.0s linear all;
+//   -o-transition:1.0s linear all;
+//   transition:1.0s linear all;
+//   background-color: blue;
+// }
+
+// /* When hiding an element */
+// .addons.ng-hide-add {
+//   -webkit-transition:0.5s linear all;
+//   -moz-transition:0.5s linear all;
+//   -o-transition:0.5s linear all;
+//   transition:0.5s linear all;
+
+//   opacity:1;
+// }
+
+// .addons.ng-hide-add.ng-hide-add-active {
+//   opacity:0;
+// }
+
+// /* When showing an element */
+// .addons.ng-hide-remove {
+//   -webkit-transition:0.5s linear all;
+//   -moz-transition:0.5s linear all;
+//   -o-transition:0.5s linear all;
+//   transition:0.5s linear all;
+
+//   /* this needs to be here to make it visible during the animation
+//      since the .ng-hide class is already on the element rendering
+//      it as hidden. */
+//   display:block!important;
+//   opacity:0;
+// }
+
+// .addons,
+// .addons.ng-hide-remove.ng-hide-remove-active {
+//   opacity:1;
+// }
+
+

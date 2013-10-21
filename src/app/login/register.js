@@ -1,4 +1,4 @@
-angular.module('register', ['ngRoute', 'i18n', 'ui.bootstrap.buttons', 'resources.account', 'ngAnimate'])
+angular.module('register', ['ngRoute', 'i18n', 'ui.bootstrap.buttons', 'resources.account', 'ngAnimate', 'directives.lists'])
 
 .config(['$routeProvider', function ($routeProvider) {
 
@@ -20,6 +20,14 @@ angular.module('register', ['ngRoute', 'i18n', 'ui.bootstrap.buttons', 'resource
   $scope.user = {
     newgroup: true
   };
+
+  $scope.showRealName = false;
+  $scope.showEmail = false;
+  $scope.showGroup = false;
+
+  // $scope.showRealName = function(){
+  //   console.log('Show real name');
+  // }
 
   $scope.registerUser = function(){
     $scope.error = false;

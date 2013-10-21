@@ -2,7 +2,86 @@
 
 <h2>Регистрация нового пользователя</h2>
 
-<form class="form-horizontal" role="form" ng-submit="registerUser()">
+ <form class="form-horizontal" role="form" ng-submit="registerUser()" tab-form>
+  <div class="form-group">
+    <label>Имя пользователя</label>
+    <div class="input-group">
+      <input focus-me="true" type="text" class="form-control" placeholder="Используется для входа" ng-model="user.username" required>
+      <span class="btn input-group-addon" ng-click="showRealName = !showRealName" title="Нажмите чтобы задать отображаемое имя пользователя">Отображаемое имя &#8230;</span>
+    </div>
+  </div>
+
+  <div class="form-group addons" ng-if="showRealName">
+    <label>Отображаемое имя пользователя</label>
+    <input type="text" class="form-control" placeholder="Так вас будут видеть другие пользователи" ng-model="user.title" required>
+  </div>
+
+  <div class="form-group">
+    <label>Пароль</label>
+    <div class="input-group">
+      <input type="password" class="form-control" placeholder="Рекомендуется не менее 6-ти символов" ng-model="user.password" required>
+      <span class="btn input-group-addon" ng-click="showEmail = !showEmail" title="Нажмите чтобы указать email для процедуры восстановления пароля">Восстановление пароля &#8230;</span>
+    </div>
+  </div>
+
+  <div class="form-group addons" ng-if="showEmail">
+    <label>Электронный ящик</label>
+    <input type="email" class="form-control" placeholder="Укажите если хотите иметь возможность восстановления пароля" ng-model="user.email">
+  </div>
+
+
+  <div class="form-group">
+    <span class="info">Чтобы иметь возможность создавать общие списки транспортных средств, объекты на карте, шаблоны отчетов и многое другое, необходимо создать группу пользователей (компанию) или присоединиться к существующей группе. Вы можете это сделать и после создания пользователя.</span>
+
+    <div class="text-center">
+      <div class="btn-group text-left">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          Сделать это сейчас &#8230; <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="javascript:void(0);" ng-click="showGroup='add'; user.newgroup = true"><i class="icon-plus-sign"></i> Создать группу и стать ее администратором</a></li>
+          <li><a href="javascript:void(0);" ng-click="showGroup='join'; user.newgroup = false"><i class="icon-group"></i> Присоединиться к существующей группе</a></li>
+          <li class="divider"></li>
+          <li><a href="javascript:void(0);" ng-click="showGroup=false"><i class="icon-remove-sign"></i> Не создавать группу</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-info addons" ng-switch="user.newgroup" ng-if="showGroup">
+    <span ng-switch-when="true">Будет создана группа пользователей <strong>{{ user.groupname }}</strong>, и вы станете ее администратором. Для приглашения пользователей в группу, сообщите им название группы и проверочное слово <strong>{{ user.grouppassword }}</strong>.</span>
+    <span ng-switch-when="false">Чтобы присоединиться к существующей группе вы должны правильно указать название группы и проверочное слово.</span>
+  </div>
+
+  <div class="form-group addons" ng-if="showGroup">
+    <label>Группа</label>
+    <input type="text" class="form-control" placeholder="Используется для объединения группы пользователей" ng-model="user.groupname" required>
+  </div>
+  <div class="form-group addons" ng-if="showGroup">
+    <label>Проверочное слово</label>
+    <input type="text" class="form-control" placeholder="Необходимо для вступления в группу пользователей" ng-model="user.grouppassword" required>
+  </div>
+
+  <div class="form-group">
+    <div class="row">
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-primary">Создать пользователя</button>
+      </div>
+      <div class="col-md-9 error-alert" ng-show="showerror" id="bugfix0001" style="display:none">
+        <div class="alert alert-danger" ng-switch="error">
+          <span ng-switch-when="userexist">Пользователь с именем <strong>{{ user.username }}</strong> уже существует.</span>
+          <span ng-switch-when="groupexist">Группа с именем <strong>{{ user.groupname }}</strong> уже существует.</span>
+          <span ng-switch-when="nogroup">Группы <strong>{{ user.groupname }}</strong> не существует.</span>
+          <span ng-switch-when="grouppassword">Проверочное слово для группы <strong>{{ user.groupname }}</strong> не верно.</span>
+          <span ng-switch-default>?</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!--
+ <form class="form-horizontal" role="form" ng-submit="registerUser()">
   <div class="form-group">
     <label>Имя пользователя</label>
     <input type="text" class="form-control" placeholder="Используется для входа" ng-model="user.username" required>
@@ -57,6 +136,7 @@
     </div>
   </div>
 </form>
+ -->
 
 <div class="modal fade" data-backdrop="static" data-keyboard="false" id="registerMessage">
   <div class="modal-dialog">
