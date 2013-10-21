@@ -234,9 +234,14 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
 
     $scope.$watch('mapconfig.numbers', function(){
                 if ($scope.mapconfig.numbers) {
-                    $(".eventmarker .track.STOP span").attr("class", "");
+                    // $(".eventmarker .track.STOP span").attr("class", "");
+                    // $(".eventmarker .track.STOP span").attr("class", "");
+                    $(".eventmarker .track.STOP .eventmarker-nonumber").attr("style", "");
+                    $(".eventmarker .track.STOP .eventmarker-number").attr("style", "display: initial");
                 } else {
-                    $(".eventmarker .track.STOP span").attr("class", "hide");
+                    // $(".eventmarker .track.STOP span").attr("class", "hide");
+                    $(".eventmarker .track.STOP .eventmarker-nonumber").attr("style", "display: initial");
+                    $(".eventmarker .track.STOP .eventmarker-number").attr("style", "display: none");
                 }
             });
 

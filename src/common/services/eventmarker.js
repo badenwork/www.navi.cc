@@ -50,9 +50,9 @@ EventMarker.prototype.onRemove = function() {
 var eventDuration = function(d) {
     // return moment(new Date((d.point.dt * 1000))).format("DD/MM/YYYY : hh:mm");;
     if(d.end && d.point){
-        var duration = moment.duration((d.end.dt - d.point.dt) * 1000).humanize();
-        // console.log("duration=", duration);
-        return duration;
+        var duration = (d.end.dt - d.point.dt);
+        if(duration < 60) return "меньше минуты";
+        else return moment.duration(duration * 1000).humanize();
     } else {
         return "";
     }
@@ -98,9 +98,10 @@ EventMarker.prototype.draw = function() {
         .on('click', function(d) {
             console.log(d3.select(this), d);
         });
-    div.append("span").text(function(d){
+    div.append("span").attr("class", "eventmarker-number").text(function(d){
         return d.title;
     });
+    var nonumber = div.append('div').attr("class", "eventmarker-nonumber").text("P");
     var label = div.append("span").attr("class", "title");
 
             /*var label = div.append("div").attr("class", "lastmarker-label").text(function(d) {
@@ -113,6 +114,7 @@ EventMarker.prototype.draw = function() {
             var timeLine = tbody.append('tr');
             timeLine.append('td').text(function(d) { return d.type == 'HOLD' ? 'Остановка:' : 'Стоянка:';});
             timeLine.append('td').text(function(d) { return eventDuration(d)});
+
 
 
     points

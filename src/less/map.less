@@ -272,7 +272,8 @@ div.mapcalendar {
     margin-top: -12px;
     // background-color: rgba(255, 255, 255, 0.75);;
     background-color: #fff;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+    // box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0px 0px 2px rgba(0,0,0,1.0);
     border-radius: 12px;
     text-align: center;
     cursor: pointer;
@@ -280,20 +281,74 @@ div.mapcalendar {
     // .translate3d(0, 0, 0);
     // -webkit-transform: translate3d(0, 0, 0);
     .translate3d(0,0,0);
+
+    .eventmarker-nonumber {
+        display: none;
+    }
 }
 
 .eventmarker .track.START {
-    border: 2px solid #2d2;
+    // border: 2px solid #2d2;
+    background-color: #070;
     z-index: 3;
 }
 
 .eventmarker .track.FINISH {
-    border: 2px solid #2dd;
+    // border: 2px solid #2dd;
+    background-color: #f33;
     z-index: 3;
 }
 
+.eventmarker .track.START, .eventmarker .track.FINISH {
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+    border-radius: 4px;
+    border: 2px solid white;
+    color: white;
+
+    span {
+        font-weight: bold;
+        line-height: 16px;
+
+        .lastmarker-control{
+            color: black;
+        }
+    }
+}
+
+
 .eventmarker .track.STOP {
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+    border-radius: 5px;
+    // border: 2px solid #0cf;
+    border: 2px solid white;
+    background-color: #33f;
     z-index: 2;
+    color: white;
+
+    .eventmarker-nonumber {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    span {
+        font-weight: bold;
+        line-height: 16px;
+
+        .lastmarker-control{
+            color: black;
+        }
+    }
 }
 
 .eventmarker .track.HOLD {
@@ -316,11 +371,6 @@ div.mapcalendar {
     // -webkit-transform: translate3d(0, 0, 0) scale(2);
     z-index: 1001;
     .scale(2)
-}
-
-.eventmarker .track span {
-    font-weight: bold;
-    line-height: 20px;
 }
 
 .eventmarker .track:hover span {
@@ -362,7 +412,8 @@ div.mapcalendar {
     .marker {
         position: absolute;
         // border: 2px solid red;
-        border: 1px solid rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(0, 0, 0, 0.8);
+        // border: 1px solid black;
         width: 24px;
         height: 24px;
         margin-left: -12px;
