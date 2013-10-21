@@ -56,18 +56,18 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
         angular.copy(value || {}, this);
         this.$name = name;
     }
-    
+
     var removeSysErrors = function(sys) {
         if (sys.dynamic) {
             switch(sys.dynamic.fsource){
                 case 2:
                 case 3:
-                case 4:   
+                case 4:
                 case 7:
                     sys.dynamic.speed = 0;
                     break;
-                default: 
-                    break; 
+                default:
+                    break;
              }
         }
         //if (angular.isUndefined(data.car.hasFuelSensor))
@@ -143,6 +143,10 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
             defer.resolve(this.models[id]);
         }
         return defer.promise;
+    }
+
+    REST.prototype.cached = function(id){
+        return this.models[id];
     }
 
     REST.prototype.getall = function(reload){

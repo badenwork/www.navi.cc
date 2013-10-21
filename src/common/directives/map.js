@@ -100,9 +100,9 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
           }, 250);
         }
         animateCircle();
-        
+
         scope.points = [];
-        
+
         var updatePoints = function(points) {
             scope.points = points;
         }
@@ -159,7 +159,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     }],
                 map: map
             });
-            
+
 
             google.maps.event.addListener(path, 'click', function(event)
             {
@@ -217,30 +217,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     map.fitBounds(data.bounds);
                 }
             }
-
-            var eventdata = [];
-            var index = 1;
-            for(i=0; i<data.events.length; i++){
-                var e = data.events[i];
-                var title = "?";
-                if(e.type === "START"){
-                    title = "S";
-                } else if(e.type === "FINISH"){
-                    title =  "F";
-                } else {
-                    title = "" + index;
-                    index += 1;
-                }
-                eventdata.push({
-                    title: title,
-                    type: e.type,
-                    pos: e.position,
-                    point: e.point
-                });
-            }
-
-            eventmarker.setData(eventdata);
-
+            eventmarker.setData(data.events);
         };
 
         // TODO. Не нравится мне чтото это. Заменить бып на событие.
@@ -252,7 +229,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 path = null;
                 eventmarker.setData([]);
             }
-            if((data === null) || (data.points.length === 0) ) return; 
+            if((data === null) || (data.points.length === 0) ) return;
             showTrack(data);
         }, true);
         // scope.$watch("track.select", function(data){

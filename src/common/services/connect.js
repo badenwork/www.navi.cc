@@ -81,7 +81,7 @@ angular.module('services.connect', [])
         };
         ws.onmessage = function(event) {
             var msg = JSON.parse(event.data);
-            console.log('WebSocket onmessage:', msg);
+            // console.log('WebSocket onmessage:', msg);
             // var resource = msg.resource;
             // var id = msg.id;
             shared.scope.$emit('update', msg);

@@ -6,6 +6,7 @@
     3. Заправки.
     4. Сливы топлива.
     5. Тревожные события.
+    ...
 */
 
 function EventMarker(map)
@@ -31,17 +32,9 @@ EventMarker.prototype.onAdd = function() {
     var panes = this.getPanes();
     this.panes = panes;
 
-    // var marker = d3.select(svg);
-
-    // console.log('market div', div);
     panes.overlayImage.appendChild(div);
 }
 
-// EventMarker.prototype.setPosition = function(position) {
-//     this.position = position;
-//     // this.point = point;
-//     this.draw();
-// }
 EventMarker.prototype.setData = function(data) {
     this.data = data;
     this.draw();
@@ -55,18 +48,41 @@ EventMarker.prototype.onRemove = function() {
 }
 
 var eventDuration = function(d) {
-    return moment(new Date((d.point.dt * 1000))).format("DD/MM/YYYY : hh:mm");;
+    // return moment(new Date((d.point.dt * 1000))).format("DD/MM/YYYY : hh:mm");;
+    if(d.end && d.point){
+        var duration = moment.duration((d.end.dt - d.point.dt) * 1000).humanize();
+        // console.log("duration=", duration);
+        return duration;
+    } else {
+        return "";
+    }
 };
 
 EventMarker.prototype.draw = function() {
     var overlayProjection = this.getProjection();
     if(!overlayProjection) return;
 
-    // var divpx = overlayProjection.fromLatLngToDivPixel(this.position);
     var div = this.div;
 
-    // var x = divpx.x;
-    // var y = divpx.y;
+    // console.log('EventMarker.prototype.draw', this.data, this.data[1]);
+
+    // Назначим индексы стоянкам
+    var index = 1;
+    for(i=0; i<this.data.length; i++){
+        var e = this.data[i];
+        var title = "";
+        if(e.type === "START"){
+            title = "S";
+        } else if(e.type === "FINISH"){
+            title =  "F";
+        } else if(e.type === "STOP"){
+            title = "" + index;
+            index += 1;
+        } else {
+        }
+        e.title = title;
+    }
+
 
     var track = d3.select(this.div);
     var points = track.selectAll(".track")
@@ -95,34 +111,17 @@ EventMarker.prototype.draw = function() {
             var tbody = table.append('tbody');
             //tbody = table.append('tbody');
             var timeLine = tbody.append('tr');
-            timeLine.append('td').text(function(d) { return 'Время:';});
+            timeLine.append('td').text(function(d) { return d.type == 'HOLD' ? 'Остановка:' : 'Стоянка:';});
             timeLine.append('td').text(function(d) { return eventDuration(d)});
-            
-            
 
-
-	/*div.on('mouseout', function(d){
-        var lastM = document.getElementById('eventMarkerID_' +  + d.point.course + d.point.dt);
-        lastM.setAttribute('class','hide');
-	});
-            
-            
-        div.on('mouseover', function(d){
-
-        var lastM = document.getElementById('eventMarkerID_' +  + d.point.course + d.point.dt);
-        lastM.setAttribute('class','');
-	}); */
-
-    /*div.append("span").text(function(d){
-        return d.title;
-    });*/
 
     points
         .attr("class", function(d){
+            // if()
             return "track " + d.type;
         })
         .attr("style", function(d){
-            var px = overlayProjection.fromLatLngToDivPixel(d.pos);
+            var px = overlayProjection.fromLatLngToDivPixel(d.position);
             // console.log("d=", d, "px=", px);
             return "left: " + (px.x) + "px; top: " + (px.y) + "px";
         });

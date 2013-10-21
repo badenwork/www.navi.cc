@@ -20,7 +20,7 @@ FSOURCE_TIMEINIT    = 16;    // Фиксация точек при первон�
 
 angular.module('resources.geogps', [])
 
-.factory('GeoGPS', ['SERVER', '$http', '$q', function (SERVER, $http, $q) {
+.factory('GeoGPS', ['SERVER', '$http', '$q', 'System', function (SERVER, $http, $q, System) {
     var GeoGPS = {},
         skey = null,    // Ключ системы с которой идет работа
         // path = null,
@@ -162,6 +162,9 @@ angular.module('resources.geogps', [])
         for(var i=0; i<array.length; i+=32){
             point = parse_onebin(array.subarray(i, i+32));
             // console.log('point=', point);
+            // if(i===0){
+            //     console.log('1st=', array.subarray(i, i+32));
+            // }
             if(point){
                 var gpoint = new google.maps.LatLng(point.lat, point.lon);
                 points.push(point);
@@ -176,7 +179,8 @@ angular.module('resources.geogps', [])
                 if(hour > max_hour) max_hour = hour;
                 hours[hour] = (hours[hour] || 0) + 1;
 
-                if(i===0){  // Первая точка
+                if(events.length === 0){  // Первая точка
+                    // console.log('1st', point);
                     events.push({
                         point: point,
                         position: gpoint,
@@ -224,6 +228,19 @@ angular.module('resources.geogps', [])
                     }
                 } else /*if(point['fsource'] === FSOURCE_START)*/{
                     if(stop_start !== null){
+                        var lastevent = events[events.length-1];
+                        lastevent.end = point;
+                        if(lastevent.type === 'STOP'){
+                            var system = System.cached(skey);
+                            var treshold = 5;
+                            if(system && system.car && system.car.stop){
+                                treshold = system.car.stop | 0;
+                            }
+                            var duration = lastevent.end.dt - lastevent.point.dt;
+                            if(duration < treshold * 60) {
+                                lastevent.type = 'HOLD';
+                            }
+                        }
                         ranges.push({
                             type: 'STOP',           // Стоянка/остановка (тит пока не определен)
                             start_index: stop_start,
@@ -374,6 +391,9 @@ angular.module('resources.geogps', [])
                 return;
             }
             var uInt8Array = new Uint8Array(data);
+            // var parsed = bingpsparse(uInt8Array);
+            // console.log('parsed=', parsed);
+            // parsed.constants = parsed.constants || {skey: skey};
             defer.resolve(bingpsparse(uInt8Array));
         }).error(function(data, status) {
             console.log('GeoGPS.getTrack.error', data, status);

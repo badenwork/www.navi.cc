@@ -65,6 +65,7 @@
             <dt>№ кузова</dt><dd contenteditable="true" ng-model="system.car.vin" ng-change="system.$patch('car')"></dd>
             <dt>№ страхового полиса</dt><dd contenteditable="true" ng-model="system.car.insurance" ng-change="system.$patch('car')"></dd>
             <dt translate>Has a fuel sensor</dt><dd><input type="checkbox" class="btn btn-primary" ng-model="system.car.hasFuelSensor" ng-change="system.$patch('car')"></dd>
+            <dt>Стоянка, минут</dt><dd contenteditable="true" ng-model="system.car.stop" ng-change="system.$patch('car')"></dd>
         </dl>
 
         <!-- <a class="btn btn-primary" href="#drivers">Водители</a> -->
