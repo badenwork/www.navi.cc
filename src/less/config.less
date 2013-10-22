@@ -1,4 +1,82 @@
+ul.config_sys_list {
+    list-style-type: none;
+    margin: 0;
+    padding: 10px 0 0 0;
+}
 
+ul.config_sys_list li {
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+    margin-top: -1px;
+    background-color: #fff;
+    height: 31px;
+    /*padding-top: 4px;
+    padding-bottom: 4px;*/
+}
+
+/*ul.config_sys_list li span:not(.control) {
+    margin-top: 4px;
+}*/
+
+ul.config_sys_list .off {
+    opacity: 0.2;
+}
+
+
+ul.config_sys_list li:hover {
+    background-color: #eee;
+}
+
+ul.config_sys_list li i {
+    color: #666;
+    padding: 4px;
+    /*border: 5px solid rgba(0,0,0,0);*/
+    cursor: pointer;
+
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+ul.config_sys_list li i:hover {
+    background-color: #8cf;
+}
+
+ul.config_sys_list li:first-child{
+    border-top: 1px solid black;
+}
+span.sysimei, span.sysphone {
+    /*border: 1px solid #ccc;*/
+    /*height: 23px;*/
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: -9px;
+    /*background-color: #eee;*/
+}
+
+span.sysphone {
+    width: 115px;
+}
+
+span.sysleftcontrol {
+    float: left;
+}
+
+span.sysrightcontrol {
+    float: right;
+    padding-right: 8px;
+}
+
+span.sysrightcontrol i:hover {
+    background-color: #f44 !important;
+}
 .chart{
     /*border: 1px solid blue;*/
     box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
@@ -113,6 +191,34 @@ a.caricon {
     &:hover {
         background-color: #ccf;
     }
+}
+
+
+ul.config_sys_list>li i.icon-large {
+    padding-bottom: 12px;
+    &:before {
+        vertical-align: -35%;
+    }
+    &.systag {
+        min-width: 29px;
+        min-height: 29px;
+        padding-top: 3px;
+        padding-bottom: 12px;
+        padding-left: 7px;
+        padding-right: 6px;
+        &:before {
+        vertical-align: -35%;
+        display: inline;
+        }
+    }
+}
+
+.sysname {
+    top: 4px;
+    //padding: 4px;
+    //padding-top: 4px;
+    //padding-bottom: 4px;
+    cursor: pointer;
 }
 
 #carIconsModal a {
