@@ -1,5 +1,7 @@
 // Enable the visual refresh
-google.maps.visualRefresh = true;
+if(google && google.maps) {
+    google.maps.visualRefresh = true;
+}
 
 angular.module('directives.gmap', ['services.connect', 'services.eventmarker', 'services.lastmarker'/*, 'ui'*/])
 
@@ -17,6 +19,10 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
         // Временное решение для доступа к главной карте
         //window["config"] = {};
         // var config = window["config"] = {};
+
+        if(!window.hasOwnProperty('google')) {
+            alert('Сервис Google Карт в данный момент недоступен. Попробуйте перезагрузить страницу.');
+        }
 
         var prev_config = localStorage.getItem('map.config');
         if(prev_config){
