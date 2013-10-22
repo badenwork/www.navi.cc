@@ -1,21 +1,23 @@
+(function(){
+
 /* Константы */
-FSOURCE_UNKNOWN     = 0;
-FSOURCE_SUDDENSTOP  = 1;
-FSOURCE_STOPACC     = 2;
-FSOURCE_TIMESTOPACC = 3;
-FSOURCE_SLOW        = 4;
-FSOURCE_TIMEMOVE    = 5;
-FSOURCE_START       = 6;
-FSOURCE_TIMESTOP    = 7;
-FSOURCE_ANGLE       = 8;
-FSOURCE_DELTALAT    = 9;
-FSOURCE_DELTALONG   = 10;
-FSOURCE_DELTA       = 11;
-FSOURCE_DU          = 12;    // Фиксация по дельте изменения внешнего напряжения
-FSOURCE_UMAX        = 13;    // Фиксация по превышению внешнего напряжения установленного порога
-FSOURCE_SUDDENSTART = 14;    // Это признак возможных проблем с акселерометром
-FSOURCE_SUDDENPOS   = 15;    // Это признак возможных проблем с акселерометром
-FSOURCE_TIMEINIT    = 16;    // Фиксация точек при первоначальной запитке
+var FSOURCE_UNKNOWN     = 0,
+    FSOURCE_SUDDENSTOP  = 1,
+    FSOURCE_STOPACC     = 2,
+    FSOURCE_TIMESTOPACC = 3,
+    FSOURCE_SLOW        = 4,
+    FSOURCE_TIMEMOVE    = 5,
+    FSOURCE_START       = 6,
+    FSOURCE_TIMESTOP    = 7,
+    FSOURCE_ANGLE       = 8,
+    FSOURCE_DELTALAT    = 9,
+    FSOURCE_DELTALONG   = 10,
+    FSOURCE_DELTA       = 11,
+    FSOURCE_DU          = 12,    // Фиксация по дельте изменения внешнего напряжения
+    FSOURCE_UMAX        = 13,    // Фиксация по превышению внешнего напряжения установленного порога
+    FSOURCE_SUDDENSTART = 14,    // Это признак возможных проблем с акселерометром
+    FSOURCE_SUDDENPOS   = 15,    // Это признак возможных проблем с акселерометром
+    FSOURCE_TIMEINIT    = 16;    // Фиксация точек при первоначальной запитке
 
 
 angular.module('resources.geogps', [])
@@ -410,3 +412,5 @@ angular.module('resources.geogps', [])
 
     return GeoGPS;
 }]);
+
+})();

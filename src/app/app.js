@@ -1,3 +1,6 @@
+(function(){
+
+
 angular.module('app', [
   'http-auth-interceptor',
   'ngRoute',
@@ -92,7 +95,7 @@ angular.module('app').config(['$routeProvider', '$locationProvider', '$httpProvi
   //$routeProvider.otherwise({redirectTo:'/error'});
 }]);
 
-TIMETICK_UPDATE = 30000;  // Отправлять глобальное событие каждые 30 секунд.
+var TIMETICK_UPDATE = 30000;  // Отправлять глобальное событие каждые 30 секунд.
 // TIMETICK_UPDATE = 1000;  // Отправлять глобальное событие каждые 30 секунд.
 
 angular.module('app').run(['$http', 'SERVER', '$rootScope', '$timeout', function($http, SERVER, $rootScope, $timeout){
@@ -200,3 +203,5 @@ angular.module('app').controller('HeaderCtrl', ['$scope', '$location', '$route',
 }]);
 }
 
+
+})();

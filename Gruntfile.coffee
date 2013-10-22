@@ -239,6 +239,7 @@ module.exports = (grunt) ->
       #  src:['src/i18n/ru.jade', 'src/*.jade']
       #  dest:'<%= distdir %>/tmp/jade/*.jade'
       production:
+        banner: "'use strict';\n"
         src:[
           '<banner:meta.banner>'
           'src/i18n/**/*.js'
@@ -274,8 +275,8 @@ module.exports = (grunt) ->
             'components/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
             'components/moment/moment.js',
             'components/moment/lang/ru.js',
-            # 'components/moment/lang/uk.js',
-            # 'components/moment/lang/pl.js',
+            'components/moment/lang/uk.js',
+            'components/moment/lang/pl.js',
             'components/d3/d3.min.js'
           ]
           dest: '<%= distdir %>/js/components.js'
@@ -312,8 +313,8 @@ module.exports = (grunt) ->
             'components/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
             'components/moment/moment.js',
             'components/moment/lang/ru.js',
-            # 'components/moment/lang/uk.js',
-            # 'components/moment/lang/pl.js',
+            'components/moment/lang/uk.js',
+            'components/moment/lang/pl.js',
             'components/d3/d3.min.js'
           ]
           dest: '<%= distdir %>/js/components.js'
@@ -411,8 +412,8 @@ module.exports = (grunt) ->
       livereload:
         options:
           port: 9001
-          # hostname: 'localhost'
-          hostname: '192.168.1.144'
+          hostname: 'localhost'
+          # hostname: '192.168.1.144'
           middleware: (connect) ->
             [
               lrSnippet,
@@ -426,23 +427,23 @@ module.exports = (grunt) ->
         tasks: ['index']
       htmltemplate:
         files: ['src/app/**/*.tpl.html']
-        tasks: ['copy:templates']
+        tasks: ['ngtemplates:production', 'concat:production']
       js:
         files: ['src/i18n/**/*.js', 'src/common/**/*.js', 'src/app/**/*.js']
-        tasks: ['concat']
-      template:
-        files: ['<%= distdir %>/templates/**/*.tpl.html']
-        tasks: ['html2js', 'concat']
-      livereload:
-        files: ['<%= distdir %>/**']
-        tasks: ['livereload']
+        tasks: ['concat:production']
+      # template:
+      #   files: ['<%= distdir %>/templates/**/*.tpl.html']
+      #   tasks: ['html2js', 'concat:production']
       jade:
         # files: ['src/app/templates/*.jade']
         files: ['src/app/**/*.jade']
-        tasks: ['jade', 'html2js', 'concat']
+        tasks: ['jade:production', 'concat:production']
       less:
         files: ['src/less/*.less']
         tasks: ['less']
+      livereload:
+        files: ['<%= distdir %>/**']
+        tasks: ['livereload']
 
 
   grunt.loadNpmTasks "grunt-contrib-coffee"

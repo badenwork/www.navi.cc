@@ -1,32 +1,7 @@
+
 angular.module('i18n', ['pascalprecht.translate', 'i18n.ru', 'i18n.en', 'i18n.pl', 'i18n.ua'])
+
 .config(['$translateProvider', function ($translateProvider) {
-
-    // console.log(["$translateProvider", $translateProvider, $translateProvider.translations()]);
-
-    // All other langs
-    // $translateProvider.translations({
-    //     "error_msg": "Ууууупс. Что-то произошло. Попробуйте перейти по одной из следующих ссылок:",
-
-    //     // Login page
-    //     "enter": "Вход",
-    //     "enter_help": "Введите имя пользователя и пароль своей учетной записи.",
-    //     "enter_comment": "Чтобы пользоваться сервисом необходимо авторизоваться в системе.",
-    //     "enter_comment2": "Для создания новой учетной записи придумайте имя пользователя и пароль, учетная запись будет создана автоматически.",
-    //     "user_name": "Имя пользователя",
-    //     "user_password": "Пароль",
-    //     "enter_cmd": "Войти",
-    //     "register_cmd": "Зарегестритоваться",
-
-    //     'SIMPLE': 'Простое значение',
-    //     'COMPLEX': 'value равно {{value}}.',
-
-    //     'MAP': 'Карта',
-
-    //     // Панель настроек карты
-    //     'AUTO_BOUND_TRACK': 'Автоматически центровать трек',
-    //     'ANIMATION_DIR': 'Анимация направления',
-    //     'STOP_NUMBERS': 'Нумерация остановок/стоянок'
-    // });
 
     var lang = localStorage.getItem('language');
     if((lang === null) || (lang === "undefined") || !(lang in $translateProvider.translations())){
@@ -34,6 +9,39 @@ angular.module('i18n', ['pascalprecht.translate', 'i18n.ru', 'i18n.en', 'i18n.pl
         localStorage.setItem('language', lang);
     }
     $translateProvider.uses(lang);
+    var to_moment = lang.slice(0,2);
+    if(to_moment === 'ua') to_moment = 'uk';
+    moment.lang(to_moment);
     // $translateProvider.rememberLanguage(true);   // Not worked yet
+}])
+
+.factory('i18n', ['$translate', '$rootScope', function($translate, $rootScope) {
+
+    var moment = window['moment'];
+
+    var i18n = {
+        moment: moment,
+        langs: [
+            {code: 'ru_RU', text: 'RU', moment: 'ru', title: "Русский"},
+            {code: 'en_EN', text: 'EN', moment: 'en', title: "English"},
+            {code: 'ua_UA', text: 'UA', moment: 'uk', title: "Українська"},
+            {code: 'pl_PL', text: 'PL', moment: 'pl', title: "Polski"}
+        ]
+    };
+
+    i18n.lang = function(lang){
+        $translate.uses(lang);
+        localStorage.setItem('language', lang);
+
+        var to_moment = lang.slice(0,2);
+        if(to_moment === 'ua') to_moment = 'uk';
+        moment.lang(to_moment);
+    }
+
+    i18n.active = function(){
+        return $translate.uses();
+    }
+
+    return i18n;
 }]);
 
