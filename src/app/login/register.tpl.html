@@ -49,7 +49,7 @@
         <li><a href="javascript:void(0);" ng-click="showGroup='add'; user.newgroup = true; groupCmd=$event.target.innerText"><i class="icon-plus-sign"></i> Создать группу и стать ее администратором</a></li>
         <li><a href="javascript:void(0);" ng-click="showGroup='join'; user.newgroup = false; groupCmd=$event.target.innerText"><i class="icon-group"></i> Присоединиться к существующей группе</a></li>
         <li class="divider"></li>
-        <li><a href="javascript:void(0);" ng-click="showGroup=false"><i class="icon-remove-sign"></i> Не создавать группу</a></li>
+        <li><a href="javascript:void(0);" ng-click="showGroup=false; groupCmd=$event.target.innerText"><i class="icon-remove-sign"></i> Не создавать группу</a></li>
       </ul>
     </div>
   </div>
