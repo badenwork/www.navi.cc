@@ -202,7 +202,7 @@ angular.module('directives.lists', [])
                     '        <label style="display:inline">IMEI</label>' +
                     '       <input class="form-control" type="text" ng-model="newimei" required autofocus></input>' +
                     '        <button class="btn btn-primary login" id="login" ng-show=\'!form.$invalid\'>Добавить</button>' +
-                    '        <a class="btn btn-primary" ng-click="onGroupSyss()" title="Добавить все трекеры компании"><i class="icon-group" style="margin:0"></i></a>' +
+                    '        <!--a class="btn btn-primary" ng-click="onGroupSyss()" title="Добавить все трекеры компании"><i class="icon-group" style="margin:0"></i></a-->' +
                     '       <fileload ng-model="files" ng-change="onFromFiles()"></fileload>' +
                     '    </form>' +
                     '</span></div>',
