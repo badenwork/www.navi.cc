@@ -15,7 +15,7 @@ angular.module('register', ['ngRoute', 'i18n', 'ui.bootstrap.buttons', 'resource
 }])
 
 .controller('RegisterViewCtrl', ['$scope', '$location', 'account', '$timeout', function ($scope, $location, account, $timeout) {
-  console.log('RegisterViewCtrl controller', account);
+  // console.log('RegisterViewCtrl controller', account);
 
   $scope.user = {
     newgroup: true
@@ -25,15 +25,30 @@ angular.module('register', ['ngRoute', 'i18n', 'ui.bootstrap.buttons', 'resource
   $scope.showEmail = false;
   $scope.showGroup = false;
 
-  // $scope.showRealName = function(){
-  //   console.log('Show real name');
-  // }
-
   $scope.registerUser = function(){
     $scope.error = false;
     $scope.showerror = false;
     console.log('registerUser', $scope.user);
-    account.register($scope.user).then(function(result){
+    var credentials = {
+      username: $scope.user.username,
+      password: $scope.user.password
+    };
+
+    if($scope.showRealName) {
+      credentials['title'] = $scope.user.title;
+    }
+
+    if($scope.showEmail) {
+      credentials['email'] = $scope.user.email;
+    }
+
+    if($scope.showGroup) {
+      credentials['newgroup'] = $scope.user.newgroup;
+      credentials['groupname'] = $scope.user.groupname;
+      credentials['grouppassword'] = $scope.user.grouppassword;
+    }
+
+    account.register(credentials).then(function(result){
       console.log('registerUser success result', result);
       $('#registerMessage').modal();
     }, function(result){

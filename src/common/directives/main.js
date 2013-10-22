@@ -354,7 +354,9 @@ angular.module('directives.lists', [])
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
-            console.log('form', element);
+            // console.log('form', element);
+            // TODO: Хочется чтобы по нажатию "Go/Поиск" в мобильных браузерах осуществлялся переход к следующему полю.
+            // В идеале, хочется чтобы была кнопка "Next", на насколько я понял, это проблема браузера.
         }
     }
 }]);

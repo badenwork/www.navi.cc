@@ -13,7 +13,8 @@ div.container
         dd {{ account.account.date | fromnow }}
         //- dt(translate) Administrator
         //- dd {{ account.account.admin | yesno }}
-        dt Состоит в группах
+        dt(ng-if="account.account.groups.length > 0") Состоит в группах
+        dt(ng-if="account.account.groups.length == 0") Не состоит в группах
         dd
             span.label.label-primary(ng-repeat="g in account.account.groups")
                 i.icon-group
