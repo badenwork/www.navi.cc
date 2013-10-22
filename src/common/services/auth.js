@@ -35,7 +35,7 @@
   .config(['$httpProvider', function($httpProvider) {
 
     var interceptor = ['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
-      console.log('interceptor');
+      // console.log('interceptor');
       function success(response) {
         return response;
       }

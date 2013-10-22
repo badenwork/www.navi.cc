@@ -1,5 +1,5 @@
 <h4><navtool></navtool> Настройка датчика топлива.</h4>
-{{ sys.title }}
+<h5>{{ system.title }}</h5>
 <div class="row">
     <div class="col-lg-4">
 
@@ -7,17 +7,16 @@
             <span>Объем топлива, л</span>
             <span>Напряжение, В</span>
         </div>
-        <ul class="config-fuel" ui-sortable="sortableOptions" ng-model="fuel">
-            <li ng-repeat="l in fuel" ng-class="{error: valid.index === $index}">
+        <ul class="config-fuel" ui-sortable="sortableOptions" ng-model="system.params.fuel">
+            <li ng-repeat="l in system.params.fuel" ng-class="{error: valid.index === $index}">
                 <i class="msp icon-reorder icon-large" title="Нажмите и тяните чтобы изменить порядок отображения объектов"></i>
-                <!-- <input type="number" ng-model="l.liters" min="0" ng-readonly="$index == 0"> -->
                 <input type="number" ng-model="l.liters" min="0">
                 <input type="number" ng-model="l.voltage" min="0" max="10.5" step="0.1">
-                <a class="btn btn-small btn-warning" ng-click="onRemove($index)" ng-show="fuel.length > 2"><i class="icon-remove"></i>Удалить</a>
+                <a class="btn btn-small btn-warning" ng-click="onRemove($index)" ng-show="system.params.fuel.length > 2"><i class="icon-remove"></i>Удалить</a>
             </li>
         </ul>
         <button class="btn btn-primary" ng-click="onAdd()"><i class="icon-plus-sign"></i> Добавить строку</button>
-        <button class="btn btn-primary" ng-click="sys.$patch('params')" ng-show="!valid"><i class="icon-save"></i> Сохранить</button>
+        <button class="btn btn-primary" ng-click="system.$patch('params')" ng-show="!valid"><i class="icon-save"></i> Сохранить</button>
         <div ng-show="valid" class="alert warning">
             <i class="icon-warning-sign"></i>
             {{ valid.title }}
@@ -26,7 +25,7 @@
     </div>
 
     <div class="col-lg-8">
-        <chart data="fuel"></chart>
+        <chart data="system.params.fuel"></chart>
     </div>
 </div>
 

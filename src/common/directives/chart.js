@@ -169,7 +169,7 @@ angular.module('directives.chart', ['i18n'])
 
     var link = function(scope, element, attrs) {
         //svg = element[0].querySelector('svg');
-        console.log('chart:link', element);
+        // console.log('chart:link', element);
         draw(element, scope.data);
         scope.$watch('data', function(data){
             redraw(element, scope.data);
