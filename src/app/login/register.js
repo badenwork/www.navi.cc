@@ -25,6 +25,8 @@ angular.module('register', ['ngRoute', 'i18n', 'ui.bootstrap.buttons', 'resource
   $scope.showEmail = false;
   $scope.showGroup = false;
 
+  $scope.groupCmd = "Не создавать группу";
+
   $scope.registerUser = function(){
     $scope.error = false;
     $scope.showerror = false;

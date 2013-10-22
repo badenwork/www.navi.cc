@@ -8,7 +8,7 @@
     <div class="input-group">
       <span class="btn input-group-addon" ng-click="showRealName = !showRealName" title="Нажмите чтобы задать отображаемое имя пользователя"><i class="icon-user"></i></span>
       <input focus-me="true" type="text" class="form-control" placeholder="Используется для входа" ng-model="user.username" required>
-      <span class="btn input-group-addon" ng-click="showRealName = !showRealName" title="Нажмите чтобы задать отображаемое имя пользователя">&#8230;</span>
+      <span class="btn input-group-addon" ng-click="showRealName = !showRealName" title="Нажмите чтобы задать отображаемое имя пользователя">Еще&#8230;</span>
     </div>
   </div>
 
@@ -25,7 +25,7 @@
     <div class="input-group">
       <span class="btn input-group-addon" ng-click="showEmail = !showEmail" title="Нажмите чтобы указать email для процедуры восстановления пароля"><i class="icon-lock"></i></span>
       <input type="password" class="form-control" placeholder="Рекомендуется не менее 6-ти символов" ng-model="user.password" required>
-      <span class="btn input-group-addon" ng-click="showEmail = !showEmail" title="Нажмите чтобы указать email для процедуры восстановления пароля">&#8230;</span>
+      <span class="btn input-group-addon" ng-click="showEmail = !showEmail" title="Нажмите чтобы указать email для процедуры восстановления пароля">Еще&#8230;</span>
     </div>
   </div>
 
@@ -43,11 +43,11 @@
 
     <div class="btn-group text-left" style="margin-top: 8px">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        Сделать это сейчас <span class="caret"></span>
+        {{groupCmd}} <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
-        <li><a href="javascript:void(0);" ng-click="showGroup='add'; user.newgroup = true"><i class="icon-plus-sign"></i> Создать группу и стать ее администратором</a></li>
-        <li><a href="javascript:void(0);" ng-click="showGroup='join'; user.newgroup = false"><i class="icon-group"></i> Присоединиться к существующей группе</a></li>
+        <li><a href="javascript:void(0);" ng-click="showGroup='add'; user.newgroup = true; groupCmd=$event.target.innerText"><i class="icon-plus-sign"></i> Создать группу и стать ее администратором</a></li>
+        <li><a href="javascript:void(0);" ng-click="showGroup='join'; user.newgroup = false; groupCmd=$event.target.innerText"><i class="icon-group"></i> Присоединиться к существующей группе</a></li>
         <li class="divider"></li>
         <li><a href="javascript:void(0);" ng-click="showGroup=false"><i class="icon-remove-sign"></i> Не создавать группу</a></li>
       </ul>
