@@ -197,3 +197,19 @@ angular.module('app').controller('HeaderCtrl', ['$scope', '$location', '$route',
 
 }]);
 }
+
+if(window.hasOwnProperty('applicationCache')){
+  var appCache = window.applicationCache;
+  window.addEventListener('load', function(e) {
+    window.applicationCache.addEventListener('updateready', function(e) {
+      if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+        window.applicationCache.swapCache();
+        if (confirm('Доступна новая версия сайта. Перезагрузить страницу?')) {
+          window.location.reload();
+        }
+      } else {
+        // Manifest didn't changed. Nothing new to server.
+      }
+    }, false);
+  }, false);
+}

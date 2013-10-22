@@ -22,6 +22,45 @@ module.exports = (grunt) ->
       #less: ['src/less/*.less']  # recess:build doesn't accept ** in its file patterns
       less: ['src/less/main.less']  # recess:build doesn't accept ** in its file patterns
 
+    ngtemplates:
+      production:
+        cwd:    'src/app'
+        src:    ["**/*.tpl.html"]
+        dest:   'temp/templates.js'
+        # expand: true
+        options:
+          module: 'app'
+          prefix: 'templates/'
+          # url:    (url) -> return 'templates/' + url  # .replace '.tpl.html', '.html'
+          htmlmin:
+            collapseBooleanAttributes:      false
+            collapseWhitespace:             true
+            removeAttributeQuotes:          false
+            removeComments:                 true # Only if you don't use comment directives!
+            removeEmptyAttributes:          false
+            removeRedundantAttributes:      false
+            removeScriptTypeAttributes:     false
+            removeStyleLinkTypeAttributes:  false
+
+      production_jade:
+        cwd:    'temp/templates'
+        src:    ["**/*.tpl.html"]
+        dest:   'temp/templates-jade.js'
+        # expand: true
+        options:
+          module: 'app'
+          prefix: 'templates/'
+          # url:    (url) -> return 'templates/' + url  # .replace '.tpl.html', '.html'
+          htmlmin:
+            collapseBooleanAttributes:      false
+            collapseWhitespace:             true
+            removeAttributeQuotes:          false
+            removeComments:                 true # Only if you don't use comment directives!
+            removeEmptyAttributes:          false
+            removeRedundantAttributes:      false
+            removeScriptTypeAttributes:     false
+            removeStyleLinkTypeAttributes:  false
+
     bowerful:
       dist:
         packages:
@@ -96,6 +135,21 @@ module.exports = (grunt) ->
           cwd: 'components/'
           expand: true
         ]
+      conponents_min:
+        files: [
+        #   dest: '<%= distdir %>/css/'
+        #   src: [
+        #     'components/components-font-awesome/css/font-awesome.min.css',
+        #     'components/bootstrap/dist/css/bootstrap.min.css',
+        #   ]
+        #   expand: true
+        #   flatten: true
+        # ,
+          dest: '<%= distdir %>/font/'
+          src: 'components/components-font-awesome/font/*'
+          expand: true
+          flatten: true
+        ]
       templates:
         files: [
           dest: '<%= distdir %>/templates'
@@ -135,6 +189,20 @@ module.exports = (grunt) ->
           # '<%= distdir %>/templates/': ['src/app/templates/*.jade']
           )
 
+      production:
+        options:
+          client: false
+          doctype: '5'
+          pretty: true
+          data:
+            debug: false
+            title: 'My awesome application'
+        files: grunt.file.expandMapping(["**/*.jade"], "temp/templates/",
+          cwd: "src/app"
+          rename: (destBase, destPath) ->
+            destBase + destPath.replace(/\.jade$/, ".tpl.html")
+          )
+
     # jade:
     #   templates: {
     #     files: {
@@ -170,6 +238,59 @@ module.exports = (grunt) ->
         dest:'<%= distdir %>/js/<%= pkg.name %>.js'
       #  src:['src/i18n/ru.jade', 'src/*.jade']
       #  dest:'<%= distdir %>/tmp/jade/*.jade'
+      production:
+        src:[
+          '<banner:meta.banner>'
+          'src/i18n/**/*.js'
+          'src/common/**/*.js'
+          'src/app/**/*.js'
+          'temp/templates-jade.js'
+          'temp/templates.js'
+        ],
+        dest:'<%= distdir %>/js/<%= pkg.name %>.js'
+      conponents_min:
+        files: [
+          src: [
+            'components/xlsx.js/xlsx.js',
+            'components/jszip/jszip.min.js',
+            'components/jszip/jszip-deflate.js',
+            'components/jquery/jquery.min.js',
+            'components/jquery-ui/ui/jquery.ui.core.js',
+            'components/jquery-ui/ui/jquery.ui.widget.js',
+            'components/jquery-ui/ui/jquery.ui.mouse.js',
+            'components/jquery-ui/ui/jquery.ui.sortable.js',
+            'components/bootstrap/dist/js/bootstrap.min.js',
+            'components/bootstrap-datepicker/js/bootstrap-datepicker.js',
+            'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js',
+            'components/angular/angular.min.js',
+            'components/angular-route/angular-route.min.js',
+            'components/angular-resource/angular-resource.min.js',
+            'components/angular-animate/angular-animate.min.js',
+            'components/angular-translate/angular-translate.min.js',
+            'components/angular-ui-sortable/src/sortable.js',
+            'components/angular-ui-bootstrap/src/buttons/buttons.js',
+            'components/angular-bindonce/bindonce.js',
+            'components/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
+            'components/moment/moment.js',
+            'components/moment/lang/ru.js',
+            # 'components/moment/lang/uk.js',
+            # 'components/moment/lang/pl.js',
+            'components/d3/d3.min.js'
+          ]
+          dest: '<%= distdir %>/js/components.js'
+          # expand: true
+        ,
+          src: [
+            'components/bootstrap/dist/css/bootstrap.min.css'
+            'components/components-font-awesome/css/font-awesome.min.css'
+          ]
+          dest: '<%= distdir %>/css/components.css'
+        ]
+
+    uglify:
+      production:
+        files:
+          '<%= distdir %>/js/<%= pkg.name %>.min.js': ['<%= distdir %>/js/<%= pkg.name %>.js']
 
     oversprite:
       all:
@@ -215,8 +336,37 @@ module.exports = (grunt) ->
         #   dest: "sprite.ie.css"
         ]
 
+    manifest:
+      generate:
+        options:
+          basePath: 'dist/'
+          cache: [
+            'js/components.js'
+            'js/angular-strap-0.7.5.js'
+            # 'font/fontawesome-webfont.woff'
+            'img/minus_button.png'
+            'img/plus_button.png'
+            'font/fontawesome-webfont.woff?v=3.2.1'
+            'font/font-webfont.woff'
+            'font/caricons.woff?82948991'
+          ]
+          network: ['http://*', 'https://*', '*']
+          fallback: ['/ /offline.html']
+          # exclude: ['js/jquery.min.js']
+          preferOnline: true
+          verbose: true
+          timestamp: true
+          hash: true
+          master: ['index.html']
+        src: [
+          # 'some_files/*.html'
+          'js/*.min.js'
+          'css/*.css'
+        ]
+        dest: 'dist/manifest.appcache'
+
     clean:
-      dist: ['<%= distdir %>/*']
+      dist: ['<%= distdir %>/*', 'temp/*']
       sprites: ["src/images/sprite-*.png", "src/images/sprite-*.css"]
 
     connect:
@@ -270,6 +420,10 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-regarde"
   grunt.loadNpmTasks "grunt-oversprite"
   grunt.loadNpmTasks "grunt-bowerful"
+  grunt.loadNpmTasks "grunt-angular-templates"
+  grunt.loadNpmTasks "grunt-contrib-htmlmin"
+  grunt.loadNpmTasks "grunt-contrib-uglify"
+  grunt.loadNpmTasks "grunt-manifest"
 
   # grunt-contrib-watch now not work with livereload :(
   #grunt.loadNpmTasks "grunt-contrib-watch"
@@ -290,16 +444,36 @@ module.exports = (grunt) ->
     "clean", "jade", "less", "bowerful", "copy", "index", "concat"
   ]
 
+  # Production
+  grunt.registerTask "production", [
+    # "clean", "jade", "less" #, "bowerful", "copy", "index", "concat"
+    "clean"
+    "jade:production"
+    "ngtemplates:production"
+    "ngtemplates:production_jade"
+    "less"
+    # "bowerful"
+    "copy:assets"
+    "copy:sprites"
+    "copy:conponents_min"
+    "concat:conponents_min"
+    "concat:production"
+    "uglify:production"
+    "index"
+    "manifest"
+  ]
+
   # Development server
   grunt.registerTask 'server', [
-    'build',
-    'livereload-start',
-    'connect:livereload',
-    #'connect',
+    # 'build',
+    'production'
+    'livereload-start'
+    'connect:livereload'
+    #'connect'
     'regarde'
     #'open',
     #'watch'
   ]
 
 
-  grunt.registerTask "default", ["build"]
+  grunt.registerTask "default", ["pruduction"]

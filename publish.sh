@@ -7,7 +7,7 @@ HOST=new.navi.cc
 
 echo "Publich: $BRANCH"
 
-grunt build
+grunt production
 rsync -avz --delete -e ssh ./dist/ $USER@$HOST:~/SDK/newgps.navi.cc/www-$BRANCH/
 
 
