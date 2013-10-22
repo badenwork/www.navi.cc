@@ -209,15 +209,16 @@ angular.module('directives.lists', [])
         replace: true,
         link: function(scope, element, attr, ngModel) {
         },
-        controller: ["$scope", "Account", "$timeout", function($scope, Account, $timeout){
+        controller: ["$scope", "Account", "$timeout", "System", function($scope, Account, $timeout, System){
             $scope.addform = false;
 
             var add = function(imeis){
                 Account.systemadd(imeis, function(system){
                     console.log("system=", system);
                     // $scope.systems[system.id] = System.add(system);
-                    // System.add(system);
-                    $scope.systems.$add(system);
+                    System.add(system);
+                    // $scope.systems.$add(system);  // TODO! Процедура не вызывает Update
+
                 });
             }
 

@@ -75,6 +75,7 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
             sys.car.hasFuelSensor = false;
     }
 
+    // TODO: Метод не вызывает $update
     Models.prototype.$add = function(data){
         // var model = new Model(that.name, data);
         var id = data.id;
@@ -178,7 +179,12 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
 
     // Ручное добавление ресурса. Алиас на models.$add(data)
     REST.prototype.add = function(data){
-        this.models.$add(data);
+        // this.models.$add(data);
+        var model = this.models.$add(data);
+        if(this.hasOwnProperty('$update')){
+            this.$update.call(model);
+        }
+
     }
 
     return REST;
