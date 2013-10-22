@@ -244,10 +244,49 @@ module.exports = (grunt) ->
           'src/i18n/**/*.js'
           'src/common/**/*.js'
           'src/app/**/*.js'
-          'temp/templates-jade.js'
           'temp/templates.js'
+          'temp/templates-jade.js'
         ],
         dest:'<%= distdir %>/js/<%= pkg.name %>.js'
+
+      conponents:
+        files: [
+          src: [
+            'components/xlsx.js/xlsx.js',
+            'components/jszip/jszip.min.js',
+            'components/jszip/jszip-deflate.js',
+            'components/jquery/jquery.min.js',
+            'components/jquery-ui/ui/jquery.ui.core.js',
+            'components/jquery-ui/ui/jquery.ui.widget.js',
+            'components/jquery-ui/ui/jquery.ui.mouse.js',
+            'components/jquery-ui/ui/jquery.ui.sortable.js',
+            'components/bootstrap/dist/js/bootstrap.min.js',
+            'components/bootstrap-datepicker/js/bootstrap-datepicker.js',
+            'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js',
+            'components/angular/angular.js',
+            'components/angular-route/angular-route.min.js',
+            'components/angular-resource/angular-resource.min.js',
+            'components/angular-animate/angular-animate.min.js',
+            'components/angular-translate/angular-translate.min.js',
+            'components/angular-ui-sortable/src/sortable.js',
+            'components/angular-ui-bootstrap/src/buttons/buttons.js',
+            'components/angular-bindonce/bindonce.js',
+            'components/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
+            'components/moment/moment.js',
+            'components/moment/lang/ru.js',
+            # 'components/moment/lang/uk.js',
+            # 'components/moment/lang/pl.js',
+            'components/d3/d3.min.js'
+          ]
+          dest: '<%= distdir %>/js/components.js'
+        ,
+          src: [
+            'components/bootstrap/dist/css/bootstrap.min.css'
+            'components/components-font-awesome/css/font-awesome.min.css'
+          ]
+          dest: '<%= distdir %>/css/components.css'
+        ]
+
       conponents_min:
         files: [
           src: [
@@ -278,7 +317,6 @@ module.exports = (grunt) ->
             'components/d3/d3.min.js'
           ]
           dest: '<%= distdir %>/js/components.js'
-          # expand: true
         ,
           src: [
             'components/bootstrap/dist/css/bootstrap.min.css'
@@ -350,8 +388,8 @@ module.exports = (grunt) ->
             'font/font-webfont.woff'
             'font/caricons.woff?82948991'
           ]
-          network: ['http://*', 'https://*', '*']
-          fallback: ['/ /offline.html']
+          network: ['http://*', 'https://*', 'http://dev.new.navi.cc/1.0/*','*']
+          # fallback: ['/ /offline.html']
           # exclude: ['js/jquery.min.js']
           preferOnline: true
           verbose: true
@@ -373,7 +411,8 @@ module.exports = (grunt) ->
       livereload:
         options:
           port: 9001
-          hostname: 'localhost'
+          # hostname: 'localhost'
+          hostname: '192.168.1.144'
           middleware: (connect) ->
             [
               lrSnippet,
@@ -457,8 +496,9 @@ module.exports = (grunt) ->
     "copy:sprites"
     "copy:conponents_min"
     "concat:conponents_min"
+    # "concat:conponents"
     "concat:production"
-    "uglify:production"
+    # "uglify:production"
     "index"
     "manifest"
   ]

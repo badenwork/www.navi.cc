@@ -12,7 +12,7 @@
     <!--meta name="viewport" content="width=device-width" initial-scale="1.0"/-->
     <meta name='HandheldFriendly' content='True' />
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
-    <meta name="viewport" content="target-densitydpi=device-dpi, initial-scale=1.0, user-scalable=no" />
+    <!-- <meta name="viewport" content="target-densitydpi=device-dpi, initial-scale=1.0, user-scalable=no" /> -->
 
     <!-- Bootstrap, font-awesome, etc -->
     <link rel='stylesheet' href='css/components.css' />
@@ -90,7 +90,8 @@
     <script type="text/javascript" src="js/angular-strap-0.7.5.js"></script>
 
     <!-- <script type="text/javascript" src="js/sockjs-0.3.min.js"></script> -->
-    <script type="text/javascript" src="js/<%= grunt.config.get('pkg.name') %>.min.js"></script>
+    <!-- <script type="text/javascript" src="js/<%= grunt.config.get('pkg.name') %>.min.js"></script> -->
+    <script type="text/javascript" src="js/<%= grunt.config.get('pkg.name') %>.js"></script>
 
     <script type="text/javascript">
         window.document.onselectstart = function(ev){
@@ -99,6 +100,23 @@
             }
             return false;
         }   // Запретим выделение (внимание решение может быть не кроссбраузерно)
+
+
+        if(window.hasOwnProperty('applicationCache')){
+          var appCache = window.applicationCache;
+          window.addEventListener('load', function(e) {
+            window.applicationCache.addEventListener('updateready', function(e) {
+              if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+                window.applicationCache.swapCache();
+                if (confirm('Доступна новая версия сайта. Перезагрузить страницу?')) {
+                  window.location.reload();
+                }
+              } else {
+                // Manifest didn't changed. Nothing new to server.
+              }
+            }, false);
+          }, false);
+        }
 
         // $("[rel=tooltip]").tooltip();
         //angular.bootstrap(document, ['app']);

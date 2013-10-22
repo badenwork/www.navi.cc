@@ -155,6 +155,7 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
         var that = this;
 
         if(!this.all || reload) {
+            console.log('SERVER.api=', SERVER.api);
             $http({
                 method: 'GET',
                 url: SERVER.api + "/" + this.name + "s"
