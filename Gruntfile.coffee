@@ -393,9 +393,16 @@ module.exports = (grunt) ->
             'font/font-webfont.woff'
             'font/caricons.woff?82948991'
           ]
-          network: ['http://*', 'https://*', 'http://dev.new.navi.cc/1.0/*','*']
+          network: [
+            'http://*'
+            'https://*'
+            'http://dev.new.navi.cc/1.0/*'
+            '*'
+          ]
           # fallback: ['/ /offline.html']
-          # exclude: ['js/jquery.min.js']
+          exclude: [
+            'css/www-navi-cc.css'
+          ]
           preferOnline: true
           verbose: true
           timestamp: true
