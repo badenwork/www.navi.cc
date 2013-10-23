@@ -25,6 +25,7 @@ angular.module('resources.geogps', [])
 .factory('GeoGPS', ['SERVER', '$http', '$q', 'System', function (SERVER, $http, $q, System) {
     var GeoGPS = {},
         skey = null,    // Ключ системы с которой идет работа
+        system = null,
         // path = null,
         days = {};      // Дни, в которые было движение
 
@@ -161,9 +162,16 @@ angular.module('resources.geogps', [])
         var move_start = null;  // Точка начала движения
 
         var index = 0;
+
+        var fuelscale = System.$fuelscale(skey);
+        console.log('fuelscale=', fuelscale);
+
         for(var i=0; i<array.length; i+=32){
             point = parse_onebin(array.subarray(i, i+32));
-            // console.log('point=', point);
+            // console.log('point=', point, System);
+            if(point.fuel) {
+                point.fuel = fuelscale(point.fuel);
+            }
             // if(i===0){
             //     console.log('1st=', array.subarray(i, i+32));
             // }
@@ -313,6 +321,7 @@ angular.module('resources.geogps', [])
 
     GeoGPS.select = function(newskey){
         skey = newskey;
+        system = System.cached(newskey);    // Тут есть потенциальная опасность если данные на момент выбора еще не готовы
     };
 
     GeoGPS.getHours = function(hourfrom, hourto){

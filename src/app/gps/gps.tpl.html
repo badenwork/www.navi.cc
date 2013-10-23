@@ -22,6 +22,7 @@
             <span title="Скорость"><span class="showchart" style="background-image: url(img/ulitka.png);width: 32px;height: 32px;background-position: 0px 0px;" data-value="speed"></span></span>
             <span>Uосн.</span>
             <span>Uрез.</span>
+            <span>Топл.</span>
             <span>Тип</span>
     </div>
 
@@ -37,6 +38,7 @@
             <span bo-text="g.speed | number:1"></span>
             <span bo-text="g.vout | number:1"></span>
             <span bo-text="g.vin | number:2"></span>
+            <span bo-text="g.fuel | number:1"></span>
             <span bo-title="(g.fsource | fsource).title" style="color:grey"><i bo-class="s" ng-repeat="s in (g.fsource | fsource).icons" style="padding-left:2px"></i></span>
         </div>
     </div>

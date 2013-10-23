@@ -7,21 +7,35 @@ angular.module('resources.system', ['services.connect'])
     // В цепи измерения делитель: 22k/10k
     // В перспективе значение должно быть привязано к hwid
     // Systems.$fuel = function(system, value){
-    var fuel = function(fuel, value){
+    var fuelscale = function(fuel) {
         var r1 = 22,
             r2 = 10,
             vdd = 3.3,
             vmin = fuel[0].voltage,             // Предполагается что функция неубывающая.
             vmax = fuel[fuel.length-1].voltage;
 
-        var v = (value * vdd / 1024) * (r1+r2) / r2 ; // +- 1lsb?
-        v = Math.max(v, vmin);
-        v = Math.min(v, vmax);
-
         var scale = d3.scale.linear()
-            .domain(fuel.map(function(d){return d.voltage}))
-            .range(fuel.map(function(d){return d.liters}));
-        return scale(v);
+            .domain(fuel.map(function(d){
+                return d.voltage * 1024 * r2 / (vdd * (r1 + r2));
+            }))
+            .range(fuel.map(function(d){return d.liters}))
+            .clamp(true);
+
+        return scale;
+    }
+    var fuel = function(fuel, value){
+        return fuelscale(fuel)(value);
+    }
+
+    Systems.$fuelscale = function(id){
+        var system = this.cached(id);
+        if(system && system.params && system.params.fuel) {
+            return fuelscale(system.params.fuel);
+        } else {
+            return function(v){
+                return 0;
+            }
+        }
     }
 
     Systems.$update = function(){
