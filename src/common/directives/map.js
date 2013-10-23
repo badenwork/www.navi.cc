@@ -11,14 +11,8 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
     var link = function(scope, element, attrs) {
         var path = null,
-            select = null;
-        var gmarker = null;
-        // console.log('map directive: link', scope, element, Connect);
-        //element.innerHTML="<div>map</div>";
-
-        // Временное решение для доступа к главной карте
-        //window["config"] = {};
-        // var config = window["config"] = {};
+            select = null,
+            gmarker = null;
 
         if(!window.hasOwnProperty('google')) {
             alert('Сервис Google Карт в данный момент недоступен. Попробуйте перезагрузить страницу.');
@@ -43,8 +37,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
         };
         var map = new google.maps.Map(element[0], myOptions);
 
-        // config.map = map;
-
         var saveMapState = function() {
             localStorage.setItem('map.config', JSON.stringify({
                 center: [map.getCenter().lat(), map.getCenter().lng()],
@@ -58,10 +50,10 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
         google.maps.event.addListener(map, 'zoom_changed', function(){
             // console.log('zoom_changed');
-            //PathRebuild();
+            //PathRebuild();    // TODO! Разная детализация трека, по аналогии со старым сайтом
         });
 
-          if(scope.config.centermarker){
+        if(scope.config.centermarker){
             var center = new google.maps.MarkerImage(
                 '/img/marker/marker-center.png?v=1',
                 new google.maps.Size(32, 32),
@@ -91,7 +83,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
         var eventmarkers = {};
 
-//        if(scope.config.autobounds){
         function animateCircle() {
             var count = 0;
             offsetId = window.setInterval(function() {
@@ -142,7 +133,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
         scope.infowindow = new google.maps.InfoWindow();
 
         var showTrack = function(data){
-             //console.log("showTrack", data);
             if (scope.infowindow != null)
                 scope.infowindow.close();
             updatePoints (data.points);
@@ -169,11 +159,8 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             google.maps.event.addListener(path, 'click', function(event)
             {
-                //console.log(event);
                 var point = scope.findNearestPoint({lat:event.latLng.lb, lon:event.latLng.mb});
-                if (point == null)
-                    return;
-                console.log(point);
+                if (point == null) return;
                 var timeStr = moment(new Date((point.dt * 1000))).format("DD/MM/YYYY : hh:mm");
                 var lat = Math.round(point.lat * 100000) / 100000;
                 var lon = Math.round(point.lon * 100000) / 100000;
@@ -184,7 +171,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 var content = '<div class="info-header">' + timeStr+ '</div><table id="tbl_info" width="100%"><tbody><tr><td>Долгота:</td><td><b>' + lat + '</b></td></tr><tr><td>Широта:</td><td><b>' + lon + '</b></td></tr><tr><td>Спутники</td><td><b>' + sats + '</b></td></tr><tr><td>Скорость</td><td><b>' + speed +'км/ч</b></td></tr><tr><td>Основное питание</td><td><b>' + vout + 'В</b></td></tr><tr><td>Резервное питание</td><td><b>' + vin + 'В</b></td></tr></tbody></table>';
                 scope.infowindow.setContent(content);
                 scope.infowindow.setPosition(new google.maps.LatLng(point.lat, point.lon));
-                //scope.infowindow.setPosition(event.latLng);
                 scope.infowindow.open(map);
             });
 
@@ -200,7 +186,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 var bounds = new google.maps.LatLngBounds(fragment[0], fragment[0]);
 
                 fragment.forEach(function(point){bounds.extend(point)});
-                // console.log("bounds=", bounds);
                 map.fitBounds(bounds);
 
                 if(select) {
@@ -218,7 +203,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 if(select) {
                     select.setPath([]);
                 }
-                // console.log("scope.autobounds=", scope.autobounds);
                 if(scope.config.autobounds){
                     map.fitBounds(data.bounds);
                 }
@@ -228,8 +212,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
         // TODO. Не нравится мне чтото это. Заменить бып на событие.
         scope.$watch("track", function(data){
-            // console.log(['MAP:track change', data]);
-            // $scope.hideTrack();
             if(path) {
                 path.setMap(null);
                 path = null;
@@ -238,19 +220,14 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             if((data === null) || (data.points.length === 0) ) return;
             showTrack(data);
         }, true);
-        // scope.$watch("track.select", function(data){
-        //     console.log(['MAP:track select', data]);
-        // });
 
         var lastmarker = new LastMarker(map);
 
         scope.$watch("systems", function(systems){
             if(!systems) return;
             var lastpos = [];
-            //for(var i in systems){}
             angular.forEach(systems, function(sys){
                 if(sys.dynamic && sys.dynamic.latitude){
-                    // console.log('forEach ', sys, key);
                     var off = scope.account.account.off;
                     if(!off.hasOwnProperty(sys.id)) {
                           lastpos.push({
@@ -264,18 +241,12 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 }
             });
             lastmarker.setData(lastpos);
-            // console.log('$watch account.account.systems', systems, lastpos);
         }, true);
-
-
     };
 
     return {
         restrict: 'A',
         transclude: false,
-        //scope: {last_pos: '='},
-        //template: '<div>List:<ul><li ng-repeat="l in list">{{l}}<i class="icon-arrow-right"></i><span>{{l}}</span></li></ul></div>',
-        //template: '<div>MAP</div>',
         scope: {
             track: "=",
             config: "=",
@@ -283,10 +254,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             account: "=",
             systems: "="
         },
-        link: link/*,
-        controller: ["$scope", "Connect", function($scope, Connect){
-            console.log("map directive:controller", $scope, Connect);
-        }]*/
+        link: link
     };
 }]);
 

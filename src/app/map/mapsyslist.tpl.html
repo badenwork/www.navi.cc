@@ -1,13 +1,12 @@
 <div class="mapsyslist">
     <div class="input-group">
         <!-- <span class="input-group-addon input-small"><i class="icon-filter"></i></span> -->
-        <select class="form-control input-small" ng-model="sfilter" ng-options="f.desc for f in filters"><option value="">все</option></select>
-        <span class="input-group-addon input-small" ng-click="doZoomList()"><span class="icon-zoom-in icon-large" title="Размер"></span></span>
-        <span class="input-group-addon input-small"><a href="#/config" class="icon-wrench icon-large" title="Размер"></a></span>
+        <select disabled="disabled" class="form-control input-small" ng-model="sfilter" ng-options="f.desc for f in filters"><option value="">все</option></select>
+        <a class="input-group-addon input-small" ng-click="doZoomList()" style="cursor:pointer;"><i class="icon-zoom-in icon-large" title="Размер"></i></a>
+        <a class="input-group-addon input-small" href="#/config" title="Размер"><i class="icon-wrench icon-large"></i></a>
     </div>
 
     <ul class="mapsyslist">
-
         <mapsysitem zoomlist="{{zoomlist}}" class="{{s}}" ng-repeat="s in account.account.skeys | isoff:account.account.off" item="systems[s]" select="onSysSelect(s)" skey="skey"></mapsysitem>
 
         <li style="padding-top: 15px;">
@@ -16,9 +15,5 @@
                 <addtracker account="account" systems="systems"></addtracker>
             </div>
         </li>
-    <!--     <li>1</li>
-        <li>{{ skey }}</li>
-     -->
     </ul>
-
 </div>

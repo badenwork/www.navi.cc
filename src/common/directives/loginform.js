@@ -5,7 +5,7 @@ angular.module('directives.loginform', ['i18n', 'http-auth-interceptor', 'resour
         restrict: 'E',
         transclude: false,
         replace: true,
-        // templateUrl: 'templates/login/loginform.tpl.html',
+        // templateUrl: 'templates/login/loginform.tpl.html',   // Внешний шаблон не успевает подгрузиться
         template: '' +
 
 '   <div class="modal fade loginform" data-backdrop="static" data-keyboard="false">'+
@@ -48,20 +48,11 @@ angular.module('directives.loginform', ['i18n', 'http-auth-interceptor', 'resour
                 console.log('event:auth-loginRequired', elem);
                 var options = {};
                 elem.modal(options);
-                // $timeout(function(){
-                //     elem.find('input[autofocus]').focus();
-                //     // console.log('select=', elem, );
-                // }, 1000);
-                // login.slideDown('slow', function() {
-                    // main.hide();
-                // });
             });
 
             scope.$on('event:auth-loginConfirmed', function() {
                 console.log('event:auth-loginConfirmed', elem);
                 elem.modal('hide');
-                // main.show();
-                // login.slideUp();
             });
 
             scope.error = false;

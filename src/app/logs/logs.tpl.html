@@ -1,31 +1,20 @@
 <h4><navtool></navtool> События</h4>
 
 <form class="form-inline" style="margin:10px 0 10px 0;">
-<!-- <form class="form-inline"> -->
-<!--     <select class="form-control" ng-model="account.skey" ng-options="account.account.systems[s].desc for s in account.account.skeys"  style="width: 210px;" ng-change="onSysSelect()">
-        <option value="">Выберите систему</option>
-    </select>
- -->
     <select class="form-control" ng-model="skey" ng-options="systems[s].id as systems[s].title for s in account.skeys" style="width: 210px;" ng-change="onSysSelect()">
         <option value="" ng-show="!skey">Выберите систему</option>
     </select>
     <button class="btn" ng-show="skey" ng-click="onReload()"><i class="icon-refresh"></i> Обновить</button>
-    <!-- skey:{{account.skey}} -->
-    <!-- SKEY: {{ skey }} -->
 </form>
-
-<!-- {{ logs }} -->
 
 <table class="table table-condensed table-striped table-hover" ng-show="skey">
     <thead>
     <tr>
         <th>Дата и время</th>
         <th>Событие</th>
-        <!-- <th>Примечания</th> -->
     </tr>
     </thead>
     <tbody>
-    <!-- <tr ng-repeat="l in logs | filter:isFiltered"> -->
     <tr bindonce ng-repeat="l in logs">
         <td><datetime datetime="{{l.dt}}"></datetime></td>
         <td bo-html="l.text">

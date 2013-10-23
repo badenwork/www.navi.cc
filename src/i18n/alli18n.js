@@ -30,7 +30,10 @@ angular.module('i18n', ['pascalprecht.translate', 'i18n.ru', 'i18n.en', 'i18n.pl
             {code: 'en_EN', text: 'EN', moment: 'en', title: "English"},
             {code: 'ua_UA', text: 'UA', moment: 'uk', title: "Українська"},
             {code: 'pl_PL', text: 'PL', moment: 'pl', title: "Polski"}
-        ]
+        ],
+        shortLang: function(){
+            return momentLangs[$translate.uses()];
+        }
     };
 
     i18n.lang = function(lang){

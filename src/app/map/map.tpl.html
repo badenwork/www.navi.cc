@@ -2,23 +2,9 @@
 <div class="map-control">
     <mapsyslist skey="skey" account="account" systems="systems" zoom="{{zoomlist}}" select="onSelect"></mapsyslist>
 
-<!--     <ul class="mapsyslist">
-        <mapsysitem zoom="{{zoomlist}}" class="{{s}}" ng-repeat="s in account.account.skeys" item="account.account.systems[s]" select="onSysSelect(s)"></mapsysitem>
-        <li style="padding-top: 15px;">
-            <div style="white-space: normal;">
-                <div ng-show="account.account.skeys.length === 0">Вы еще не наблюдаете ни за одним трекером. Нажмите кнопку ниже чтобы добавить трекер в список наблюдения.</div>
-                <addtracker account="account"></addtracker>
-            </div>
-        </li>
-        <li>
-            {{ skey }}
-        </li>
-    </ul>
- -->    <div class="mapcalendar">
+    <div class="mapcalendar">
       <div id="datepicker" data-date-language="ru" data-date-weekstart="1"></div>
     </div>
-
-
 </div>
 
 <div class="map-timeline" id="timeline" data="timeline" timeline on-hover="onTimelineHover" on-click="onTimelineClick"></div>
@@ -36,6 +22,5 @@
     <a onclick="document.documentElement.webkitRequestFullScreen()" title="На весь экран"><i class="icon-fullscreen icon-large"></i></a>
     <button ng-click="revertVisibleTrack()" class="btn">{{!hideTrack ?'Hide track':'Show track' | translate}}</button>
     <!-- {{'points_in_track' | translate:{value: points} }} -->
-    <!--chooselang></chooselang-->
 </div>
 

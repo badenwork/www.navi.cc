@@ -70,7 +70,6 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
                     break;
              }
         }
-        //if (angular.isUndefined(data.car.hasFuelSensor))
         if (sys.car && angular.isUndefined(sys.car.hasFuelSensor))
             sys.car.hasFuelSensor = false;
     }
@@ -98,13 +97,9 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
         var that = this;
 
         Connect.on(name, function(message){
-            // console.log(that.models);
-
             if(that.models.hasOwnProperty(message.id)){
-                // console.log("extend");
                 removeSysErrors(message.data);
                 if(message.data === null){  // Неизвестна степень изменений, требуется перезагрузить данные
-                    console.log("Full update", that);
                     that.get(message.id, true);
                 } else {
                     angular.extend(that.models[message.id], message.data);
@@ -130,13 +125,6 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
                 if(that.hasOwnProperty('$update')){
                     that.$update.call(model);
                 }
-                // if(that.models.hasOwnProperty(id)){
-                //     angular.extend(that.models[id], data);
-                // } else {
-                //     that.models[id] = new Model(that.name, data);
-                // }
-                // // Оформим подписку на оповещение об обновлении
-                // Connect.subscribe(that.name, id);
 
                 defer.resolve(that.models[id]);
             });
@@ -155,7 +143,6 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
         var that = this;
 
         if(!this.all || reload) {
-            // console.log('SERVER.api=', SERVER.api);
             $http({
                 method: 'GET',
                 url: SERVER.api + "/" + this.name + "s"
@@ -180,7 +167,6 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
 
     // Ручное добавление ресурса. Алиас на models.$add(data)
     REST.prototype.add = function(data){
-        // this.models.$add(data);
         var model = this.models.$add(data);
         if(this.hasOwnProperty('$update')){
             this.$update.call(model);

@@ -18,12 +18,6 @@ angular.module('directives.timeline', [])
         var zoom, x, xAxis;
 
         function zoomed() {
-            // console.log("translate=", d3.event.translate);
-            // console.log("d3.event.scale=", d3.event.scale);
-            // chart.attr("transform", "translate(" + d3.event.translate[0] + ", 0)scale(" + d3.event.scale + ")");
-            // chart.attr("transform", "translate(" + d3.event.translate[0] + ", 0)");
-
-
             var t = zoom.translate(),
                   tx = t[0],
                   ty = t[1];
@@ -31,7 +25,6 @@ angular.module('directives.timeline', [])
             tx = Math.min(tx, 0);
             tx = Math.max(tx, width - width * zoom.scale());
             zoom.translate([tx, 0]);    // zoom.translate([tx, ty]);
-            // console.log(tx);
 
             // Ось времени
             svg.select(".x.axis").call(xAxis);
@@ -52,7 +45,6 @@ angular.module('directives.timeline', [])
         // TODO: Не нравится мне что при каждом draw пересоздается все.
         // Нужно оценить на возможные утечки памяти
         function draw() {
-            // console.log("draw", data);
             if(data == null) return;
 
             // avar
@@ -131,11 +123,9 @@ angular.module('directives.timeline', [])
             var start = new Date(data[0].start.dt * 1000),
                 stop = new Date(data[data.length-1].stop.dt * 1000);
 
-            // console.log("x.domain=", x.domain());
         }
 
         scope.$watch("data", function(_data){
-            // console.log(['timeline on data', _data]);
             data = _data;
             draw();
         }, true);
@@ -163,15 +153,11 @@ angular.module('directives.timeline', [])
 
     return {
         restrict: 'A',
-        // transclude: false,
-        //scope: {last_pos: '='},
-        //template: '<div>List:<ul><li ng-repeat="l in list">{{l}}<i class="icon-arrow-right"></i><span>{{l}}</span></li></ul></div>',
         scope: {
             data: "=",
             hover: "&onHover",
             click: "&onClick"
         },
-        // template: '<svg width="2500px" height="33px" class="timeline"></svg>',
         template:
             '<div>' +
                 '<div id="minusButton" style="position:absolute;left:0;top:0"><img src="img/minus_button.png" width="32" height="32"/></div>'+

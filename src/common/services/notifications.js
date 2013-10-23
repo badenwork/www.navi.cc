@@ -1,3 +1,4 @@
+// TODO: Разобраться в зоопарке функций нотификации (это и i18nNotification)
 angular.module('services.notifications', []).factory('notifications', ['$rootScope', '$timeout', function ($rootScope, $timeout) {
 
   var notifications = {

@@ -1,3 +1,5 @@
+// TODO: Функционал всплывающих сообщений необходимо восстановить
+
 // angular.module('services.i18nNotifications', ['services.notifications', 'services.localizedMessages']);
 // angular.module('services.i18nNotifications').factory('i18nNotifications', ['localizedMessages', 'notifications', function (localizedMessages, notifications) {
 

@@ -2,7 +2,6 @@
     Маркеры последних известных положений ТС.
 */
 
-
 angular.module('services.lastmarker', ['newgps.services'])
 
 .factory('LastMarker', [
@@ -51,64 +50,50 @@ angular.module('services.lastmarker', ['newgps.services'])
 
         var sysTime = function(sys) {
             if (sys && sys.dynamic) {
-                //var tz = (new Date()).getTimezoneOffset()/60;
-                //var now = Math.round((new Date()).valueOf() / 1000);
-                //var delta = now - sys.dynamic.lastping;
-                //value = Math.floor(delta / 60);
-              return moment((new Date((sys.dynamic.dt * 1000)))).format("DD/MM/YYYY : hh:mm");
-            } else
+                return moment((new Date((sys.dynamic.dt * 1000)))).format("DD/MM/YYYY : hh:mm");
+            } else {
                 return '-';
+            }
         };
 
         var sysSpeed = function(sys) {
-            if (sys && sys.dynamic)
+            if (sys && sys.dynamic) {
                 return Math.round(sys.dynamic.speed * 10) / 10;
-            else
+            } else {
                 return '-';
+            }
         };
 
         var sysVout = function(sys) {
-            if (sys && sys.dynamic)
+            if (sys && sys.dynamic) {
                 return Math.round(sys.dynamic.vout * 100) / 100;
-            else
+            } else {
                 return '-';
+            }
         };
 
         var sysVin = function(sys) {
-            if (sys && sys.dynamic)
+            if (sys && sys.dynamic) {
                 return Math.round(sys.dynamic.vin * 100)/100;
-            else
+            } else {
                 return '-';
+            }
         };
 
         var sysSats = function(sys) {
-            if (sys && sys.dynamic)
+            if (sys && sys.dynamic) {
                 return sys.dynamic.sats;
-            else
+            } else {
                 return '-';
+            }
         };
 
         var sysFuel = function(sys) {
             if (sys && sys.dynamic){
                 return $filter('number')(sys.dynamic.fuel, 1);
-            }else
+            } else {
                 return '-';
-            // if(sys.params && sys.params.fuel && sys.dynamic) {
-            //     var fuelMap = sys.params.fuel;
-            //     var fuel = sys.dynamic.fuel;
-            //     var voltage = data * fuelMap[$scope.fuelMap.length-1].voltage/1024;
-
-            //     for(var i = 1; i < fuelMap.length; i++){
-            //     if(voltage==fuelMap[i-1].voltage)
-            //         return fuelMap[i].liters;
-            //     if(fuelMap[i-1].voltage<voltage && voltage<fuelMap[i].voltage){
-            //         var otnosh = (voltage - fuelMap[i-1].voltage)/(fuelMap[i].voltage - fuelMap[i-1].voltage)
-            //         var liters = fuelMap[i-1].liters + otnosh*(fuelMap[i].liters - fuelMap[i-1].liters)
-            //         return liters
-            //     }
-            //   }
-            // }
-            // return '-';
+            }
         };
 
         LastMarker.prototype.draw = function() {
@@ -116,12 +101,7 @@ angular.module('services.lastmarker', ['newgps.services'])
 
             if (!overlayProjection) return;
 
-            // var divpx = overlayProjection.fromLatLngToDivPixel(this.position);
             var div = this.div;
-
-
-            // var x = divpx.x;
-            // var y = divpx.y;
 
             var track = d3.select(this.div);
             var points = track.selectAll(".marker")

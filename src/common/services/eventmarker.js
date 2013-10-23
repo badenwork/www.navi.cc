@@ -96,7 +96,7 @@ EventMarker.prototype.draw = function() {
         //     return "left: " + (px.x) + "px; top: " + (px.y) + "px";
         // })
         .on('click', function(d) {
-            console.log(d3.select(this), d);
+            console.log("TODO", d3.select(this), d);
         });
     div.append("span").attr("class", "eventmarker-number").text(function(d){
         return d.title;

@@ -1,14 +1,12 @@
 div.container
     h4 {{'enter_as' | translate:{value: account.account.title} }}
-    //- | {{ account }}
     dl.dl-horizontal
         dt Язык<br> (Language, Мова, Język)
         dd
             chooselang
         br
-            //- select(style="max-width:100px;", ng-model="blah", ng-options="item.id as item.title for item in langs")
         dt(translate) Display name
-        dd(contenteditable="true", ng-model="account.account.title", ng-change="onChange(account.account.title)")
+        dd(contenteditable, ng-model="account.account.title", ng-change="account.$patch('title')")
         dt(translate) Register date
         dd {{ account.account.date | fromnow }}
         //- dt(translate) Administrator
@@ -20,8 +18,6 @@ div.container
                 i.icon-group
                 | &nbsp;{{ g }}
             | &nbsp;
-            //- a(title="Настроить", href="#/login/groups")
-            //-     i.icon-wrench
         dt(translate) Observed systems
         dd {{ account.account.skeys.length }}
         dt(title="{{ 'for_recovery' | translate}}") email
@@ -30,10 +26,6 @@ div.container
                 span(ng-show="hideemail") {{ account.account.email }}
                 span(ng-hide="hideemail")
                     i.icon-question-sign
-
-    //- div(style="text-align: center;")
-        //- | Основные операции
-        //- div.row
 
     div.well(ng-show="account.account.skeys.length === 0")
         p.text-center.text-warning
