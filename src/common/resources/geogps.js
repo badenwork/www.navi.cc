@@ -175,13 +175,9 @@
 
                 for (var i = 0; i < array.length; i += 32) {
                     var point = parse_onebin(array.subarray(i, i + 32));
-                    // console.log('point=', point, System);
-                    if (point.fuel) {
+                    if(point !== null && point.fuel) {
                         point.fuel = fuelscale(point.fuel);
                     }
-                    // if(i===0){
-                    //     console.log('1st=', array.subarray(i, i+32));
-                    // }
                     if (point) {
                         var gpoint = new google.maps.LatLng(point.lat, point.lon);
                         points.push(point);
@@ -197,7 +193,6 @@
                         hours[hour] = (hours[hour] || 0) + 1;
 
                         if (events.length === 0) { // Первая точка
-                            // console.log('1st', point);
                             events.push({
                                 point: point,
                                 position: gpoint,
@@ -206,7 +201,6 @@
                             });
                             range_start = point;
 
-                            // if($.inArray(point['fsource'], [FSOURCE_STOPACC, FSOURCE_TIMESTOPACC, FSOURCE_TIMESTOP, FSOURCE_SLOW]) >= 0){
                             if (isStop(point.fsource)) {
                                 stop_start = 0;
                                 events.push({
@@ -219,8 +213,6 @@
                                 move_start = 0;
                             }
                         }
-                        // if(point['fsource'] in [FSOURCE_STOPACC, FSOURCE_TIMESTOPACC, FSOURCE_TIMESTOP, FSOURCE_SLOW]){
-                        // if($.inArray(point['fsource'], [FSOURCE_STOPACC, FSOURCE_TIMESTOPACC, FSOURCE_TIMESTOP, FSOURCE_SLOW]) >= 0){
                         if (isStop(point.fsource)) {
                             if (stop_start === null) {
                                 stop_start = index;

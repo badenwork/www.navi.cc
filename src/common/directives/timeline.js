@@ -54,7 +54,7 @@
                 // Нужно оценить на возможные утечки памяти
 
                 function draw() {
-                    if (data === null) return;
+                    if (angular.isUndefined(data)) return;
 
                     // avar
                     svg.select('g').remove();
