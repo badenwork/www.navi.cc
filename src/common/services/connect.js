@@ -62,16 +62,8 @@ angular.module('services.connect', [])
 
         //new SockJS(ws_server)
         ws = new WebSocket(ws_server);
-        // var ws = $rootScope.ws = new SockJS(ws_server);
         ws.onopen = function () {
             console.log('WebSocket connected');
-            //$('#main').append('<div>Opened</div>');
-            //ws.send("First msg");
-            // var message = {
-            //     "message": "ping"
-            // };
-            // ws.send(JSON.stringify(message));
-
             if(!subscribes.isEmpty()){
                 ws.send(JSON.stringify({
                     subscribe: subscribes.toArray()
@@ -81,9 +73,6 @@ angular.module('services.connect', [])
         };
         ws.onmessage = function(event) {
             var msg = JSON.parse(event.data);
-            // console.log('WebSocket onmessage:', msg);
-            // var resource = msg.resource;
-            // var id = msg.id;
             shared.scope.$emit('update', msg);
         };
         ws.onclose = function(event) {

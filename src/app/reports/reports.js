@@ -1,4 +1,4 @@
-angular.module('reports', ['ngRoute', 'resources.account', '$strap.directives','resources.geogps', 'resources.system'])
+angular.module('reports', ['ngRoute', 'resources.account', '$strap.directives','resources.geogps', 'resources.system', 'i18n'])
 
 .config(['$routeProvider', function ($routeProvider) {
   $routeProvider.when('/reports', {
@@ -30,16 +30,16 @@ angular.module('reports', ['ngRoute', 'resources.account', '$strap.directives','
     reloadOnSearch: false
   });
 }])
-.value('$strapConfig', {
-  datepicker: {
-    /*beforeShowDay: function(date) {
-      console.log("beforeShowDay");
-      return 'disabled';//GeoGPS.checkDay(day)?'enabled':'disabled';
-    },*/
-    autoclose: true,
-    language: 'ru'
+
+.factory('$strapConfig', ['i18n', function(i18n){
+  return {
+    datepicker: {
+      autoclose: true,
+      language: i18n.shortLang()
+    }
   }
-})
+}])
+
 /*
 {
  title: "Имя шаблона",

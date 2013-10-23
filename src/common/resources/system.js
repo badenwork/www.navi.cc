@@ -21,9 +21,6 @@ angular.module('resources.system', ['services.connect'])
         var scale = d3.scale.linear()
             .domain(fuel.map(function(d){return d.voltage}))
             .range(fuel.map(function(d){return d.liters}));
-        // var liters = scale(v);
-        // return Math.round(liters * 10) / 10; // округление до 0.1
-        // return $filter('number')(liters, 5);    // Фиксированное кол-во знаков после запятой.
         return scale(v);
     }
 

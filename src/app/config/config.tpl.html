@@ -10,7 +10,7 @@
 <ul class="config_sys_list" ui-sortable="sortableOptions" ng-model="account.account.skeys">
     <li ng-repeat="s in account.account.skeys" ng-class="{off: account.account.off[s]}">
         <i class="msp icon-reorder icon-large" title="Нажмите и тяните чтобы изменить порядок отображения объектов"></i>
-        <i class="icon-wrench icon-large" title="Нажмите чтобы настроить трекер" ng-click="sysManage.manageSystemParams(s)"></i>
+        <a title="Нажмите чтобы настроить трекер" href="#/config/{{s}}/params"><i class="icon-wrench icon-large"></i></a>
         <i class="{{ systems[s].icon }} icon-large"></i>
         <span class="sysimei canselect"><input class="clone" value="{{ systems[s].imei }}"/></span>
         <span class="sysphone" title="номер телефона"><input class="clone" value="{{ systems[s].phone }}"/></span>

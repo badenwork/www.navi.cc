@@ -50,23 +50,6 @@ filter('fromnow', function(){
     };
 }).
 
-/*
-.filter('datetime', function(){
-    return function (text, length, end) {
-        var d = new Date(parseInt(text, 10)*1000);
-        return '' + fdigits(d.getDate(),2) + '/' + fdigits(d.getMonth()+1, 2) + '/' + d.getFullYear() + ' ' +
-            fdigits(d.getHours(), 2) + ':' + fdigits(d.getMinutes(), 2) + ':' + fdigits(d.getSeconds(), 2);
-    };
-})
-
-.filter('fromnow', function(){
-    return function (text, length, end) {
-        var d = new Date(parseInt(text, 10)*1000);
-        return moment(parseInt(text, 10)*1000).fromNow();
-    };
-})
-*/
-
 // Преобразование значения напряжения на резервном аккумуляторе в остаточную емкость в %
 filter('vin', function(){
     return function (vin) {

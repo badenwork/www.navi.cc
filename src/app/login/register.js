@@ -1,73 +1,58 @@
 angular.module('register', ['ngRoute', 'i18n', 'ui.bootstrap.buttons', 'resources.account', 'ngAnimate', 'directives.lists'])
 
 .config(['$routeProvider', function ($routeProvider) {
-
-  $routeProvider.when('/register', {
-    templateUrl:'templates/login/register.tpl.html',
-    controller:'RegisterViewCtrl',
-    resolve:{
-      account:['Account', function (Account) {
-          return Account;
-      }]
-    }
-  });
-
+    $routeProvider.when('/register', {
+        templateUrl:'templates/login/register.tpl.html',
+        controller:'RegisterViewCtrl'
+    });
 }])
 
-.controller('RegisterViewCtrl', ['$scope', '$location', 'account', '$timeout', function ($scope, $location, account, $timeout) {
-  // console.log('RegisterViewCtrl controller', account);
+.controller('RegisterViewCtrl', ['$scope', '$location', 'Account', '$timeout', function ($scope, $location, Account, $timeout) {
 
-  $scope.user = {
-    newgroup: true
-  };
-
-  $scope.showRealName = false;
-  $scope.showEmail = false;
-  $scope.showGroup = false;
-
-  $scope.groupCmd = "Не создавать группу";
-
-  $scope.registerUser = function(){
-    $scope.error = false;
-    $scope.showerror = false;
-    console.log('registerUser', $scope.user);
-    var credentials = {
-      username: $scope.user.username,
-      password: $scope.user.password
+    $scope.user = {
+        newgroup: true
     };
 
-    if($scope.showRealName) {
-      credentials['title'] = $scope.user.title;
-    }
+    $scope.showRealName = false;
+    $scope.showEmail = false;
+    $scope.showGroup = false;
 
-    if($scope.showEmail) {
-      credentials['email'] = $scope.user.email;
-    }
+    $scope.groupCmd = "Не создавать группу";
 
-    if($scope.showGroup) {
-      credentials['newgroup'] = $scope.user.newgroup;
-      credentials['groupname'] = $scope.user.groupname;
-      credentials['grouppassword'] = $scope.user.grouppassword;
-    }
-
-    account.register(credentials).then(function(result){
-      console.log('registerUser success result', result);
-      $('#registerMessage').modal();
-    }, function(result){
-      $scope.error = result;
-      $scope.showerror = true;
-      $timeout(function(){
+    $scope.registerUser = function(){
+        $scope.error = false;
         $scope.showerror = false;
-      }, 3000);
-      // console.log('registerUser fail result', result);
-    });
+        var credentials = {
+            username: $scope.user.username,
+            password: $scope.user.password
+        };
 
-  }
+        if($scope.showRealName) {
+            credentials['title'] = $scope.user.title;
+        }
 
-  $timeout(function(){
-    $('#bugfix0001').removeAttr('style');
-  }, 2000);
+        if($scope.showEmail) {
+            credentials['email'] = $scope.user.email;
+        }
 
+        if($scope.showGroup) {
+            credentials['newgroup'] = $scope.user.newgroup;
+            credentials['groupname'] = $scope.user.groupname;
+            credentials['grouppassword'] = $scope.user.grouppassword;
+        }
+
+        Account.register(credentials).then(function(result){
+            $('#registerMessage').modal();
+        }, function(result){
+            $scope.error = result;
+            $scope.showerror = true;
+            $timeout(function(){
+                $scope.showerror = false;
+            }, 3000);
+        });
+    }
+
+    $timeout(function(){
+        $('#bugfix0001').removeAttr('style');
+    }, 2000);
 }]);
-
-
