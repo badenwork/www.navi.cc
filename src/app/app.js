@@ -42,24 +42,17 @@ angular.module('app').constant('SERVER', {
   api_withCredentials: true    // Должен быть установлен для использования withCredentials, в противном случае используется авторизация через Header:
 });
 
-angular.module('app').constant('globals', {
-  locale: 'ru'
-});
-
-//TODO: move those messages to a separate module
-// angular.module('app').constant('I18N.MESSAGES', {
-//   'errors.route.changeError':'Route change error',
-//   'crud.user.save.success':"A user with id '{{id}}' was saved successfully.",
-//   'crud.user.remove.success':"A user with id '{{id}}' was removed successfully.",
-//   'crud.user.save.error':"Something went wrong when saving a user...",
-//   'login.error.notAuthorized':"Необходима авторизация чтобы пользоваться сервисом.",
-//   'login.error.notAuthenticated':"Необходима авторизация чтобы пользоваться сервисом.",
-//   'login.newUser':'Создана новая учетная запись {{name}}.'
+// angular.module('app').constant('globals', {
+//   locale: 'ru'
 // });
 
 angular.module('app').config(['$routeProvider', '$locationProvider', '$httpProvider', 'SERVER', function ($routeProvider, $locationProvider, $httpProvider, SERVER) {
+// angular.module('app').config(['$routeProvider', '$locationProvider', '$httpProvider', /*'$compileProvider',*/ 'SERVER', function ($routeProvider, $locationProvider, $httpProvider, /*$compileProvider,*/ SERVER) {
   // console.log(['! App CONFIG !', $httpProvider, SERVER]);
   $httpProvider.defaults.withCredentials = SERVER.api_withCredentials;
+
+  // Разрешим вызывать ссылки вида chrome:.... Не пригодилось, ссылки вида chrome браузер блокирует
+  // $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome):/);
 
   if(!$httpProvider.defaults.headers.patch) {
     $httpProvider.defaults.headers.patch = {};

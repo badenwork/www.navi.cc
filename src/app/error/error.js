@@ -9,6 +9,6 @@ angular.module('error', ['ngRoute'])
 }])
 
 .controller('ErrorCtrl', ['$scope', '$location', '$route', function ($scope, $location, $route) {
-  console.log('ErrorCtrl', $location, $route);
-  //$route.current.$route.template = "<div>Loaded</div>";
+  var manifest = document.querySelector('html').manifest;
+  $scope.appcache = btoa(manifest);
 }]);

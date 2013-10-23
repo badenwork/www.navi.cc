@@ -1,3 +1,11 @@
+(function(moment){
+
+var momentLangs = {
+    'ua_UA': 'uk',
+    'ru_RU': 'ru',
+    'en_EN': 'en',
+    'pl_PL': 'pl'
+};
 
 angular.module('i18n', ['pascalprecht.translate', 'i18n.ru', 'i18n.en', 'i18n.pl', 'i18n.ua'])
 
@@ -9,15 +17,11 @@ angular.module('i18n', ['pascalprecht.translate', 'i18n.ru', 'i18n.en', 'i18n.pl
         localStorage.setItem('language', lang);
     }
     $translateProvider.uses(lang);
-    var to_moment = lang.slice(0,2);
-    if(to_moment === 'ua') to_moment = 'uk';
-    moment.lang(to_moment);
+    moment.lang(momentLangs[lang]);
     // $translateProvider.rememberLanguage(true);   // Not worked yet
 }])
 
 .factory('i18n', ['$translate', '$rootScope', function($translate, $rootScope) {
-
-    var moment = window['moment'];
 
     var i18n = {
         moment: moment,
@@ -32,10 +36,7 @@ angular.module('i18n', ['pascalprecht.translate', 'i18n.ru', 'i18n.en', 'i18n.pl
     i18n.lang = function(lang){
         $translate.uses(lang);
         localStorage.setItem('language', lang);
-
-        var to_moment = lang.slice(0,2);
-        if(to_moment === 'ua') to_moment = 'uk';
-        moment.lang(to_moment);
+        moment.lang(momentLangs[lang]);
     }
 
     i18n.active = function(){
@@ -45,3 +46,5 @@ angular.module('i18n', ['pascalprecht.translate', 'i18n.ru', 'i18n.en', 'i18n.pl
     return i18n;
 }]);
 
+
+})(moment);

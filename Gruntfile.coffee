@@ -437,7 +437,7 @@ module.exports = (grunt) ->
       jade:
         # files: ['src/app/templates/*.jade']
         files: ['src/app/**/*.jade']
-        tasks: ['jade:production', 'concat:production']
+        tasks: ['jade:production', 'ngtemplates:production_jade', 'concat:production']
       less:
         files: ['src/less/*.less']
         tasks: ['less']

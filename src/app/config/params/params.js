@@ -1,3 +1,5 @@
+(function(){
+
 var params_descs = {
     "accel.deb": {
         "desc": "",
@@ -339,29 +341,15 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.params',
   function($routeProvider) {
     var skey = ['$route',
       function($route) {
-        // console.log(['=== route', route]);
         return $route.current.params.skey;
       }
     ];
-    // console.log(['=== skey', skey]);
     $routeProvider.when('/config/:skey/params', {
       templateUrl: 'templates/config/params/params.tpl.html',
       controller: 'ConfigParamsCtrl',
       resolve: {
-        // account: ['Account',
-        //   function(Account) {
-        //     //TODO: sure for fetch only one for the current user
-        //     return Account.get();
-        //   }
-        // ],
-        // params:['Params', '$route', function (Params, $route) {
-        //   //return Params.get({skey:$route.current.params.skey});
-        // }],
         params: ['Params', '$route',
           function(Params, $route) {
-            //return Params.get({skey:$route.current.params.skey});
-            console.log("resolve Params", $route.current.params.skey);
-            // return Params.get({skey: $route.current.params.skey});
             return Params.get($route.current.params.skey);
           }
         ],
@@ -381,8 +369,6 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.params',
 
 .controller('ConfigParamsCtrl', ['$scope', '$route', '$routeParams', 'params', 'system', 'System',
   function($scope, $route, $routeParams, params, system, System) {
-    console.log('ConfigParamsCtrl', params);
-    // $scope.account = account;
     $scope.system = system;
     var skey = $scope.skey = $routeParams['skey'];
     $scope.params = params;
@@ -394,16 +380,8 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.params',
     }
 
     $scope.extend = function(key){
-      // var extend = params.$desc(key);
-      // return extend.desc || "";
       return params_descs[key];
     }
-
-    // $scope.params.get($route.current.params.skey).then(function(data) {
-    //   console.log('params success', data);
-    // });
-
-    console.log('params success', $scope.params);
 
     $scope.isFiltered = function(item) {
       if (!$scope.filtered) {
@@ -412,40 +390,17 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.params',
       return item.filter;
     };
 
-    // $scope.onChangeValue = function(k) {
-    //   params.set(k); // Отправим значение в очередь на сервер
-    // };
-
-    // $scope.setqueue = function(k, v) {
-    //   console.log('setqueue', k, v, params);
-    //   params.queue = params.queue || {};
-    //   params.queue[k] = v;
-    //   params.data[k].newqueue = params.data[k].queue;
-    //   // params.$patch(skey, "queue", params.queue);  // Отправим очередь на сервер
-    //   params.$patch("queue"); // Сохраним очередь
-
-    //   // params.set(k); // Отправим значение в очередь на сервер
-    //   // params.$set({skey: skey, key: "aa", value: "bb"});  // Отправим очередь на сервер
-
-    // }
-
     $scope.cancelqueue = function(k) {
-        console.log("cancelqueue", k);
         delete params.queue[k];
         params.$patch("queue"); // Сохраним очередь
-      // params.cancel(k); // Отправим на сервер команду отменить изменение параметра
     }
 
     $scope.stopqueue = function() {
-      // params.cancelall($scope.skey); // Отправим на сервер команду отменить все изменения
       params.queue = {};
       params.$patch("queue"); // Сохраним очередь
     }
 
     $scope.tofuel = function() {
-      // console.log('tofuel/System', system);
-      // account.account.systems[skey].dynamic.fuel
-
       return System.$fuel(system, system.dynamic.fuel);
     }
 
@@ -473,10 +428,8 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.params',
         class: i
       }
     });
-    // console.log('$scope.caricons = ', $scope.caricons);
 
     $scope.changeIcon = function() {
-      // console.log("changeIcon");
       var options = {};
       $('#carIconsModal').modal(options);
     }
@@ -495,7 +448,6 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.params',
         if(angular.isUndefined(params.queue[key]) && (params.data[key].value === value)) return; // Значение не изменяется
 
         params.queue[key] = value;
-        // params.data[key].newqueue = params.data[key].queue;
         params.$patch("queue"); // Сохраним очередь
     });
 
@@ -509,7 +461,6 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.params',
     }
 
     $scope.setIcon = function(icon) {
-      // console.log("setIcon", icon, system);
       $('#carIconsModal').modal('hide');
       system.icon = icon.class;
       system.$patch('icon');
@@ -521,7 +472,6 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.params',
 
 .filter('isFiltered', function() {
   return function(value, status) {
-    console.log('isFiltered:', value, status);
     if (!status) {
       return value;
     }
@@ -534,3 +484,5 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.params',
     return out;
   };
 });
+
+})();

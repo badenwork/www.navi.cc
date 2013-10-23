@@ -4,7 +4,21 @@ h4
 
 div(translate) error_msg
 
-ul.unstyled
+ul.list-unstyled
     li
-        a.btn(href="#/", translate) Login
-        a.btn(href="#/map", translate) Map
+        a.btn.btn-default(href="#/", translate) Login
+        a.btn.btn-default(href="#/map", translate) Map
+
+p Если проблема не пропадает после перезагрузки страницы, попробуйте очистить кеш браузера и кеш приложения.
+p Если вы используете браузер Chrome, то откройте новую страницу и укажите в адресной строке путь:
+    table.table
+        tr
+            td Для очистки кеша браузера:
+            td
+                input.clone(value="chrome://settings/clearBrowserData")
+        tr
+            td Для очистки кеша приложения:
+            td
+                input.clone(value="chrome://appcache-internals/?view-cache={{ appcache }}")
+
+    p После этого перезагрузите страницу.

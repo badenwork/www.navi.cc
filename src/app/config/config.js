@@ -16,7 +16,6 @@ angular.module('config', ['ngRoute','resources.account', 'resources.system', 'ui
 }])
 
 .controller('ConfigViewCtrl', ['$scope', '$location', 'account', 'systems', 'System', 'sysManage', function ($scope, $location, account, systems, System, sysManage) {
-  // console.log(["ConfigViewCtrl:", system]);
 
   $scope.account = account;
   $scope.systems = systems;
@@ -25,13 +24,11 @@ angular.module('config', ['ngRoute','resources.account', 'resources.system', 'ui
   $scope.deleteenable = false;
 
   $scope.onFromFiles = function(){
-    console.log('multiple add', $scope.files);
     account.systemadd($scope.files);
     $scope.addform = false;
   };
 
   $scope.onoff = function(el){
-    // console.log('onoff', el);
     var off = $scope.account.account.off;
     if(off.hasOwnProperty(el)) {
       var s = systems[el];
@@ -42,7 +39,6 @@ angular.module('config', ['ngRoute','resources.account', 'resources.system', 'ui
       s.hide = true;
       off[el] = true;
     }
-    // $scope.systems[el].off = !$scope.systems[el].off;
     account.$patch('off');
   };
 
@@ -59,36 +55,7 @@ angular.module('config', ['ngRoute','resources.account', 'resources.system', 'ui
   };
 
   $scope.del = function(el){
-    //delete el;
-    console.log('del', el);
     account.systemdel(el);
-    //$scope.account.systems[]
-  };
-  // var sortableEle = $('ul.config_sys_list').sortable({
-  //   handle: ".msp",
-  //   revert: true,
-  //   scrollSpeed: 5,
-  //   cursor: 'crosshair',
-  //   placeholder: 'ui-sortable-placeholder2',
-  //   end: $scope.onSort
-  // }).on('update', function(ev){
-  //   console.log('on update', ev);
-  // });
-
-  /*$scope.$watch('account', function(){
-    console.log('$watch:account');
-  }, true);*/
-
-  /*$scope.manageSystem = function (skey) {
-    $location.path('/config/' + skey);
   };
 
-  $scope.manageSystemData = function (skey) {
-    $location.path('/config/' + skey + '/data');
-  };
-
-  $scope.manageSystemParams = function (skey) {
-    $location.path('/config/' + skey + '/params');
-  };*/
-  //$("[rel=tooltip]").tooltip();
 }]);

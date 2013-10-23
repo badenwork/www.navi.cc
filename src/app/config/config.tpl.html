@@ -6,16 +6,14 @@
     </span>
     <addtracker account="account" systems="systems"></addtracker>
 </div>
+
 <ul class="config_sys_list" ui-sortable="sortableOptions" ng-model="account.account.skeys">
     <li ng-repeat="s in account.account.skeys" ng-class="{off: account.account.off[s]}">
-        <i class="msp icon-reorder icon-large" title="Нажмите и тяните чтобы изменить порядок отображения объектов"></i
-        ><!--i class="syspicto icon-globe icon-large" title="Нажмите чтобы задать значок" ng-click="icon(s)"></i
-        ><i class="systag icon-tags icon-large" title="Нажмите чтобы назначить ярлыки" ng-click="tags(s)"></i-->
-        <i class="icon-wrench icon-large" title="Нажмите чтобы настроить трекер" ng-click="sysManage.manageSystemParams(s)"></i
-        ><i class="{{ systems[s].icon }} icon-large"></i>
-        <span class="sysimei canselect"><input class="clone" value="{{ systems[s].imei }}"/><!--span class="sysimei canselect" title="IMEI">{{ account.account.systems[s].imei }}--></span>
+        <i class="msp icon-reorder icon-large" title="Нажмите и тяните чтобы изменить порядок отображения объектов"></i>
+        <i class="icon-wrench icon-large" title="Нажмите чтобы настроить трекер" ng-click="sysManage.manageSystemParams(s)"></i>
+        <i class="{{ systems[s].icon }} icon-large"></i>
+        <span class="sysimei canselect"><input class="clone" value="{{ systems[s].imei }}"/></span>
         <span class="sysphone" title="номер телефона"><input class="clone" value="{{ systems[s].phone }}"/></span>
-        <!--span class="control"><i class="icon-edit" title="Редактировать описание системы" ng-click="edit(s)"></i></span-->
         <span class="sysname canselect" contenteditable ng-model="systems[s].title" ng-change="systems[s].$patch('title')"></span>
         <span class="sysrightcontrol control">
             <i class="systag icon-off icon-large" title="Временно отключить наблюдение за системой" ng-click="onoff(s)"></i>
