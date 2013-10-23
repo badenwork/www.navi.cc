@@ -1,10 +1,14 @@
-angular.module('resources.rest', ['services.connect', 'ngResource'])
+(function(angular, $) {
+    'use strict';
 
-// Если я не ощибаюсь, то factory нужно как-то заменить на provider
+    angular.module('resources.rest', ['services.connect', 'ngResource'])
 
-.factory('REST', ['SERVER', '$http', '$q', 'Connect', function (SERVER, $http, $q, Connect) {
+    // Если я не ощибаюсь, то factory нужно как-то заменить на provider
 
-    /*
+    .factory('REST', ['SERVER', '$http', '$q', 'Connect',
+        function(SERVER, $http, $q, Connect) {
+
+            /*
      Name - имя ресурса, например 'param'
 
     Запрос с сервера будет каким:
@@ -21,159 +25,158 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
 
     */
 
+            var Model = function(name, value) {
+                angular.copy(value || {}, this);
+                this.$name = name;
+            };
 
-    var Model = function(name, value){
-        angular.copy(value || {}, this);
-        this.$name = name;
-    }
+            // Отправить на сервер измененное значение одного поля
+            Model.prototype.$patch = function(field) {
+                var defer = $q.defer();
 
-    // Отправить на сервер измененное значение одного поля
-    Model.prototype.$patch = function(field) {
-        var defer = $q.defer();
-        var that = this;
+                var request = {};
+                request[field] = angular.copy(this[field]);
 
-        var request = {};
-        request[field] = angular.copy(this[field]);
-
-        $http({
-            method: 'PATCH',
-            url: SERVER.api + "/" + this.$name + "s/" + encodeURIComponent(this.id),
-            data: JSON.stringify(request)
-        }).success(function(data){
-            defer.resolve(data);
-        });
-
-        return defer.promise;
-    }
-
-    Model.prototype.$isEmpty = function(field) {
-        return $.isEmptyObject(angular.copy(field || this));
-    }
-
-
-    // Множество моделей
-    var Models = function(name, value){
-        angular.copy(value || {}, this);
-        this.$name = name;
-    }
-
-    var removeSysErrors = function(sys) {
-        if (sys.dynamic) {
-            switch(sys.dynamic.fsource){
-                case 2:
-                case 3:
-                case 4:
-                case 7:
-                    sys.dynamic.speed = 0;
-                    break;
-                default:
-                    break;
-             }
-        }
-        if (sys.car && angular.isUndefined(sys.car.hasFuelSensor))
-            sys.car.hasFuelSensor = false;
-    }
-
-    // TODO: Метод не вызывает $update
-    Models.prototype.$add = function(data){
-        // var model = new Model(that.name, data);
-        var id = data.id;
-        removeSysErrors(data);
-        if(this.hasOwnProperty(id)){
-            angular.extend(this[id], data);
-        } else {
-            this[id] = new Model(this.$name, data);
-        }
-        // Оформим подписку на оповещение об обновлении этого экземпляра
-        Connect.subscribe(this.$name, id);
-        return this[id];
-    }
-
-    var REST = function(name){
-        this.name = name;
-        // this.models = {};   // Сюда будут помещаться все документы: ключ => значение
-        this.models = new Models(name, {});
-        this.all = false;   // Будет установлен в true после вызова .getall()
-        var that = this;
-
-        Connect.on(name, function(message){
-            if(that.models.hasOwnProperty(message.id)){
-                removeSysErrors(message.data);
-                if(message.data === null){  // Неизвестна степень изменений, требуется перезагрузить данные
-                    that.get(message.id, true);
-                } else {
-                    angular.extend(that.models[message.id], message.data);
-                }
-                if(that.hasOwnProperty('$update')){
-                    that.$update.call(that.models[message.id]);
-                }
-            }
-
-        });
-    }
-
-    REST.prototype.get = function(id, reload){
-        var defer = $q.defer();
-        var that = this;
-
-        if(!this.models[id] || reload) {
-            $http({
-                method: 'GET',
-                url: SERVER.api + "/" + this.name + "s/" + encodeURIComponent(id)
-            }).success(function(data){
-                var model = that.models.$add(data);
-                if(that.hasOwnProperty('$update')){
-                    that.$update.call(model);
-                }
-
-                defer.resolve(that.models[id]);
-            });
-        } else {
-            defer.resolve(this.models[id]);
-        }
-        return defer.promise;
-    }
-
-    REST.prototype.cached = function(id){
-        return this.models[id];
-    }
-
-    REST.prototype.getall = function(reload){
-        var defer = $q.defer();
-        var that = this;
-
-        if(!this.all || reload) {
-            $http({
-                method: 'GET',
-                url: SERVER.api + "/" + this.name + "s"
-            }).success(function(dataall){
-                that.all = true;
-
-                dataall.map(function(data){
-                    var id = data.id;
-                    var model = that.models.$add(data);
-                    if(that.hasOwnProperty('$update')){
-                        that.$update.call(model);
-                    }
+                $http({
+                    method: 'PATCH',
+                    url: SERVER.api + '/' + this.$name + 's/' + encodeURIComponent(this.id),
+                    data: JSON.stringify(request)
+                }).success(function(data) {
+                    defer.resolve(data);
                 });
 
-                defer.resolve(that.models);
-            });
-        } else {
-            defer.resolve(this.models);
+                return defer.promise;
+            };
+
+            Model.prototype.$isEmpty = function(field) {
+                return $.isEmptyObject(angular.copy(field || this));
+            };
+
+            // Множество моделей
+            var Models = function(name, value) {
+                angular.copy(value || {}, this);
+                this.$name = name;
+            };
+
+            var removeSysErrors = function(sys) {
+                if (sys.dynamic) {
+                    switch (sys.dynamic.fsource) {
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 7:
+                            sys.dynamic.speed = 0;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (sys.car && angular.isUndefined(sys.car.hasFuelSensor))
+                    sys.car.hasFuelSensor = false;
+            };
+
+            // TODO: Метод не вызывает $update
+            Models.prototype.$add = function(data) {
+                // var model = new Model(that.name, data);
+                var id = data.id;
+                removeSysErrors(data);
+                if (this.hasOwnProperty(id)) {
+                    angular.extend(this[id], data);
+                } else {
+                    this[id] = new Model(this.$name, data);
+                }
+                // Оформим подписку на оповещение об обновлении этого экземпляра
+                Connect.subscribe(this.$name, id);
+                return this[id];
+            };
+
+            var REST = function(name) {
+                this.name = name;
+                // this.models = {};   // Сюда будут помещаться все документы: ключ => значение
+                this.models = new Models(name, {});
+                this.all = false; // Будет установлен в true после вызова .getall()
+                var that = this;
+
+                Connect.on(name, function(message) {
+                    if (that.models.hasOwnProperty(message.id)) {
+                        removeSysErrors(message.data);
+                        if (message.data === null) { // Неизвестна степень изменений, требуется перезагрузить данные
+                            that.get(message.id, true);
+                        } else {
+                            angular.extend(that.models[message.id], message.data);
+                        }
+                        if (that.hasOwnProperty('$update')) {
+                            that.$update.call(that.models[message.id]);
+                        }
+                    }
+
+                });
+            };
+
+            REST.prototype.get = function(id, reload) {
+                var defer = $q.defer();
+                var that = this;
+
+                if (!this.models[id] || reload) {
+                    $http({
+                        method: 'GET',
+                        url: SERVER.api + '/' + this.name + 's/' + encodeURIComponent(id)
+                    }).success(function(data) {
+                        var model = that.models.$add(data);
+                        if (that.hasOwnProperty('$update')) {
+                            that.$update.call(model);
+                        }
+
+                        defer.resolve(that.models[id]);
+                    });
+                } else {
+                    defer.resolve(this.models[id]);
+                }
+                return defer.promise;
+            };
+
+            REST.prototype.cached = function(id) {
+                return this.models[id];
+            };
+
+            REST.prototype.getall = function(reload) {
+                var defer = $q.defer();
+                var that = this;
+
+                if (!this.all || reload) {
+                    $http({
+                        method: 'GET',
+                        url: SERVER.api + '/' + this.name + 's'
+                    }).success(function(dataall) {
+                        that.all = true;
+
+                        dataall.map(function(data) {
+                            // var id = data.id;
+                            var model = that.models.$add(data);
+                            if (that.hasOwnProperty('$update')) {
+                                that.$update.call(model);
+                            }
+                        });
+
+                        defer.resolve(that.models);
+                    });
+                } else {
+                    defer.resolve(this.models);
+                }
+                return defer.promise;
+            };
+
+            // Ручное добавление ресурса. Алиас на models.$add(data)
+            REST.prototype.add = function(data) {
+                var model = this.models.$add(data);
+                if (this.hasOwnProperty('$update')) {
+                    this.$update.call(model);
+                }
+
+            };
+
+            return REST;
         }
-        return defer.promise;
-    }
+    ]);
 
-    // Ручное добавление ресурса. Алиас на models.$add(data)
-    REST.prototype.add = function(data){
-        var model = this.models.$add(data);
-        if(this.hasOwnProperty('$update')){
-            this.$update.call(model);
-        }
-
-    }
-
-    return REST;
-}]);
-
+})(this.angular, this.jQuery);

@@ -1,60 +1,71 @@
-angular.module('admin', ['ngRoute'])
+(function(angular, console) {
+    'use strict';
 
-.factory('AdminUsers', [
-    'SERVER', '$http', '$q',
-    function(SERVER, $http, $q) {
+    angular.module('admin', ['ngRoute'])
 
-        var _get = function(){
-            var defer = $q.defer();
+    .factory('AdminUsers', [
+        'SERVER', '$http', '$q',
+        function(SERVER, $http, $q) {
 
-            $http({
-                method: 'GET',
-                url: SERVER.api + "/admin/users"
-            }).success(function(data){
-                console.log('admin/users:get.success', data);
-                defer.resolve(data);
+            var _get = function() {
+                var defer = $q.defer();
+
+                $http({
+                    method: 'GET',
+                    url: SERVER.api + '/admin/users'
+                }).success(function(data) {
+                    console.log('admin/users:get.success', data);
+                    defer.resolve(data);
+                });
+
+                return defer.promise;
+            };
+
+            var Users = {
+                get: _get
+            };
+            return Users;
+        }
+    ])
+
+    .config(['$routeProvider',
+        function($routeProvider) {
+            $routeProvider.when('/admin', {
+                templateUrl: 'templates/admin/admin.tpl.html',
+                controller: 'AdminViewCtrl',
+                resolve: {
+                    users: ['AdminUsers',
+                        function(AdminUsers) {
+                            console.log('AdminUsers', AdminUsers);
+                            return AdminUsers;
+                        }
+                    ]
+                }
             });
-
-            return defer.promise;
         }
+    ])
 
-        var Users = {
-            get: _get
-        };
-        return Users;
-    }
-])
+    .controller('AdminViewCtrl', ['$scope', '$location', 'users',
+        function($scope, $location, users) {
+            var all = users.get();
 
-.config(['$routeProvider', function ($routeProvider) {
-    $routeProvider.when('/admin', {
-        templateUrl:'templates/admin/admin.tpl.html',
-        controller:'AdminViewCtrl',
-        resolve:{
-            users: ['AdminUsers', function(AdminUsers){
-                console.log('AdminUsers', AdminUsers);
-                return AdminUsers;
-            }]
+            $scope.formAddUser = false;
+            $scope.users = [{
+                username: 'baden',
+                title: 'Да, это я',
+                groups: []
+            }];
+
+            console.log('AdminViewCtrl:', users, all);
+
+            $scope.user = {};
+
+            $scope.addUser = function() {
+                $scope.users.push($scope.user);
+                $scope.user = {};
+                $scope.formAddUser = false;
+            };
         }
-    });
-}])
+    ]);
 
-.controller('AdminViewCtrl', ['$scope', '$location', 'users', function ($scope, $location, users) {
-    var all = users.get();
-
-    $scope.formAddUser = false;
-    $scope.users = [{
-        username: "baden",
-        title: "Да, это я",
-        groups: []
-    }];
-
-    console.log("AdminViewCtrl:", users, all);
-
-    $scope.user = {};
-
-    $scope.addUser = function(){
-        $scope.users.push($scope.user);
-        $scope.user = {};
-        $scope.formAddUser = false;
-    }
-}]);
+})(this.angular, this.console);

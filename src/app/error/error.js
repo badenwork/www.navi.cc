@@ -1,16 +1,27 @@
-angular.module('error', ['ngRoute'])
+(function(angular) {
+    'use strict';
 
-.config(['$routeProvider', function ($routeProvider) {
-    $routeProvider.when('/error', {
-        templateUrl:'templates/error/error.tpl.html',
-        controller:'ErrorCtrl'
-    });
+    angular.module('error', ['ngRoute'])
 
-    $routeProvider.otherwise({ redirectTo: '/error' });
+    .config(['$routeProvider',
+        function($routeProvider) {
+            $routeProvider.when('/error', {
+                templateUrl: 'templates/error/error.tpl.html',
+                controller: 'ErrorCtrl'
+            });
 
-}])
+            $routeProvider.otherwise({
+                redirectTo: '/error'
+            });
 
-.controller('ErrorCtrl', ['$scope', '$location', '$route', function ($scope, $location, $route) {
-    var manifest = document.querySelector('html').manifest;
-    $scope.appcache = btoa(manifest);
-}]);
+        }
+    ])
+
+    .controller('ErrorCtrl', ['$scope',
+        function($scope) {
+            var manifest = document.querySelector('html').manifest;
+            $scope.appcache = btoa(manifest);
+        }
+    ]);
+
+})(this.angular);

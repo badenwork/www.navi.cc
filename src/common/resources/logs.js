@@ -1,24 +1,30 @@
-angular.module('resources.logs', ['services.connect'])
+(function(angular) {
+    'use strict';
 
-.factory('Logs', ['SERVER', '$http', 'Connect', '$rootScope', '$q', function (SERVER, $http, Connect, $rootScope, $q) {
+    angular.module('resources.logs', ['services.connect'])
 
-    var Logs = {
-        data: []
-    };
+    .factory('Logs', ['SERVER', '$http', 'Connect', '$rootScope', '$q',
+        function(SERVER, $http, Connect, $rootScope, $q) {
 
-    Logs.get = function(skey){
-        var defer = $q.defer();
-        $http({
-            method: 'GET',
-            url: SERVER.api + "/systems/" + encodeURIComponent(skey) + "/logs"
-        }).success(function(data){
-            Logs.data = data;
-            defer.resolve(Logs);
-        });
-        return defer.promise;
-    };
+            var Logs = {
+                data: []
+            };
 
-    return Logs;
+            Logs.get = function(skey) {
+                var defer = $q.defer();
+                $http({
+                    method: 'GET',
+                    url: SERVER.api + '/systems/' + encodeURIComponent(skey) + '/logs'
+                }).success(function(data) {
+                    Logs.data = data;
+                    defer.resolve(Logs);
+                });
+                return defer.promise;
+            };
 
-}]);
+            return Logs;
 
+        }
+    ]);
+
+})(this.angular);

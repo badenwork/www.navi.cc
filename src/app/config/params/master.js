@@ -1,60 +1,74 @@
-angular.module('config.system.params.master', ['ngRoute', 'resources.account', 'resources.params', 'app.filters'])
+(function(angular) {
+    'use strict';
 
-.config(['$routeProvider', function ($routeProvider) {
-  var skey = ['$route', function($route){
-    console.log(['=== route', route]);
-    return $route.current.params.skey;
-  }];
-  // console.log(['=== skey', skey]);
-  $routeProvider.when('/config/:skey/params/master', {
-    templateUrl:'templates/config/params/master.tpl.html',
-    controller:'ConfigParamsMasterCtrl',
-    resolve:{
-      account:['Account', function (Account) {
-        //TODO: sure for fetch only one for the current user
-        return Account;
-      }],
-      params:['Params', '$route', function (Params, $route) {
-        return Params.get({skey:$route.current.params.skey});
-      }]
-    }
-  });
-}])
+    angular.module('config.system.params.master', ['ngRoute', 'resources.account', 'resources.params', 'app.filters'])
 
-.controller('ConfigParamsMasterCtrl', ['$scope', '$route', '$routeParams', 'account', 'params', '$location', function ($scope, $route, $routeParams, account, params, $location) {
-  console.log('ConfigParamsCtrl', $scope, $route, $routeParams, account, params);
-  $scope.account = account;
-  $scope.skey = $routeParams['skey'];
-  $scope.params = params;
+    .config(['$routeProvider',
+        function($routeProvider) {
+            // var skey = ['$route',
+            //     function($route) {
+            //         return $route.current.params.skey;
+            //     }
+            // ];
 
-  $scope.steps = ['one', 'two', 'three', 'four'];
-  $scope.step = 0;
+            $routeProvider.when('/config/:skey/params/master', {
+                templateUrl: 'templates/config/params/master.tpl.html',
+                controller: 'ConfigParamsMasterCtrl',
+                resolve: {
+                    account: ['Account',
+                        function(Account) {
+                            return Account.get();
+                        }
+                    ],
+                    params: ['Params', '$route',
+                        function(Params, $route) {
+                            return Params.get({
+                                skey: $route.current.params.skey
+                            });
+                        }
+                    ]
+                }
+            });
+        }
+    ])
 
-  $scope.isCurrentStep = function(step) {
-    return $scope.step === step;
-  };
+    .controller('ConfigParamsMasterCtrl', ['$scope', '$route', '$routeParams', 'account', 'params', '$location',
+        function($scope, $route, $routeParams, account, params, $location) {
+            $scope.account = account;
+            $scope.skey = $routeParams.skey;
+            $scope.params = params;
 
-  $scope.setCurrentStep = function(step) {
-    $scope.step = step;
-  };
+            $scope.steps = ['one', 'two', 'three', 'four'];
+            $scope.step = 0;
 
-  $scope.setNextStep = function(step) {
-    $scope.step += 1;
-  };
+            $scope.isCurrentStep = function(step) {
+                return $scope.step === step;
+            };
 
-  $scope.getCurrentStep = function() {
-    return $scope.steps[$scope.step];
-  };
+            $scope.setCurrentStep = function(step) {
+                $scope.step = step;
+            };
 
-  $scope.confirm = function() {
-    $location.path("/config/" + $scope.skey + "/params");
-  };
+            $scope.setNextStep = function() {
+                $scope.step += 1;
+            };
 
-  // Defaults
-  $scope.config = {
-    in1: "off"
-  };
+            $scope.getCurrentStep = function() {
+                return $scope.steps[$scope.step];
+            };
 
-  $("[rel=tooltip]").tooltip();
-}]);
+            $scope.confirm = function() {
+                $location.path('/config/' + $scope.skey + '/params');
+            };
 
+            // Defaults
+            $scope.config = {
+                in1: 'off'
+            };
+
+            // $('[rel=tooltip]').tooltip();
+        }
+    ]);
+
+
+})(this.angular);

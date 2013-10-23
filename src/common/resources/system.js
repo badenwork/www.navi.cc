@@ -1,49 +1,59 @@
-angular.module('resources.system', ['services.connect'])
+(function(angular, d3) {
+    'use strict';
 
-.factory('System', ['REST', function (REST) {
-    var Systems = new REST('system');
+    angular.module('resources.system', ['services.connect'])
 
-    // Построим формулу преобразования значения АЦП в объем топлива
-    // В цепи измерения делитель: 22k/10k
-    // В перспективе значение должно быть привязано к hwid
-    // Systems.$fuel = function(system, value){
-    var fuelscale = function(fuel) {
-        var r1 = 22,
-            r2 = 10,
-            vdd = 3.3,
-            vmin = fuel[0].voltage,             // Предполагается что функция неубывающая.
-            vmax = fuel[fuel.length-1].voltage;
+    .factory('System', ['REST',
+        function(REST) {
+            var Systems = new REST('system');
 
-        var scale = d3.scale.linear()
-            .domain(fuel.map(function(d){
-                return d.voltage * 1024 * r2 / (vdd * (r1 + r2));
-            }))
-            .range(fuel.map(function(d){return d.liters}))
-            .clamp(true);
+            // Построим формулу преобразования значения АЦП в объем топлива
+            // В цепи измерения делитель: 22k/10k
+            // В перспективе значение должно быть привязано к hwid
+            // Systems.$fuel = function(system, value){
+            var fuelscale = function(fuel) {
+                var r1 = 22,
+                    r2 = 10,
+                    vdd = 3.3;
+                    // vmin = fuel[0].voltage, // Предполагается что функция неубывающая.
+                    // vmax = fuel[fuel.length - 1].voltage;
 
-        return scale;
-    }
-    var fuel = function(fuel, value){
-        return fuelscale(fuel)(value);
-    }
+                var scale = d3.scale.linear()
+                    .domain(fuel.map(function(d) {
+                        return d.voltage * 1024 * r2 / (vdd * (r1 + r2));
+                    }))
+                    .range(fuel.map(function(d) {
+                        return d.liters;
+                    }))
+                    .clamp(true);
 
-    Systems.$fuelscale = function(id){
-        var system = this.cached(id);
-        if(system && system.params && system.params.fuel) {
-            return fuelscale(system.params.fuel);
-        } else {
-            return function(v){
-                return 0;
-            }
+                return scale;
+            };
+
+            var fuel = function(fuel, value) {
+                return fuelscale(fuel)(value);
+            };
+
+            Systems.$fuelscale = function(id) {
+                var system = this.cached(id);
+                if (system && system.params && system.params.fuel) {
+                    return fuelscale(system.params.fuel);
+                } else {
+                    return function() {
+                        return 0;
+                    };
+                }
+            };
+
+            Systems.$update = function() {
+                if (this.dynamic && this.dynamic.fuel) {
+                    this.dynamic.fuel = fuel(this.params.fuel, this.dynamic.fuel);
+                }
+            };
+
+            return Systems;
+
         }
-    }
+    ]);
 
-    Systems.$update = function(){
-        if(this.dynamic && this.dynamic.fuel){
-            this.dynamic.fuel = fuel(this.params.fuel, this.dynamic.fuel);
-        }
-    }
-
-    return Systems;
-
-}]);
+})(this.angular, this.d3);

@@ -106,6 +106,9 @@ module.exports = (grunt) ->
         store: 'components'
         # dest: 'public'
 
+    jshint:
+      all: ["<%= src.js %>"]
+
     # CoffeeScript
     coffee:
       dist:
@@ -475,6 +478,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-contrib-htmlmin"
   grunt.loadNpmTasks "grunt-contrib-uglify"
   grunt.loadNpmTasks "grunt-manifest"
+  grunt.loadNpmTasks "grunt-contrib-jshint"
 
   # grunt-contrib-watch now not work with livereload :(
   #grunt.loadNpmTasks "grunt-contrib-watch"
@@ -499,6 +503,7 @@ module.exports = (grunt) ->
   grunt.registerTask "production", [
     # "clean", "jade", "less" #, "bowerful", "copy", "index", "concat"
     "clean"
+    "jshint"
     "jade:production"
     "ngtemplates:production"
     "ngtemplates:production_jade"

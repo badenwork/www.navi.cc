@@ -1,0 +1,607 @@
+Running "jshint:all" (jshint) task
+Linting src/i18n/alli18n.js ...ERROR
+[L43:C6] W033: Missing semicolon.
+    } 
+Linting src/i18n/alli18n.js ...ERROR
+[L47:C6] W033: Missing semicolon.
+    } 
+Linting src/common/directives/chart.js ...ERROR
+[L84:C6] W033: Missing semicolon.
+    } 
+Linting src/common/directives/chart.js ...ERROR
+[L118:C86] W033: Missing semicolon.
+                .text(function(d) { return d.liters + " л -> " + d.voltage + " B"; }) 
+Linting src/common/directives/chart.js ...ERROR
+[L124:C9] W027: Unreachable 'var' after 'return'.
+        var chart = d3.select(element[0]).select('svg');
+Linting src/common/directives/chart.js ...ERROR
+[L127:C18] W004: 'line' is already defined.
+        var line = d3.svg.line()
+Linting src/common/directives/chart.js ...ERROR
+[L164:C26] W033: Missing semicolon.
+            .attr("r", 5) 
+Linting src/common/directives/chart.js ...ERROR
+[L168:C6] W033: Missing semicolon.
+    } 
+Linting src/common/directives/chart.js ...ERROR
+[L186:C6] W033: Missing semicolon.
+    } 
+Linting src/common/directives/chooselang.js ...ERROR
+[L7:C22] W043: Bad escaping of EOL. Use option multistr if needed.
+        template: '\ 
+Linting src/common/directives/chooselang.js ...ERROR
+[L8:C38] W043: Bad escaping of EOL. Use option multistr if needed.
+            <div class="btn-group">\ 
+Linting src/common/directives/chooselang.js ...ERROR
+[L9:C189] W043: Bad escaping of EOL. Use option multistr if needed.
+                <button type="button" class="btn btn-primary" ng-class="{active: l.code == active}" ng-repeat="l in langs" title="{{ l.title }}" ng-click="onSet(l)">{{ l.text }}</button>\ 
+Linting src/common/directives/loginform.js ...ERROR
+[L68:C14] W033: Missing semicolon.
+            } 
+Linting src/common/directives/main.js ...ERROR
+[L54:C27] W004: 'translate' is already defined.
+            var translate = $filter('translate');
+Linting src/common/directives/main.js ...ERROR
+[L168:C14] W033: Missing semicolon.
+            } 
+Linting src/common/directives/main.js ...ERROR
+[L175:C14] W033: Missing semicolon.
+            } 
+Linting src/common/directives/main.js ...ERROR
+[L195:C6] W033: Missing semicolon.
+    } 
+Linting src/common/directives/main.js ...ERROR
+[L207:C6] W033: Missing semicolon.
+    } 
+Linting src/common/directives/main.js ...ERROR
+[L286:C6] W033: Missing semicolon.
+    } 
+Linting src/common/directives/main.js ...ERROR
+[L297:C6] W033: Missing semicolon.
+    } 
+Linting src/common/directives/map.js ...ERROR
+[L105:C10] W033: Missing semicolon.
+        } 
+Linting src/common/directives/map.js ...ERROR
+[L116:C12] W033: Missing semicolon.
+          } 
+Linting src/common/directives/map.js ...ERROR
+[L118:C41] W041: Use '===' to compare with '0'.
+                if (scope.points.length == 0)
+Linting src/common/directives/map.js ...ERROR
+[L132:C14] W033: Missing semicolon.
+            } 
+Linting src/common/directives/map.js ...ERROR
+[L136:C34] W041: Use '!==' to compare with 'null'.
+            if (scope.infowindow != null)
+Linting src/common/directives/map.js ...ERROR
+[L163:C27] W041: Use '===' to compare with 'null'.
+                if (point == null) return;
+Linting src/common/directives/map.js ...ERROR
+[L188:C70] W033: Missing semicolon.
+                fragment.forEach(function(point){bounds.extend(point)});
+Linting src/common/directives/map.js ...ERROR
+[L239:C27] W033: Missing semicolon.
+                        }) 
+Linting src/common/directives/mapsysitem.js ...ERROR
+[L43:C14] W033: Missing semicolon.
+            } 
+Linting src/common/directives/mapsysitem.js ...ERROR
+[L46:C6] W033: Missing semicolon.
+    } 
+Linting src/common/directives/mapsysitem.js ...ERROR
+[L81:C14] W033: Missing semicolon.
+            } 
+Linting src/common/directives/timeline.js ...ERROR
+[L48:C21] W041: Use '===' to compare with 'null'.
+            if(data == null) return;
+Linting src/common/directives/timeline.js ...ERROR
+[L123:C23] W004: 'start' is already defined.
+            var start = new Date(data[0].start.dt * 1000),
+Linting src/common/directives/timeline.js ...ERROR
+[L124:C22] W004: 'stop' is already defined.
+                stop = new Date(data[data.length-1].stop.dt * 1000);
+Linting src/common/filters/main.js ...ERROR
+[L27:C106] W033: Missing semicolon.
+            return '' + fdigits(d.getDate(),2) + '/' + fdigits(d.getMonth()+1, 2) + '/' + d.getFullYear() 
+Linting src/common/filters/main.js ...ERROR
+[L84:C11] W033: Missing semicolon.
+        }) 
+Linting src/common/resources/account.js ...ERROR
+[L24:C50] W069: ['Authorization'] is better written in dot notation.
+                    $http.defaults.headers.common["Authorization"] = "Bearer " + Account.access_token;
+Linting src/common/resources/account.js ...ERROR
+[L26:C57] W069: ['Authorization'] is better written in dot notation.
+                    delete $http.defaults.headers.common["Authorization"];
+Linting src/common/resources/account.js ...ERROR
+[L48:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/account.js ...ERROR
+[L63:C45] W069: ['Authorization'] is better written in dot notation.
+            if($http.defaults.headers.common["Authorization"]){
+Linting src/common/resources/account.js ...ERROR
+[L64:C53] W069: ['Authorization'] is better written in dot notation.
+                delete $http.defaults.headers.common["Authorization"];
+Linting src/common/resources/account.js ...ERROR
+[L77:C46] W069: ['Authorization'] is better written in dot notation.
+                $http.defaults.headers.common["Authorization"] = "Bearer " + data.access_token;
+Linting src/common/resources/account.js ...ERROR
+[L183:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/geogps.js ...ERROR
+[L87:C25] W004: 'fsource' is already defined.
+            var fsource = packet[2];
+Linting src/common/resources/geogps.js ...ERROR
+[L89:C22] W004: 'sats' is already defined.
+            var sats = packet[3];
+Linting src/common/resources/geogps.js ...ERROR
+[L91:C20] W004: 'dt' is already defined.
+            var dt = packet[4] + packet[5]*256 + packet[6]*256*256 + packet[7]*256*256*256;
+Linting src/common/resources/geogps.js ...ERROR
+[L93:C21] W004: 'lat' is already defined.
+            var lat = (packet[8] + packet[9]*256 + packet[10]*256*256 + packet[11]*256*256*256) / 600000.0;
+Linting src/common/resources/geogps.js ...ERROR
+[L95:C21] W004: 'lon' is already defined.
+            var lon = (packet[12] + packet[13]*256 + packet[14]*256*256 + packet[15]*256*256*256) / 600000.0;
+Linting src/common/resources/geogps.js ...ERROR
+[L97:C23] W004: 'speed' is already defined.
+            var speed = ((packet[16] + packet[17]*256) * 1.852) / 100;
+Linting src/common/resources/geogps.js ...ERROR
+[L102:C24] W004: 'course' is already defined.
+            var course = packet[20] * 2;
+Linting src/common/resources/geogps.js ...ERROR
+[L104:C22] W004: 'vout' is already defined.
+            var vout = packet[21] * 4;
+Linting src/common/resources/geogps.js ...ERROR
+[L106:C21] W004: 'vin' is already defined.
+            var vin = packet[22] * 4;
+Linting src/common/resources/geogps.js ...ERROR
+[L118:C22] W030: Expected an assignment or function call and instead saw an expression.
+            packet[26]; packet[27]; packet[28]; packet[29]; packet[30];
+Linting src/common/resources/geogps.js ...ERROR
+[L118:C34] W030: Expected an assignment or function call and instead saw an expression.
+            packet[26]; packet[27]; packet[28]; packet[29]; packet[30];
+Linting src/common/resources/geogps.js ...ERROR
+[L118:C46] W030: Expected an assignment or function call and instead saw an expression.
+            packet[26]; packet[27]; packet[28]; packet[29]; packet[30];
+Linting src/common/resources/geogps.js ...ERROR
+[L118:C58] W030: Expected an assignment or function call and instead saw an expression.
+            packet[26]; packet[27]; packet[28]; packet[29]; packet[30];
+Linting src/common/resources/geogps.js ...ERROR
+[L118:C70] W030: Expected an assignment or function call and instead saw an expression.
+            packet[26]; packet[27]; packet[28]; packet[29]; packet[30];
+Linting src/common/resources/geogps.js ...ERROR
+[L120:C22] W004: 'lcrc' is already defined.
+            var lcrc = packet[31];
+Linting src/common/resources/geogps.js ...ERROR
+[L147:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/geogps.js ...ERROR
+[L203:C36] W069: ['fsource'] is better written in dot notation.
+                    if(isStop(point['fsource'])){
+Linting src/common/resources/geogps.js ...ERROR
+[L217:C32] W069: ['fsource'] is better written in dot notation.
+                if(isStop(point['fsource'])){
+Linting src/common/resources/rest.js ...ERROR
+[L28:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/rest.js ...ERROR
+[L47:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/rest.js ...ERROR
+[L51:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/rest.js ...ERROR
+[L58:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/rest.js ...ERROR
+[L75:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/rest.js ...ERROR
+[L90:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/rest.js ...ERROR
+[L113:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/rest.js ...ERROR
+[L135:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/rest.js ...ERROR
+[L139:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/rest.js ...ERROR
+[L166:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/rest.js ...ERROR
+[L175:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/system.js ...ERROR
+[L21:C56] W033: Missing semicolon.
+            .range(fuel.map(function(d){return d.liters}))
+Linting src/common/resources/system.js ...ERROR
+[L25:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/system.js ...ERROR
+[L28:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/system.js ...ERROR
+[L37:C14] W033: Missing semicolon.
+            } 
+Linting src/common/resources/system.js ...ERROR
+[L39:C6] W033: Missing semicolon.
+    } 
+Linting src/common/resources/system.js ...ERROR
+[L45:C6] W033: Missing semicolon.
+    } 
+Linting src/common/services/connect.js ...ERROR
+[L19:C10] W033: Missing semicolon.
+        } 
+Linting src/common/services/connect.js ...ERROR
+[L100:C6] W033: Missing semicolon.
+    } 
+Linting src/common/services/connect.js ...ERROR
+[L115:C6] W033: Missing semicolon.
+    } 
+Linting src/common/services/eventmarker.js ...ERROR
+[L36:C2] W033: Missing semicolon.
+} 
+Linting src/common/services/eventmarker.js ...ERROR
+[L41:C2] W033: Missing semicolon.
+} 
+Linting src/common/services/eventmarker.js ...ERROR
+[L48:C2] W033: Missing semicolon.
+} 
+Linting src/common/services/eventmarker.js ...ERROR
+[L91:C13] W004: 'div' is already defined.
+    var div = points.enter().append("div")
+Linting src/common/services/eventmarker.js ...ERROR
+[L111:C125] W033: Missing semicolon.
+            var table = control.append('table').attr('id',function(d) {return 'eventMarkerID_' + d.point.course + d.point.dt});
+Linting src/common/services/eventmarker.js ...ERROR
+[L116:C77] W033: Missing semicolon.
+            timeLine.append('td').text(function(d) { return eventDuration(d)});
+Linting src/common/services/eventmarker.js ...ERROR
+[L137:C2] W033: Missing semicolon.
+} 
+Linting src/common/services/lastmarker.js ...ERROR
+[L34:C10] W033: Missing semicolon.
+        } 
+Linting src/common/services/lastmarker.js ...ERROR
+[L39:C10] W033: Missing semicolon.
+        } 
+Linting src/common/services/lastmarker.js ...ERROR
+[L45:C10] W033: Missing semicolon.
+        } 
+Linting src/common/services/lastmarker.js ...ERROR
+[L114:C21] W004: 'div' is already defined.
+            var div = points.enter().append("div")
+Linting src/common/services/lastmarker.js ...ERROR
+[L146:C18] W033: Missing semicolon.
+                } 
+Linting src/common/services/lastmarker.js ...ERROR
+[L147:C14] W033: Missing semicolon.
+            } 
+Linting src/common/services/lastmarker.js ...ERROR
+[L155:C89] W033: Missing semicolon.
+                .attr('style', function(d){return d.hasFuelSensor ? "" : "display: none"});
+Linting src/common/services/lastmarker.js ...ERROR
+[L178:C93] W033: Missing semicolon.
+                    .attr("transform", function(d){return "rotate(" + d.dynamic.course + ")"});
+Linting src/common/services/lastmarker.js ...ERROR
+[L188:C122] W033: Missing semicolon.
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerTime>td+td").text(function(d)  { return sysTime(d)});
+Linting src/common/services/lastmarker.js ...ERROR
+[L189:C123] W033: Missing semicolon.
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerSpeed>td+td").text(function(d) { return sysSpeed(d)});
+Linting src/common/services/lastmarker.js ...ERROR
+[L190:C122] W033: Missing semicolon.
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerVout>td+td").text(function(d)  { return sysVout(d)});
+Linting src/common/services/lastmarker.js ...ERROR
+[L191:C121] W033: Missing semicolon.
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerVin>td+td").text(function(d)   { return sysVin(d)});
+Linting src/common/services/lastmarker.js ...ERROR
+[L192:C122] W033: Missing semicolon.
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerSats>td+td").text(function(d)  { return sysSats(d)});
+Linting src/common/services/lastmarker.js ...ERROR
+[L193:C122] W033: Missing semicolon.
+            label.select(".lastmarker-control>table>tbody tr.lastmarkerFuel>td+td").text(function(d)  { return sysFuel(d)});
+Linting src/common/services/lastmarker.js ...ERROR
+[L200:C10] W033: Missing semicolon.
+        } 
+Linting src/app/admin/admin.js ...ERROR
+[L19:C10] W033: Missing semicolon.
+        } 
+Linting src/app/admin/admin.js ...ERROR
+[L59:C6] W033: Missing semicolon.
+    } 
+Linting src/app/app.js ...ERROR
+[L63:C6] W033: Missing semicolon.
+    } 
+Linting src/app/app.js ...ERROR
+[L71:C6] W033: Missing semicolon.
+    } 
+Linting src/app/app.js ...ERROR
+[L80:C6] W033: Missing semicolon.
+    } 
+Linting src/app/config/config.js ...ERROR
+[L37:C19] W004: 's' is already defined.
+            var s = systems[el];
+Linting src/app/config/params/fuel.js ...ERROR
+[L71:C6] W033: Missing semicolon.
+    } 
+Linting src/app/config/params/fuel.js ...ERROR
+[L75:C6] W033: Missing semicolon.
+    } 
+Linting src/app/config/params/master.js ...ERROR
+[L27:C29] W069: ['skey'] is better written in dot notation.
+  $scope.skey = $routeParams['skey'];
+Linting src/app/config/params/params.js ...ERROR
+[L373:C42] W069: ['skey'] is better written in dot notation.
+    var skey = $scope.skey = $routeParams['skey'];
+Linting src/app/config/params/params.js ...ERROR
+[L380:C6] W033: Missing semicolon.
+    } 
+Linting src/app/config/params/params.js ...ERROR
+[L384:C6] W033: Missing semicolon.
+    } 
+Linting src/app/config/params/params.js ...ERROR
+[L396:C6] W033: Missing semicolon.
+    } 
+Linting src/app/config/params/params.js ...ERROR
+[L401:C6] W033: Missing semicolon.
+    } 
+Linting src/app/config/params/params.js ...ERROR
+[L405:C6] W033: Missing semicolon.
+    } 
+Linting src/app/config/params/params.js ...ERROR
+[L415:C6] W033: Missing semicolon.
+    } 
+Linting src/app/config/params/params.js ...ERROR
+[L429:C8] W033: Missing semicolon.
+      } 
+Linting src/app/config/params/params.js ...ERROR
+[L435:C6] W033: Missing semicolon.
+    } 
+Linting src/app/config/params/params.js ...ERROR
+[L461:C6] W033: Missing semicolon.
+    } 
+Linting src/app/config/params/params.js ...ERROR
+[L467:C6] W033: Missing semicolon.
+    } 
+Linting src/app/gps/gps.js ...ERROR
+[L43:C40] W069: ['day'] is better written in dot notation.
+    var day = $scope.day = $routeParams['day'] || 0;
+Linting src/app/gps/gps.js ...ERROR
+[L45:C31] W069: ['skey'] is better written in dot notation.
+    $scope.skey = $routeParams['skey'];
+Linting src/app/gps/gps.js ...ERROR
+[L72:C6] W033: Missing semicolon.
+    } 
+Linting src/app/gps/gps.js ...ERROR
+[L83:C36] W041: Use '!==' to compare with ''.
+    if($scope.skey && ($scope.skey != '') && ($scope.skey != '+')){
+Linting src/app/gps/gps.js ...ERROR
+[L110:C6] W033: Missing semicolon.
+    } 
+Linting src/app/gps/gps.js ...ERROR
+[L124:C6] W033: Missing semicolon.
+    } 
+Linting src/app/gps/gps.js ...ERROR
+[L143:C6] W033: Missing semicolon.
+    } 
+Linting src/app/login/register.js ...ERROR
+[L31:C24] W069: ['title'] is better written in dot notation.
+            credentials['title'] = $scope.user.title;
+Linting src/app/login/register.js ...ERROR
+[L35:C24] W069: ['email'] is better written in dot notation.
+            credentials['email'] = $scope.user.email;
+Linting src/app/login/register.js ...ERROR
+[L39:C24] W069: ['newgroup'] is better written in dot notation.
+            credentials['newgroup'] = $scope.user.newgroup;
+Linting src/app/login/register.js ...ERROR
+[L40:C24] W069: ['groupname'] is better written in dot notation.
+            credentials['groupname'] = $scope.user.groupname;
+Linting src/app/login/register.js ...ERROR
+[L41:C24] W069: ['grouppassword'] is better written in dot notation.
+            credentials['grouppassword'] = $scope.user.grouppassword;
+Linting src/app/login/register.js ...ERROR
+[L53:C6] W033: Missing semicolon.
+    } 
+Linting src/app/logs/logs.js ...ERROR
+[L41:C31] W069: ['skey'] is better written in dot notation.
+    $scope.skey = $routeParams['skey'];
+Linting src/app/logs/logs.js ...ERROR
+[L52:C6] W033: Missing semicolon.
+    } 
+Linting src/app/logs/logs.js ...ERROR
+[L56:C6] W033: Missing semicolon.
+    } 
+Linting src/app/map/map.js ...ERROR
+[L36:C31] W069: ['skey'] is better written in dot notation.
+    $scope.skey = $routeParams['skey'];
+Linting src/app/map/map.js ...ERROR
+[L37:C30] W069: ['day'] is better written in dot notation.
+    $scope.day = $routeParams['day'] || 0;
+Linting src/app/map/map.js ...ERROR
+[L86:C6] W033: Missing semicolon.
+    } 
+Linting src/app/map/map.js ...ERROR
+[L99:C6] W033: Missing semicolon.
+    } 
+Linting src/app/map/map.js ...ERROR
+[L107:C35] W069: ['skey'] is better written in dot notation.
+        $scope.skey = $routeParams['skey'];
+Linting src/app/map/map.js ...ERROR
+[L108:C34] W069: ['day'] is better written in dot notation.
+        $scope.day = $routeParams['day'];
+Linting src/app/map/map.js ...ERROR
+[L124:C6] W033: Missing semicolon.
+    } 
+Linting src/app/map/map.js ...ERROR
+[L132:C51] W033: Missing semicolon.
+            $scope.timeline = $scope.timeLine_hide 
+Linting src/app/map/map.js ...ERROR
+[L139:C51] W033: Missing semicolon.
+            $scope.timeLine_hide = $scope.timeline 
+Linting src/app/map/map.js ...ERROR
+[L149:C6] W033: Missing semicolon.
+    } 
+Linting src/app/map/map.js ...ERROR
+[L159:C6] W033: Missing semicolon.
+    } 
+Linting src/app/reports/reports.js ...ERROR
+[L40:C4] W033: Missing semicolon.
+  } 
+Linting src/app/reports/reports.js ...ERROR
+[L64:C35] W041: Use '===' to compare with ''.
+      if ($scope.report.systemKey == "")
+Linting src/app/reports/reports.js ...ERROR
+[L71:C24] W033: Missing semicolon.
+  var link = $('<a />') 
+Linting src/app/reports/reports.js ...ERROR
+[L72:C57] W033: Missing semicolon.
+  link.attr("href", getXLSXDownloadLink ($scope.report)) 
+Linting src/app/reports/reports.js ...ERROR
+[L73:C53] W033: Missing semicolon.
+  link.attr("download", $scope.report.title+".xlsx") 
+Linting src/app/reports/reports.js ...ERROR
+[L102:C21] W041: Use '===' to compare with 'undefined'.
+  if($scope.fuelMap == undefined) return;
+Linting src/app/reports/reports.js ...ERROR
+[L108:C115] W033: Missing semicolon.
+    var otnosh = (voltage - $scope.fuelMap[i-1].voltage)/($scope.fuelMap[i].voltage - $scope.fuelMap[i-1].voltage) 
+Linting src/app/reports/reports.js ...ERROR
+[L110:C109] W033: Missing semicolon.
+    var liters = $scope.fuelMap[i-1].liters + otnosh*($scope.fuelMap[i].liters - $scope.fuelMap[i-1].liters) 
+Linting src/app/reports/reports.js ...ERROR
+[L112:C18] W033: Missing semicolon.
+    return liters 
+Linting src/app/reports/reports.js ...ERROR
+[L116:C56] W033: Missing semicolon.
+  return $scope.fuelMap[$scope.fuelMap.length-1].liters 
+Linting src/app/reports/reports.js ...ERROR
+[L117:C4] W033: Missing semicolon.
+  } 
+Linting src/app/reports/reports.js ...ERROR
+[L120:C96] W041: Use '===' to compare with '0'.
+        if(index==$scope.report.reportData.rows.length || $scope.report.reportData.rows.length == 0)return;
+Linting src/app/reports/reports.js ...ERROR
+[L135:C82] W041: Use '===' to compare with '0'.
+          $scope.report.reportData.rows[index].address +=parts[i].long_name + ((i==0)?'':', ')
+Linting src/app/reports/reports.js ...ERROR
+[L135:C95] W033: Missing semicolon.
+          $scope.report.reportData.rows[index].address +=parts[i].long_name + ((i==0)?'':', ') 
+Linting src/app/reports/reports.js ...ERROR
+[L138:C61] W033: Missing semicolon.
+        setTimeout(function(){$scope.formatPosition(index+1)},1000);
+Linting src/app/reports/reports.js ...ERROR
+[L142:C59] W033: Missing semicolon.
+        setTimeout(function(){$scope.formatPosition(index)},3000);
+Linting src/app/reports/reports.js ...ERROR
+[L145:C8] W033: Missing semicolon.
+      } 
+Linting src/app/reports/reports.js ...ERROR
+[L154:C4] W033: Missing semicolon.
+  } 
+Linting src/app/reports/reports.js ...ERROR
+[L167:C4] W033: Missing semicolon.
+  } 
+Linting src/app/reports/reports.js ...ERROR
+[L169:C44] W033: Missing semicolon.
+     $scope.report.reportData.rows.length=0 
+Linting src/app/reports/reports.js ...ERROR
+[L170:C54] W041: Use '===' to compare with '0'.
+     if (!data || !data.points || data.points.length == 0) {
+Linting src/app/reports/reports.js ...ERROR
+[L184:C18] W004: 'i' is already defined.
+       for(var i = 0; i < items.length; ++i){
+Linting src/app/reports/reports.js ...ERROR
+[L194:C87] W033: Missing semicolon.
+       item.duration = moment.duration((item.finishdt - item.startdt)*1000).humanize() 
+Linting src/app/reports/reports.js ...ERROR
+[L200:C61] W033: Missing semicolon.
+     item.fuel = Math.floor(10*$scope.getFuel(item.fuel))/10 
+Linting src/app/reports/reports.js ...ERROR
+[L202:C58] W033: Missing semicolon.
+             stop.fuel = points[items[i].stop_index].fuel 
+Linting src/app/reports/reports.js ...ERROR
+[L204:C83] W033: Missing semicolon.
+     item.fuelChange = - Math.floor(10*(item.fuel - $scope.getFuel(stop.fuel)))/10 
+Linting src/app/reports/reports.js ...ERROR
+[L220:C37] W041: Use '!==' to compare with '0'.
+     item.speed = (item.durationSecs!=0)?(Math.floor(36000*item.distance/(item.durationSecs))/10):""
+Linting src/app/reports/reports.js ...ERROR
+[L220:C101] W033: Missing semicolon.
+     item.speed = (item.durationSecs!=0)?(Math.floor(36000*item.distance/(item.durationSecs))/10):"" 
+Linting src/app/reports/reports.js ...ERROR
+[L222:C19] W033: Missing semicolon.
+     var delta = 1 
+Linting src/app/reports/reports.js ...ERROR
+[L224:C66] W033: Missing semicolon.
+     item.startdt=moment(item.startdt*1000).format("DD/MM HH:mm") 
+Linting src/app/reports/reports.js ...ERROR
+[L236:C74] W033: Missing semicolon.
+            item.event = $scope.zapravka(item.fuelChange,delta,"Стоянка") 
+Linting src/app/reports/reports.js ...ERROR
+[L239:C76] W033: Missing semicolon.
+            item.event = $scope.zapravka(item.fuelChange,delta,"Остановка") 
+Linting src/app/reports/reports.js ...ERROR
+[L255:C8] W014: Bad line breaking before '+'.
+       +"_"+moment($scope.report.interval.start).format("DD/MM/YYYY")
+Linting src/app/reports/reports.js ...ERROR
+[L256:C8] W014: Bad line breaking before '+'.
+       +"_"+moment($scope.report.interval.end).format("DD/MM/YYYY")
+Linting src/app/reports/reports.js ...ERROR
+[L256:C68] W033: Missing semicolon.
+       +"_"+moment($scope.report.interval.end).format("DD/MM/YYYY") 
+Linting src/app/reports/reports.js ...ERROR
+[L261:C16] W004: 'i' is already defined.
+     for(var i = 0; i<$scope.report.reportData.rows.length; ++i){
+Linting src/app/reports/reports.js ...ERROR
+[L262:C17] W004: 'item' is already defined.
+       var item = $scope.report.reportData.rows[i]
+Linting src/app/reports/reports.js ...ERROR
+[L262:C51] W033: Missing semicolon.
+       var item = $scope.report.reportData.rows[i] 
+Linting src/app/reports/reports.js ...ERROR
+[L263:C42] W033: Missing semicolon.
+     summary.distance += item.distanceRaw 
+Linting src/app/reports/reports.js ...ERROR
+[L265:C84] W033: Missing semicolon.
+     if(item.fsource==6||item.fsource==8) summary.moveDuration += item.durationSecs 
+Linting src/app/reports/reports.js ...ERROR
+[L266:C52] W033: Missing semicolon.
+     else summary.stopDuration += item.durationSecs 
+Linting src/app/reports/reports.js ...ERROR
+[L269:C59] W033: Missing semicolon.
+     summary.fuel -= (item.fuelChange<0)?item.fuelChange:0 
+Linting src/app/reports/reports.js ...ERROR
+[L271:C61] W033: Missing semicolon.
+     summary.distance = Math.floor(summary.distance*100)/100 
+Linting src/app/reports/reports.js ...ERROR
+[L272:C51] W033: Missing semicolon.
+     summary.fuel = Math.floor(summary.fuel*10)/10 
+Linting src/app/reports/reports.js ...ERROR
+[L273:C43] W041: Use '!==' to compare with '0'.
+     summary.speed = (summary.durationSecs!=0)?(Math.floor(36000*summary.distance/(summary.moveDuration))/10):""
+Linting src/app/reports/reports.js ...ERROR
+[L273:C113] W033: Missing semicolon.
+     summary.speed = (summary.durationSecs!=0)?(Math.floor(36000*summary.distance/(summary.moveDuration))/10):"" 
+Linting src/app/reports/reports.js ...ERROR
+[L277:C16] W004: 'i' is already defined.
+     for(var i = 0; i < points.length; i++){
+Linting src/app/reports/reports.js ...ERROR
+[L278:C93] W033: Missing semicolon.
+      summary.maxspeed = (summary.maxspeed>points[i].speed)?summary.maxspeed:points[i].speed 
+Linting src/app/reports/reports.js ...ERROR
+[L280:C59] W033: Missing semicolon.
+     summary.maxspeed = Math.floor(summary.maxspeed*10)/10 
+Linting src/app/reports/reports.js ...ERROR
+[L282:C86] W033: Missing semicolon.
+     summary.moveDuration =  moment.duration((summary.moveDuration )*1000).humanize() 
+Linting src/app/reports/reports.js ...ERROR
+>> Too many errors. (52% scanned).
+
+Warning: Task "jshint:all" failed. Use --force to continue.
+
+Aborted due to warnings.

@@ -1,6 +1,10 @@
+/* global angular:true, console:true */
+
 angular.module('services.connect', [])
 
-.factory('Connect', ["$rootScope", 'SERVER', function($rootScope, SERVER) {
+.factory('Connect', ['$rootScope', 'SERVER', function($rootScope, SERVER) {
+    'use strict';
+
     var shared = {
         scope: $rootScope.$new(true)
     };
@@ -12,11 +16,11 @@ angular.module('services.connect', [])
     };
 
     Subscribes.prototype.add = function(resource, id) {
-        var key = resource + ":" + id;
+        var key = resource + ':' + id;
         this.set[key] = {
             resource: resource,
             id: id
-        }
+        };
     };
 
     Subscribes.prototype.isEmpty = function(){
@@ -48,11 +52,11 @@ angular.module('services.connect', [])
 
     var subscribes = new Subscribes();
 
-    //var ws_server = "ws://gpsapi04.navi.cc:8888/socket";
-    //var ws_server = "http://gpsapi04.navi.cc:8888/socket";
+    //var ws_server = 'ws://gpsapi04.navi.cc:8888/socket';
+    //var ws_server = 'http://gpsapi04.navi.cc:8888/socket';
     //baseUrl: ((location.hostname === 'localhost') || (location.hostname === 'bigbrother')) ? 'http://localhost:8183/' : 'http://api.newgps.navi.cc/'
 
-    //var ws_server = "http://localhost:8888/socket";
+    //var ws_server = 'http://localhost:8888/socket';
     var ws_server = SERVER.channel;
     var ws = null;
 
@@ -75,7 +79,7 @@ angular.module('services.connect', [])
             var msg = JSON.parse(event.data);
             shared.scope.$emit('update', msg);
         };
-        ws.onclose = function(event) {
+        ws.onclose = function() {
             ws = null;
             console.log('WebSocket disconnected');
             setTimeout(function(){
@@ -97,7 +101,7 @@ angular.module('services.connect', [])
                 }));
             }
         }
-    }
+    };
 
     shared.on = function(resource, callback){
         shared.scope.$on('update', function(event, message){
@@ -112,7 +116,7 @@ angular.module('services.connect', [])
                 });
             }
         });
-    }
+    };
 
     return shared;
 }]);
