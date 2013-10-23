@@ -64,6 +64,8 @@ angular.module('i18n.en', ['pascalprecht.translate'])
 
         // Config page
         'add_system': 'Add system',
+        'system_not_found': 'The system is not found. Possible cause:\n1. The system still does not communicate.\n2. Check the correct input IMEI.',
+
 
         // params
         'contenteditableTitle': 'To change the description, place the cursor in the field',

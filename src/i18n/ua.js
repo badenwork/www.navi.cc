@@ -62,6 +62,7 @@ angular.module('i18n.ua', ['pascalprecht.translate'])
 
         // Config page
         'add_system': 'Add system (translate)',
+        'system_not_found': 'Система не знайдена. Можливі причини:\n1.Система ще не виходила на зв\'язок.\n2.Перевірте правильність введення IMEI.',
 
         // params
         'contenteditableTitle': 'Для зміни опису помістіть курсор в полі',

@@ -1,7 +1,9 @@
 // TODO: Можно переделать на наследника REST
-angular.module('resources.account', []);
+angular.module('resources.account', ['i18n']);
 
-angular.module('resources.account').factory('Account', ['SERVER', '$http', '$q', '$timeout', 'Connect', '$rootScope', 'System', function (SERVER, $http, $q, $timeout, Connect, $rootScope, System) {
+angular.module('resources.account')
+
+.factory('Account', ['SERVER', '$http', '$q', '$timeout', 'Connect', '$rootScope', 'System', '$filter', function (SERVER, $http, $q, $timeout, Connect, $rootScope, System, $filter) {
 
     var Account = {
         account: null,
@@ -134,7 +136,7 @@ angular.module('resources.account').factory('Account', ['SERVER', '$http', '$q',
                     return;
                 }
                 if(data[0].result === "notfound"){
-                    alert('Система на найдена. Возможные причины: \n1. Система еще не выходила на связь.\n2. Проверте правильность ввода IMEI.');
+                    alert($filter('translate')('system_not_found'));
                     return;
                 }
             }
