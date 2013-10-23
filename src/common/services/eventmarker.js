@@ -27,7 +27,7 @@ EventMarker.prototype.onAdd = function() {
     var div = this.div = document.createElement('div');
 
     div.setAttribute("class", "eventmarker");
-
+    div.setAttribute("style","z-index:1000;");
     div.marker = this;
     var panes = this.getPanes();
     this.panes = panes;
@@ -125,7 +125,7 @@ EventMarker.prototype.draw = function() {
         .attr("style", function(d){
             var px = overlayProjection.fromLatLngToDivPixel(d.position);
             // console.log("d=", d, "px=", px);
-            return "left: " + (px.x) + "px; top: " + (px.y) + "px";
+            return "left: " + (px.x) + "px; top: " + (px.y) + "px;";
         });
 
     points.exit().remove();
