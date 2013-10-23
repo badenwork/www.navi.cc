@@ -1,4 +1,6 @@
-(function(angular, $) {
+/* global angular:true, $:true */
+
+(function() {
     'use strict';
 
     var params_descs = {
@@ -506,4 +508,4 @@
         };
     });
 
-})(this.angular, this.jQuery);
+})();

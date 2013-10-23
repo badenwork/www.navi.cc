@@ -1,181 +1,180 @@
-(function(angular, d3) {
-    'use strict';
+/* global angular:true, d3:true */
 
-    angular.module('directives.timeline', [])
+angular.module('directives.timeline', [])
 
-    .directive('timeline', [
-        function() {
-            var link = function(scope, element) {
+.directive('timeline', [
+    function() {
+        'use strict';
 
-                var data = null;
-                // var tz = (new Date()).getTimezoneOffset() / 60;
+        var link = function(scope, element) {
 
-                var margin = {
-                    top: 0,
-                    right: 32,
-                    bottom: 0,
-                    left: 32
-                },
-                    width = element.width() - 50 - margin.left - margin.right,
-                    height = 32 - margin.top - margin.bottom;
+            var data = null;
+            // var tz = (new Date()).getTimezoneOffset() / 60;
 
-                var svg = d3.select(element[0]).select('.timeline')
-                    .append('svg')
-                    .attr('width', width + margin.left + margin.right)
-                    .attr('height', height + margin.top + margin.bottom);
+            var margin = {
+                top: 0,
+                right: 32,
+                bottom: 0,
+                left: 32
+            },
+                width = element.width() - 50 - margin.left - margin.right,
+                height = 32 - margin.top - margin.bottom;
 
-                var zoom, x, xAxis;
+            var svg = d3.select(element[0]).select('.timeline')
+                .append('svg')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
 
-                function zoomed() {
-                    var t = zoom.translate(),
-                        tx = t[0];
+            var zoom, x, xAxis;
 
-                    tx = Math.min(tx, 0);
-                    tx = Math.max(tx, width - width * zoom.scale());
-                    zoom.translate([tx, 0]); // zoom.translate([tx, ty]);
+            function zoomed() {
+                var t = zoom.translate(),
+                    tx = t[0];
 
-                    // Ось времени
-                    svg.select('.x.axis').call(xAxis);
+                tx = Math.min(tx, 0);
+                tx = Math.max(tx, width - width * zoom.scale());
+                zoom.translate([tx, 0]); // zoom.translate([tx, ty]);
 
-                    // Данные
-                    var intervals = svg.select('.chart').selectAll('.interval')
-                        .data(data);
-                    intervals
-                        .select('rect')
-                        .attr('x', function(d) {
-                            return x(new Date(d.start.dt * 1000));
-                        })
-                        .attr('width', function(d) {
-                            return d3.max([2, x(new Date(d.stop.dt * 1000)) - x(new Date(d.start.dt * 1000))]);
-                        });
-                }
+                // Ось времени
+                svg.select('.x.axis').call(xAxis);
 
-                // TODO: Не нравится мне что при каждом draw пересоздается все.
-                // Нужно оценить на возможные утечки памяти
+                // Данные
+                var intervals = svg.select('.chart').selectAll('.interval')
+                    .data(data);
+                intervals
+                    .select('rect')
+                    .attr('x', function(d) {
+                        return x(new Date(d.start.dt * 1000));
+                    })
+                    .attr('width', function(d) {
+                        return d3.max([2, x(new Date(d.stop.dt * 1000)) - x(new Date(d.start.dt * 1000))]);
+                    });
+            }
 
-                function draw() {
-                    if (angular.isUndefined(data)) return;
+            // TODO: Не нравится мне что при каждом draw пересоздается все.
+            // Нужно оценить на возможные утечки памяти
 
-                    // avar
-                    svg.select('g').remove();
+            function draw() {
+                if (angular.isUndefined(data)) return;
 
-                    if (data.length === 0) return;
+                // avar
+                svg.select('g').remove();
 
-                    var start = new Date(data[0].start.dt * 1000),
-                        stop = new Date(data[data.length - 1].stop.dt * 1000);
+                if (data.length === 0) return;
 
-                    x = d3.time.scale.utc()
-                        .domain([start, stop])
-                        .range([0, width]);
+                var start = new Date(data[0].start.dt * 1000),
+                    stop = new Date(data[data.length - 1].stop.dt * 1000);
 
-                    xAxis = d3.svg.axis()
-                        .scale(x)
-                        .tickSubdivide(3)
-                        .tickSize(15, 8, 0)
-                        .orient('bottom')
-                        .ticks((width / 120) | 0)
-                        .tickFormat(d3.time.format('%H:%M:%S'));
+                x = d3.time.scale.utc()
+                    .domain([start, stop])
+                    .range([0, width]);
 
-                    zoom = d3.behavior.zoom()
-                        .x(x)
-                        .scaleExtent([1, 1024]) // TODO: Необходимо также ограничить translate
-                    .on('zoom', zoomed);
+                xAxis = d3.svg.axis()
+                    .scale(x)
+                    .tickSubdivide(3)
+                    .tickSize(15, 8, 0)
+                    .orient('bottom')
+                    .ticks((width / 120) | 0)
+                    .tickFormat(d3.time.format('%H:%M:%S'));
 
-                    var chart = svg
-                        .append('g')
-                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-                        .call(zoom);
+                zoom = d3.behavior.zoom()
+                    .x(x)
+                    .scaleExtent([1, 1024]) // TODO: Необходимо также ограничить translate
+                .on('zoom', zoomed);
 
-                    chart.append('rect') // Невидимый объект, чтобы получать события мыши и тача
-                    .attr('style', 'opacity: 0')
-                        .attr('class', 'overlay')
-                        .attr('width', width)
-                        .attr('height', height);
+                var chart = svg
+                    .append('g')
+                    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+                    .call(zoom);
 
-                    // svg.
-                    // var axis = chart.append('g')
-                    //     .attr('class', 'x axis')
-                    //     .attr('transform', 'translate(0,1)')
-                    //     .call(xAxis);
+                chart.append('rect') // Невидимый объект, чтобы получать события мыши и тача
+                .attr('style', 'opacity: 0')
+                    .attr('class', 'overlay')
+                    .attr('width', width)
+                    .attr('height', height);
 
-                    // var graph = chart.append('g')
-                    //     .attr('class', 'chart');
+                // svg.
+                // var axis = chart.append('g')
+                //     .attr('class', 'x axis')
+                //     .attr('transform', 'translate(0,1)')
+                //     .call(xAxis);
 
-                    // Данные
-                    var intervals = svg.select('.chart').selectAll('.interval')
-                        .data(data);
+                // var graph = chart.append('g')
+                //     .attr('class', 'chart');
 
-                    var g = intervals.enter().append('g')
-                        .attr('class', function(d) {
-                            return 'interval ' + d.type;
-                        })
-                        .on('click', function(d) {
-                            scope.click()(d);
-                        })
-                        .on('mouseenter', function(d) {
-                            scope.hover()(d);
-                        });
+                // Данные
+                var intervals = svg.select('.chart').selectAll('.interval')
+                    .data(data);
 
-                    g.append('rect')
-                        .attr('x', function(d) {
-                            return x(new Date(d.start.dt * 1000));
-                        })
-                        .attr('width', function(d) {
-                            return x(new Date(d.stop.dt * 1000)) - x(new Date(d.start.dt * 1000));
-                        })
-                        .attr('y', '2')
-                        .attr('height', '15');
+                var g = intervals.enter().append('g')
+                    .attr('class', function(d) {
+                        return 'interval ' + d.type;
+                    })
+                    .on('click', function(d) {
+                        scope.click()(d);
+                    })
+                    .on('mouseenter', function(d) {
+                        scope.hover()(d);
+                    });
 
-                    intervals.exit().remove();
+                g.append('rect')
+                    .attr('x', function(d) {
+                        return x(new Date(d.start.dt * 1000));
+                    })
+                    .attr('width', function(d) {
+                        return x(new Date(d.stop.dt * 1000)) - x(new Date(d.start.dt * 1000));
+                    })
+                    .attr('y', '2')
+                    .attr('height', '15');
 
-                    // var start = new Date(data[0].start.dt * 1000),
-                    //     stop = new Date(data[data.length - 1].stop.dt * 1000);
+                intervals.exit().remove();
 
-                }
+                // var start = new Date(data[0].start.dt * 1000),
+                //     stop = new Date(data[data.length - 1].stop.dt * 1000);
 
-                scope.$watch('data', function(_data) {
-                    data = _data;
-                    draw();
-                }, true);
+            }
 
-                var scaledelta = Math.pow(2, 120 * 0.002);
+            scope.$watch('data', function(_data) {
+                data = _data;
+                draw();
+            }, true);
 
-                element.find('#plusButton').on('click', function() {
-                    var tx = zoom.translate()[0];
-                    var scale = zoom.scale();
-                    var newscale = scale * scaledelta;
-                    zoom.scale(newscale);
-                    zoom.translate([tx + (width * scale - width * newscale) / 2, 0]); // Не идеальное решение, но немного лучше чем ничего
-                    zoomed();
-                });
+            var scaledelta = Math.pow(2, 120 * 0.002);
 
-                element.find('#minusButton').on('click', function() {
-                    var tx = zoom.translate()[0];
-                    var scale = zoom.scale();
-                    var newscale = Math.max(1.0, zoom.scale() / scaledelta);
-                    zoom.translate([tx - (width * newscale - width * scale) / 2, 0]); // Не идеальное решение, но немного лучше чем ничего
-                    zoom.scale(newscale);
-                    zoomed();
-                });
-            };
+            element.find('#plusButton').on('click', function() {
+                var tx = zoom.translate()[0];
+                var scale = zoom.scale();
+                var newscale = scale * scaledelta;
+                zoom.scale(newscale);
+                zoom.translate([tx + (width * scale - width * newscale) / 2, 0]); // Не идеальное решение, но немного лучше чем ничего
+                zoomed();
+            });
 
-            return {
-                restrict: 'A',
-                scope: {
-                    data: '=',
-                    hover: '&onHover',
-                    click: '&onClick'
-                },
-                template:
-                    '<div>' +
-                    '<div id="minusButton" style="position:absolute;left:0;top:0"><img src="img/minus_button.png" width="32" height="32"/></div>' +
-                    '<div style="position:absolute;left:32px;top:0;right:32px;bottom:0px;overflow-x:hidden;overflow-y:hidden"><div class="timeline"></div></div>' +
-                    '<div id="plusButton" style="position:absolute;right:0;top:0"><img src="img/plus_button.png" width="32" height="32"/></div>' +
-                    '</div>',
-                replace: true,
-                link: link
-            };
-        }
-    ]);
+            element.find('#minusButton').on('click', function() {
+                var tx = zoom.translate()[0];
+                var scale = zoom.scale();
+                var newscale = Math.max(1.0, zoom.scale() / scaledelta);
+                zoom.translate([tx - (width * newscale - width * scale) / 2, 0]); // Не идеальное решение, но немного лучше чем ничего
+                zoom.scale(newscale);
+                zoomed();
+            });
+        };
 
-})(this.angular, this.d3);
+        return {
+            restrict: 'A',
+            scope: {
+                data: '=',
+                hover: '&onHover',
+                click: '&onClick'
+            },
+            template:
+                '<div>' +
+                '<div id="minusButton" style="position:absolute;left:0;top:0"><img src="img/minus_button.png" width="32" height="32"/></div>' +
+                '<div style="position:absolute;left:32px;top:0;right:32px;bottom:0px;overflow-x:hidden;overflow-y:hidden"><div class="timeline"></div></div>' +
+                '<div id="plusButton" style="position:absolute;right:0;top:0"><img src="img/plus_button.png" width="32" height="32"/></div>' +
+                '</div>',
+            replace: true,
+            link: link
+        };
+    }
+]);

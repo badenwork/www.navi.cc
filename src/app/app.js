@@ -1,96 +1,98 @@
-(function(angular, $) {
-    'use strict';
+/* global angular:true, $:true */
 
-    angular.module('app', [
-        'http-auth-interceptor',
-        'ngRoute',
-        'resources.account',
-        'app.filters',
-        'error',
-        'login',
-        'register',
-        'map',
-        'logs',
-        'gps',
-        'reports',
-        'config',
-        'admin',
-        'help',
-        'i18n',
-        'directives.loginform',
-        'services.httpRequestTracker'
-    ]);
+angular.module('app', [
+    'http-auth-interceptor',
+    'ngRoute',
+    'resources.account',
+    'app.filters',
+    'error',
+    'login',
+    'register',
+    'map',
+    'logs',
+    'gps',
+    'reports',
+    'config',
+    'admin',
+    'help',
+    'i18n',
+    'directives.loginform',
+    'services.httpRequestTracker'
+]);
 
-    var DEVELOP = ((location.hostname === 'localhost') || (location.hostname === 'bigbrother') || (location.hostname.match(/192\.168\.*/)));
-    var API_VERSION = '1.0';
+var DEVELOP = ((location.hostname === 'localhost') || (location.hostname === 'bigbrother') || (location.hostname.match(/192\.168\.*/)));
+var API_VERSION = '1.0';
 
-    angular.module('app').constant('SERVER', {
-        //api: 'http://' + (DEVELOP ? 'gpsapi05.navi.cc:8982' : location.hostname) + '/' + API_VERSION,
-        api: (DEVELOP ? 'http://new.navi.cc/' : '/') + API_VERSION,
-        //channel: 'ws://' + (DEVELOP ? 'gpsapi05.navi.cc' : location.hostname) + ':8983/websocket',
-        channel: 'ws://' + (DEVELOP ? 'new.navi.cc' : location.hostname) + ':8983/websocket',
-        api_withCredentials: true // Должен быть установлен для использования withCredentials, в противном случае используется авторизация через Header:
-    });
+angular.module('app').constant('SERVER', {
+    //api: 'http://' + (DEVELOP ? 'gpsapi05.navi.cc:8982' : location.hostname) + '/' + API_VERSION,
+    api: (DEVELOP ? 'http://new.navi.cc/' : '/') + API_VERSION,
+    //channel: 'ws://' + (DEVELOP ? 'gpsapi05.navi.cc' : location.hostname) + ':8983/websocket',
+    channel: 'ws://' + (DEVELOP ? 'new.navi.cc' : location.hostname) + ':8983/websocket',
+    api_withCredentials: true // Должен быть установлен для использования withCredentials, в противном случае используется авторизация через Header:
+});
 
-    // angular.module('app').config(['$routeProvider', '$locationProvider', '$httpProvider', /*'$compileProvider',*/ 'SERVER', function ($routeProvider, $locationProvider, $httpProvider, /*$compileProvider,*/ SERVER) {
-    angular.module('app').config(['$routeProvider', '$locationProvider', '$httpProvider', 'SERVER',
-        function($routeProvider, $locationProvider, $httpProvider, SERVER) {
-            $httpProvider.defaults.withCredentials = SERVER.api_withCredentials;
+// angular.module('app').config(['$routeProvider', '$locationProvider', '$httpProvider', /*'$compileProvider',*/ 'SERVER', function ($routeProvider, $locationProvider, $httpProvider, /*$compileProvider,*/ SERVER) {
+angular.module('app').config(['$routeProvider', '$locationProvider', '$httpProvider', 'SERVER',
+    function($routeProvider, $locationProvider, $httpProvider, SERVER) {
+        'use strict';
 
-            // Разрешим вызывать ссылки вида chrome:.... Не пригодилось, ссылки вида chrome браузер блокирует
-            // $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome):/);
+        $httpProvider.defaults.withCredentials = SERVER.api_withCredentials;
 
-            if (!$httpProvider.defaults.headers.patch) {
-                $httpProvider.defaults.headers.patch = {};
-            }
-            $httpProvider.defaults.headers.patch['Content-Type'] = 'application/json; charset=utf-8';
+        // Разрешим вызывать ссылки вида chrome:.... Не пригодилось, ссылки вида chrome браузер блокирует
+        // $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome):/);
 
-            //$locationProvider.html5Mode(true);
+        if (!$httpProvider.defaults.headers.patch) {
+            $httpProvider.defaults.headers.patch = {};
         }
-    ]);
+        $httpProvider.defaults.headers.patch['Content-Type'] = 'application/json; charset=utf-8';
 
-    var TIMETICK_UPDATE = 30000; // Отправлять глобальное событие каждые 30 секунд.
-    // TIMETICK_UPDATE = 1000;  // Отправлять глобальное событие каждую секунду.
+        //$locationProvider.html5Mode(true);
+    }
+]);
 
-    angular.module('app').run(['$http', 'SERVER', '$rootScope', '$timeout',
-        function($http, SERVER, $rootScope, $timeout) {
+var TIMETICK_UPDATE = 30000; // Отправлять глобальное событие каждые 30 секунд.
+// TIMETICK_UPDATE = 1000;  // Отправлять глобальное событие каждую секунду.
 
-            $rootScope.now = function() {
-                return Math.round((new Date()).valueOf() / 1000);
-            };
+angular.module('app').run(['$http', 'SERVER', '$rootScope', '$timeout',
+    function($http, SERVER, $rootScope, $timeout) {
+        'use strict';
 
-            var timetick = function() {
-                // $rootScope.now = Math.round((new Date()).valueOf() / 1000);
-                $rootScope.$broadcast('timetick');
+        $rootScope.now = function() {
+            return Math.round((new Date()).valueOf() / 1000);
+        };
 
-                $timeout(function() {
-                    timetick();
-                }, TIMETICK_UPDATE);
-            };
-        }
-    ]);
+        var timetick = function() {
+            // $rootScope.now = Math.round((new Date()).valueOf() / 1000);
+            $rootScope.$broadcast('timetick');
 
-    angular.module('app').controller('AppCtrl', ['$scope', '$location', '$route',
-        function($scope, $location, $route) {
-            $scope.location = $location;
-            $scope.$route = $route;
-            $scope.debugpanel = '';
+            $timeout(function() {
+                timetick();
+            }, TIMETICK_UPDATE);
+        };
+    }
+]);
 
-            $scope.showDebugPanel = function() {
-                $scope.debugpanel = ($scope.debugpanel === '') ? 'active' : '';
-            };
+angular.module('app').controller('AppCtrl', ['$scope', '$location', '$route',
+    function($scope, $location, $route) {
+        'use strict';
 
-            // Функционал всплывающих ссобщений необходимо восстановить
-            //
-            // $scope.removeNotification = function (notification) {
-            //   i18nNotifications.remove(notification);
-            // };
+        $scope.location = $location;
+        $scope.$route = $route;
+        $scope.debugpanel = '';
 
-            $scope.$on('$routeChangeSuccess', function() {
-                $('.collapse').collapse('hide');
-                $('.modal-backdrop').remove();
-            });
-        }
-    ]);
+        $scope.showDebugPanel = function() {
+            $scope.debugpanel = ($scope.debugpanel === '') ? 'active' : '';
+        };
 
-})(this.angular, this.jQuery);
+        // Функционал всплывающих ссобщений необходимо восстановить
+        //
+        // $scope.removeNotification = function (notification) {
+        //   i18nNotifications.remove(notification);
+        // };
+
+        $scope.$on('$routeChangeSuccess', function() {
+            $('.collapse').collapse('hide');
+            $('.modal-backdrop').remove();
+        });
+    }
+]);

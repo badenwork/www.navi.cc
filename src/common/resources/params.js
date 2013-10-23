@@ -1,13 +1,13 @@
-(function(angular) {
-    'use strict';
+/* global angular:true */
 
-    angular.module('resources.params', ['services.connect', 'resources.rest'])
+angular.module('resources.params', ['services.connect', 'resources.rest'])
 
-    .factory('Params', ['REST',
-        function(REST) {
-            var Params = new REST('param');
-            return Params;
-        }
-    ]);
+.factory('Params', ['REST',
+    function(REST) {
+        'use strict';
 
-})(this.angular);
+        var Params = new REST('param');
+        return Params;
+    }
+]);
+
