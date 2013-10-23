@@ -56,6 +56,7 @@ data: [
   $scope.account = account;
   $scope.systems = systems;
   $scope.geocoder = new google.maps.Geocoder();
+    $scope.System = System;
 
 
   $scope.showReportWindow = function() {
@@ -99,7 +100,10 @@ data: [
   };
 
   $scope.getFuel = function(data){
-  if($scope.fuelMap == undefined) return;
+      var liters = System.$fuelscale($scope.report.systemKey) (data);
+      console.log("liters ", liters);
+      return liters;
+  /*if($scope.fuelMap == undefined) return;
   var voltage = data*$scope.fuelMap[$scope.fuelMap.length-1].voltage/1024;
 
   for(var i = 1; i < $scope.fuelMap.length; i++){
@@ -108,12 +112,11 @@ data: [
     var otnosh = (voltage - $scope.fuelMap[i-1].voltage)/($scope.fuelMap[i].voltage - $scope.fuelMap[i-1].voltage)
 
     var liters = $scope.fuelMap[i-1].liters + otnosh*($scope.fuelMap[i].liters - $scope.fuelMap[i-1].liters)
-
     return liters
 
     }
   }
-  return $scope.fuelMap[$scope.fuelMap.length-1].liters
+  return $scope.fuelMap[$scope.fuelMap.length-1].liters*/
   }
 
   $scope.formatPosition = function(index){
@@ -290,9 +293,9 @@ data: [
     var reportTable = $( "#reportT" );
     var sys = systems[$scope.report.systemKey];
     $scope.report.hasFuelSensor = sys.car.hasFuelSensor;
-    if((sys.params) && (sys.params.fuel)){
+    /*if((sys.params) && (sys.params.fuel)){
         $scope.fuelMap = sys.params.fuel;
-    }
+    }*/
 
   $scope.report.interval.start.setHours(0)
   $scope.report.interval.start.setMinutes(0)

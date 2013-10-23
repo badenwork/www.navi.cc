@@ -169,7 +169,7 @@ angular.module('resources.geogps', [])
         for(var i=0; i<array.length; i+=32){
             point = parse_onebin(array.subarray(i, i+32));
             // console.log('point=', point, System);
-            if(point.fuel) {
+            if(point != null && point.fuel) {
                 point.fuel = fuelscale(point.fuel);
             }
             // if(i===0){
