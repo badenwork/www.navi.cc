@@ -216,10 +216,13 @@ ul.config_sys_list>li i.icon-large {
 
 .sysname {
     top: 4px;
-    //padding: 4px;
-    //padding-top: 4px;
-    //padding-bottom: 4px;
+    margin-bottom: -4px;
     cursor: pointer;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    max-width: 45%;
 }
 
 #carIconsModal a {
