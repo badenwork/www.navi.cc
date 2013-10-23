@@ -97,9 +97,6 @@ angular.module('app').run(['$http', 'SERVER', '$rootScope', '$timeout', function
   $rootScope.now = function(){
     return Math.round((new Date()).valueOf() / 1000);
   }
-  $rootScope.$on('$routeChangeSuccess', function (event, current) {
-      $('.modal-backdrop').remove();
-  });
   var timetick = function(){
     // $rootScope.now = Math.round((new Date()).valueOf() / 1000);
     $rootScope.$broadcast("timetick");
@@ -192,6 +189,7 @@ angular.module('app').controller('HeaderCtrl', ['$scope', '$location', '$route',
   };*/
   $scope.$on('$routeChangeSuccess', function (scope, next, current) {
     $(".collapse").collapse('hide');
+    $('.modal-backdrop').remove();
   });
   /*$(".collapse").collapse({toggle: false});*/
 
