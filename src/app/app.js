@@ -58,17 +58,17 @@ var TIMETICK_UPDATE = 30000;  // Отправлять глобальное со�
 
 angular.module('app').run(['$http', 'SERVER', '$rootScope', '$timeout', function($http, SERVER, $rootScope, $timeout){
 
-  $rootScope.now = function(){
-    return Math.round((new Date()).valueOf() / 1000);
-  }
-  var timetick = function(){
-    // $rootScope.now = Math.round((new Date()).valueOf() / 1000);
-    $rootScope.$broadcast("timetick");
+    $rootScope.now = function(){
+        return Math.round((new Date()).valueOf() / 1000);
+    }
+    var timetick = function(){
+        // $rootScope.now = Math.round((new Date()).valueOf() / 1000);
+        $rootScope.$broadcast("timetick");
 
-    $timeout(function(){
-        timetick();
-    }, TIMETICK_UPDATE);
-
+        $timeout(function(){
+            timetick();
+        }, TIMETICK_UPDATE);
+    }
 }]);
 
 angular.module('app').controller('AppCtrl', ['$scope', '$location', '$route', '$rootScope', '$window', function($scope, $location, $route, $rootScope, $window) {
@@ -85,48 +85,10 @@ angular.module('app').controller('AppCtrl', ['$scope', '$location', '$route', '$
     //   i18nNotifications.remove(notification);
     // };
 
-<<<<<<< HEAD
-if(0){
-//angular.module('app').controller('HeaderCtrl', ['$scope', '$location', '$route', 'notifications', 'httpRequestTracker', function ($scope, $location, $route, notifications, httpRequestTracker) {
-angular.module('app').controller('HeaderCtrl', ['$scope', '$location', '$route', 'Account', 'httpRequestTracker', function ($scope, $location, $route, Account, httpRequestTracker) {
-  $scope.location = $location;
-  $scope.account = Account;
-  $scope.skey = Account.skey;
-
-  // console.log('update Header');
-
-  $scope.home = function () {
-    /*if ($scope.currentUser.isAuthenticated()) {
-      $location.path('/map');
-    } else {*/
-      $location.path('/login');
-    //}
-  };
-
-  $scope.isNavbarActive = function (navBarPath) {
-    //console.log('isNavbarActive(', navBarPath, $location, '123');
-    //return navBarPath === $location.path();
-    return $location.path().match(navBarPath);
-  };
-
-  $scope.hasPendingRequests = function () {
-    return httpRequestTracker.hasPendingRequests();
-  };
-
-  /*$scope.collapse = function() {
-    $(".collapse").collapse('toggle');
-  };*/
-  $scope.$on('$routeChangeSuccess', function (scope, next, current) {
-    $(".collapse").collapse('hide');
-    $('.modal-backdrop').remove();
-  });
-  /*$(".collapse").collapse({toggle: false});*/
-=======
-    // $scope.$on('$routeChangeError', function(event, current, previous, rejection){
-    //     i18nNotifications.pushForCurrentRoute('errors.route.changeError', 'error', {}, {rejection: rejection});
-    // });
->>>>>>> 02f9352250f87b053cd24e988249fd68f72465db
-
+    $scope.$on('$routeChangeSuccess', function (scope, next, current) {
+        $(".collapse").collapse('hide');
+        $('.modal-backdrop').remove();
+    });
 }]);
 
 
