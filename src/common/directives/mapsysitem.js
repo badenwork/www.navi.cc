@@ -1,6 +1,6 @@
 /* global angular:true */
 
-angular.module('directives.main', ['newgps.services'])
+angular.module('directives.main', ['newgps.services', 'services.tags'])
 
 .directive('mapsyslist', [
     function() {
@@ -16,27 +16,12 @@ angular.module('directives.main', ['newgps.services'])
             },
             templateUrl: 'templates/map/mapsyslist.tpl.html',
             replace: true,
-            controller: ['$element', '$scope',
-                function($element, $scope) {
+            controller: ['$element', '$scope', 'Tags',
+                function($element, $scope, Tags) {
                     var skeys = $scope.account.account.skeys;
-                    var set = {};
-                    $scope.filters = [];
 
-                    for (var i = skeys.length - 1; i >= 0; i--) {
-                        var skey = skeys[i];
-                        var system = $scope.systems[skey];
-                        if(system.tags){
-                            system.tags.map(function(tag){
-                                if(!set.hasOwnProperty(tag)){
-                                    set[tag] = tag;
-                                    $scope.filters.push({
-                                        desc: tag,
-                                        filter: tag
-                                    });
-                                }
-                            })
-                        }
-                    };
+                    Tags.reload();
+                    $scope.filters = Tags.filters;
 
                     $scope.zoomlist = 1;
                     $scope.doZoomList = function() {
@@ -44,20 +29,19 @@ angular.module('directives.main', ['newgps.services'])
                         if ($scope.zoomlist >= 3) $scope.zoomlist = 0;
                     };
 
-                    $scope.popup = function() {
-                    };
+                    $scope.popup = function() {};
 
                     $scope.onSysSelect = function(skey) {
                         $scope.select(skey);
                     };
 
-                    $scope.$watch('sfilter', function(){
-                        console.log('fire sfilter', $scope.sfilter);
-                    });
+                    // $scope.$watch('sfilter', function() {
+                    //     console.log('fire sfilter', $scope.sfilter);
+                    // });
 
-                    $scope.filtered = function(list){
-                        console.log('filtered', list);
-                    }
+                    // $scope.filtered = function(list) {
+                    //     console.log('filtered', list);
+                    // };
 
                 }
             ]
@@ -73,10 +57,10 @@ angular.module('directives.main', ['newgps.services'])
             restrict: 'E',
             require: '^mapsyslist',
             scope: {
-                zoomlist:   '@',
-                item:       '=',
-                skey:       '=',
-                select:     '&'
+                zoomlist: '@',
+                item: '=',
+                skey: '=',
+                select: '&'
             },
             replace: true,
             templateUrl: 'templates/map/mapsysitem.tpl.html',
@@ -111,17 +95,19 @@ angular.module('directives.main', ['newgps.services'])
     }
 ])
 
-.filter('systemfilter', ['System', function(System){
-    return function(list, param){
-        if(angular.isUndefined(param) || (param === null)) return list;
-        var out = [];
-        var tag = param.filter;
-        list.map(function(skey){
-            var system = System.cached(skey);
-            if(system && system.tags){
-                if(system.tags.indexOf(tag) >= 0) out.push(skey);
-            }
-        })
-        return out;
+.filter('systemfilter', ['System',
+    function(System) {
+        return function(list, param) {
+            if (angular.isUndefined(param) || (param === null)) return list;
+            var out = [];
+            var tag = param.filter;
+            list.map(function(skey) {
+                var system = System.cached(skey);
+                if (system && system.tags) {
+                    if (system.tags.indexOf(tag) >= 0) out.push(skey);
+                }
+            });
+            return out;
+        };
     }
-}]);
+]);

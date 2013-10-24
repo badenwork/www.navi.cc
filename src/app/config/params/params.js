@@ -361,7 +361,7 @@
 
     };
 
-    angular.module('config.system.params', ['ngRoute', '$strap', 'resources.params', 'app.filters', 'config.system.params.master', 'config.system.params.fuel'])
+    angular.module('config.system.params', ['ngRoute', '$strap', 'resources.params', 'app.filters', 'config.system.params.master', 'config.system.params.fuel', 'services.tags'])
 
     .config(['$routeProvider',
         function($routeProvider) {
@@ -369,6 +369,11 @@
                 templateUrl: 'templates/config/params/params.tpl.html',
                 controller: 'ConfigParamsCtrl',
                 resolve: {
+                    account: ['Account',        // Да, вот ради списка всех систем для коллекции ярлыков
+                        function(Account) {
+                            return Account.get();
+                        }
+                    ],
                     params: ['Params', '$route',
                         function(Params, $route) {
                             return Params.get($route.current.params.skey);
@@ -388,8 +393,8 @@
         return params_descs;
     })
 
-    .controller('ConfigParamsCtrl', ['$scope', '$route', '$routeParams', 'params', 'system', 'System',
-        function($scope, $route, $routeParams, params, system, System) {
+    .controller('ConfigParamsCtrl', ['$scope', '$route', '$routeParams', 'account', 'params', 'system', 'System', 'Tags',
+        function($scope, $route, $routeParams, account, params, system, System, Tags) {
             $scope.system = system;
             $scope.skey = $routeParams.skey;
             $scope.params = params;
@@ -489,31 +494,47 @@
                 system.$patch('icon');
             };
 
+            Tags.reload();
+            $scope.alltags = Tags.all;
+
             $scope.tagname = '';
+            $scope.edittags = false;
             $scope.addTag = function(){
                 $('#addTag').modal('show');
-            }
+            };
 
-            // $('#addTag').modal({
-            //     show: false
-            // }).on('hidden.bs.modal', function() {
-            //     // console.log("new tagname=", $scope.tagname);
-            // });
+            $('#addTag').modal({
+                show: false
+            }).on('show.bs.modal', function() {
+                $scope.edittags = false;
+                // console.log("new tagname=", $scope.tagname);
+            });
+
+            $scope.addTagThis = function(tagname){
+                // console.log('add tag done', $scope.tagname);
+                if($scope.edittags){
+                    var index = $scope.alltags.indexOf(tagname);
+                    $scope.alltags.splice(index, 1);
+                    Tags.save();
+                    // console.log('remove', tagname);
+                } else {
+                    if((tagname !== '') && ($scope.system.tags.indexOf(tagname) === -1)){
+                        $scope.system.tags.push(tagname);
+                        $scope.system.$patch('tags');
+                    }
+                    $('#addTag').modal('hide');
+                }
+            };
 
             $scope.addTagDone = function(){
-                // console.log('add tag done', $scope.tagname);
-                if(($scope.tagname !== '') && ($scope.system.tags.indexOf($scope.tagname) === -1)){
-                    $scope.system.tags.push($scope.tagname);
-                    $scope.system.$patch('tags');
-                }
-                $('#addTag').modal('hide');
-            }
+                $scope.addTagThis($scope.tagname);
+            };
 
             $scope.removeTag = function(key){
                 // console.log('removeTag key=', key);
                 $scope.system.tags.splice(key, 1);
                 $scope.system.$patch('tags');
-            }
+            };
             // $('[rel=tooltip]').tooltip();
         }
     ])
