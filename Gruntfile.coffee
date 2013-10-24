@@ -77,6 +77,7 @@ module.exports = (grunt) ->
           "angular-animate": "v1.2.0-rc.2"
           "angular-ui-sortable": ""
           "angular-ui-bootstrap": ""  # Search for 3.0 tag/branch
+          "angular-ui-select2": ""
           # "https://raw.github.com/angular-ui/ui-utils/master/modules/ie-shiv/ie-shiv.js": ""
           #   name: "some-lib"
           # "some-lib": "https://raw.github.com/angular-ui/ui-utils/master/modules/ie-shiv/ie-shiv.js"
@@ -276,6 +277,7 @@ module.exports = (grunt) ->
             'components/angular-translate/angular-translate.min.js',
             'components/angular-ui-sortable/src/sortable.js',
             'components/angular-ui-bootstrap/src/buttons/buttons.js',
+            'components/angular-ui-select2/src/select2.js',
             'components/angular-bindonce/bindonce.js',
             'components/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
             'components/moment/moment.js',
@@ -316,6 +318,7 @@ module.exports = (grunt) ->
             'components/angular-translate/angular-translate.min.js',
             'components/angular-ui-sortable/src/sortable.js',
             'components/angular-ui-bootstrap/src/buttons/buttons.js',
+            'components/angular-ui-select2/src/select2.js',
             'components/angular-bindonce/bindonce.js',
             'components/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
             'components/moment/moment.js',

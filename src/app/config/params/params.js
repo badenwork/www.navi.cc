@@ -489,6 +489,31 @@
                 system.$patch('icon');
             };
 
+            $scope.tagname = '';
+            $scope.addTag = function(){
+                $('#addTag').modal('show');
+            }
+
+            // $('#addTag').modal({
+            //     show: false
+            // }).on('hidden.bs.modal', function() {
+            //     // console.log("new tagname=", $scope.tagname);
+            // });
+
+            $scope.addTagDone = function(){
+                // console.log('add tag done', $scope.tagname);
+                if(($scope.tagname !== '') && ($scope.system.tags.indexOf($scope.tagname) === -1)){
+                    $scope.system.tags.push($scope.tagname);
+                    $scope.system.$patch('tags');
+                }
+                $('#addTag').modal('hide');
+            }
+
+            $scope.removeTag = function(key){
+                // console.log('removeTag key=', key);
+                $scope.system.tags.splice(key, 1);
+                $scope.system.$patch('tags');
+            }
             // $('[rel=tooltip]').tooltip();
         }
     ])

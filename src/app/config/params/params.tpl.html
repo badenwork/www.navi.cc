@@ -58,6 +58,13 @@
 
         <dl class="dl-horizontal">
             <dt>Значек</dt><dd><a class="caricon" ng-click="changeIcon()"><i class="{{ system.icon || 'caricon-truck'}} icon-large"></i></a></dd>
+            <dt>Ярлыки</dt>
+            <dd class="tags">
+                <span class="tag label label-default" ng-repeat="(key, value) in system.tags">{{value}}
+                    <i class="icon-minus-sign" title="Убрать" ng-click="removeTag(key)"></i>
+                </span>
+                <i class="icon-plus-sign" title="Добавить" ng-click="addTag()"></i>
+            </dd>
             <dt>Наименование ТС</dt><dd contenteditable="true" ng-model="system.title" ng-change="system.$patch('title')"></dd>
             <dt>Гос номер</dt><dd contenteditable="true" ng-model="system.car.number" ng-change="system.$patch('car')"></dd>
             <dt>Год выпуска</dt><dd contenteditable="true" ng-model="system.car.year" ng-change="system.$patch('car')"></dd>
@@ -165,6 +172,27 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
+
+    <div class="modal fade" id="addTag">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Название ярлыка</h4>
+                </div>
+                <form name="form" ng-submit="addTagDone()" style="margin-bottom: 0;">
+                    <div class="modal-body">
+                        <input class="form-control" ng-model="tagname" />
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" id="submit" class="btn btn-primary" value="Добавить"/>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 </div>
