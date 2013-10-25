@@ -92,7 +92,7 @@ module.exports = (grunt) ->
           "https://github.com/baden/ngInfiniteScroll.git": "1.0.1-pre1"
           # "ngInfiniteScroll": "https://github.com/baden/ngInfiniteScroll.git" # Оригинальный не поддерживает скроллинг в контейнере, только в top
           "angular-bindonce": ""
-          "components-font-awesome": ""
+          "components-font-awesome": "3.2.1"
           moment:
             select: ["moment.js", "ru.js"]
           jszip:
@@ -123,6 +123,9 @@ module.exports = (grunt) ->
       dist:
         files:
           "<%= distdir %>/css/<%= pkg.name %>.css": ["<%= src.less %>"]
+      bootstrap:
+        files:
+          "temp/components/bootstrap.css": ["temp/components/bootstrap/bootstrap.less"]
 
     copy:
       assets:
@@ -167,6 +170,18 @@ module.exports = (grunt) ->
           dest: "dist/css/"
           cwd: 'src/images'
           expand: true
+        ]
+      bootstrap:
+        files: [
+          src: ["*.less", '!variables.less']
+          cwd: "components/bootstrap/less/"
+          dest: "temp/components/bootstrap/"
+          expand: true
+        ,
+          src: ["src/less/variables.less"]
+          dest: "temp/components/bootstrap/"
+          expand: true
+          flatten: true
         ]
 
     jade:
@@ -291,6 +306,7 @@ module.exports = (grunt) ->
           src: [
             'components/bootstrap/dist/css/bootstrap.min.css'
             'components/components-font-awesome/css/font-awesome.min.css'
+            'components/bootstrap-datepicker/css/datepicker.css'
           ]
           dest: '<%= distdir %>/css/components.css'
         ]
@@ -330,8 +346,10 @@ module.exports = (grunt) ->
           dest: '<%= distdir %>/js/components.js'
         ,
           src: [
-            'components/bootstrap/dist/css/bootstrap.min.css'
+            # 'components/bootstrap/dist/css/bootstrap.min.css'
+            'temp/components/bootstrap.css'
             'components/components-font-awesome/css/font-awesome.min.css'
+            'components/bootstrap-datepicker/css/datepicker.css'
           ]
           dest: '<%= distdir %>/css/components.css'
         ]
@@ -499,7 +517,12 @@ module.exports = (grunt) ->
   # Build
   grunt.registerTask "build", [
     # "clean", "jade", "less", "copy", "html2js", "index", "concat"
-    "clean", "jade", "less", "bowerful", "copy", "index", "concat"
+    "clean", "jade", "less:dist", "bowerful", "copy", "index", "concat"
+  ]
+
+  # Build components
+  grunt.registerTask "deps", [
+    "bowerful", "copy:bootstrap", "less:bootstrap"
   ]
 
   # Production
@@ -510,10 +533,12 @@ module.exports = (grunt) ->
     "jade:production"
     "ngtemplates:production"
     "ngtemplates:production_jade"
-    "less"
+    "less:dist"
     # "bowerful"
     "copy:assets"
     "copy:sprites"
+    "copy:bootstrap"
+    "less:bootstrap"
     "copy:conponents_min"
     "concat:conponents_min"
     # "concat:conponents"

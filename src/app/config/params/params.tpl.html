@@ -1,88 +1,9 @@
-<h4><navtool></navtool> Информация о трекере</h4>
+<h4><navtool></navtool> Детальная конфигурация</h4>
 
 <div class="scrollable">
 
 
 <!--div class="span4"-->
-
-<div class="row">
-    <div class="well well-small span4 col-lg-4">
-        <h4>Информация о трекере</h4>
-
-        <dl class="dl-horizontal">
-            <dt>Модель</dt><dd>MT-400</dd>
-            <dt>IMEI</dt><dd><input class="clone" value="{{ system.imei }}"/></dd>
-            <dt>Телефон SIM-карты</dt><dd><input class="clone" value="{{ system.phone || '?'}}"/></dd>
-            <dt>Зарегестрирован</dt><dd><datetime seconds="false" datetime="{{ system.date }}"></datetime></dd>
-            <dt>Версия ПО</dt><dd>{{ system.swid || '?' }}<!--i class="icon-question-sign cmd" title="Проверить доступность обновления"></i--></dd>
-            <dt>Расширеный режим</dt><dd><input type="checkbox" class="btn btn-primary" ng-model="system.params.notranslate" ng-change="system.$patch('params')" title="Старый сайт не будет получать данные."></dd>
-        </dl>
-
-        <!--button class="btn btn-small" ng-click="new()">Добавить произвольное поле</button-->
-    </div>
-
-    <div class="well well-small span4 col-lg-4">
-        <h4>Сведения о состоянии</h4>
-
-        <dl class="dl-horizontal">
-            <dt>Выход на связь</dt><dd><datetime datetime="{{ system.dynamic.lastping }}"></datetime></dd>
-            <dt>Текущее состояние</dt><dd>{{ system.dynamic.speed | number:1 }} км/ч</dd>
-            <dt>Число спутников</dt><dd>{{ system.dynamic.sats || '?'}}</dd>
-            <dt>Уровень GSM</dt><dd>{{ system.dynamic.csq * 100 / 32 | number:0}}%</dd>
-            <dt>Уровень GPS</dt><dd>{{ system.dynamic.sats * 100 / 12 | number:0}}%</dd>
-            <dt>Основное питание</dt><dd>{{ system.dynamic.vout }} В</dd>
-            <dt>Резервное питание</dt><dd>{{ system.dynamic.vin | vin }}</dd>
-            <dt>Координаты</dt><dd><input class="clone" value="{{ system.dynamic.latitude | number:4 }}, {{ system.dynamic.longitude | number:4}}"/></dd>
-            <dt>Дата метки</dt><dd><datetime datetime="{{ system.dynamic.dt }}"></datetime></dd>
-            <dt>Высота над ур.моря</dt><dd>? м</dd>
-            <dt>Температура</dt><dd>? &deg;С</dd>
-            <dt>Корпус</dt><dd>?</dd>
-            <dt>Вход 1</dt><dd>?</dd>
-            <dt>Вход 2</dt><dd>?</dd>
-            <dt>Вход 3</dt><dd>?</dd>
-            <dt>Выход 1</dt><dd>?</dd>
-            <dt>Выход 2</dt><dd>?</dd>
-            <dt ng-show="system.car.hasFuelSensor">
-                Уровень топлива</dt><dd ng-show="system.car.hasFuelSensor">{{ system.dynamic.fuel | number:1 }} л
-                <a href="#/config/{{skey}}/params/fuel"><i class="icon-wrench"></i></a>
-            </dd>
-        </dl>
-            <a class="btn btn-primary" title="Нажмите чтобы посмотреть события трекера" href="#/logs/{{skey}}"><i class="icon-eye-open"></i> События</a>
-            <a class="btn btn-primary" title="Нажмите чтобы посмотреть подробности GPS" href="#/gps/{{skey}}"><i class="icon-film"></i> Экспорт GPS</a>
-
-        <!--button class="btn btn-small" ng-click="update()">Обновить</button-->
-    </div>
-
-    <div class="well well-small span4 col-lg-4">
-        <h4>Информация о транспортном средстве</h4>
-
-        <dl class="dl-horizontal">
-            <dt>Значек</dt><dd><a class="caricon" ng-click="changeIcon()"><i class="{{ system.icon || 'caricon-truck'}} icon-large"></i></a></dd>
-            <dt>Ярлыки</dt>
-            <dd class="tags">
-                <span class="tag label label-default" ng-repeat="(key, value) in system.tags">{{value}}
-                    <i class="icon-minus-sign" title="Убрать" ng-click="removeTag(key)"></i>
-                </span>
-                <i class="icon-plus-sign" title="Добавить" ng-click="addTag()"></i>
-            </dd>
-            <dt>Наименование ТС</dt><dd contenteditable="true" ng-model="system.title" ng-change="system.$patch('title')"></dd>
-            <dt>Гос номер</dt><dd contenteditable="true" ng-model="system.car.number" ng-change="system.$patch('car')"></dd>
-            <dt>Год выпуска</dt><dd contenteditable="true" ng-model="system.car.year" ng-change="system.$patch('car')"></dd>
-            <dt>№ двигателя</dt><dd contenteditable="true" ng-model="system.car.engine" ng-change="system.$patch('car')"></dd>
-            <dt>№ кузова</dt><dd contenteditable="true" ng-model="system.car.vin" ng-change="system.$patch('car')"></dd>
-            <dt>№ страхового полиса</dt><dd contenteditable="true" ng-model="system.car.insurance" ng-change="system.$patch('car')"></dd>
-            <dt translate>Has a fuel sensor</dt><dd><input type="checkbox" class="btn btn-primary" ng-model="system.car.hasFuelSensor" ng-change="system.$patch('car')"></dd>
-            <dt>Стоянка, минут</dt><dd contenteditable="true" ng-model="system.car.stop" ng-change="system.$patch('car')"></dd>
-        </dl>
-
-        <!-- <a class="btn btn-primary" href="#drivers">Водители</a> -->
-        <a class="btn btn-primary" href="#/config/{{skey}}/params/fuel"  ng-show="system.car.hasFuelSensor">Расход топлива</a>
-        <!-- <a class="btn btn-primary" href="#tags">Ярлыки</a> -->
-        <!-- <a class="btn btn-primary" href="#zones">Привязка к зонам</a> -->
-
-    </div>
-
-</div>
 
 <div class="well well-small">
     <h4>Программирование параметров системы</h4>
