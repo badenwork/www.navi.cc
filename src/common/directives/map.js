@@ -232,25 +232,43 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             var lastmarker = new LastMarker(map);
 
-            scope.$watch('systems', function(systems) {
-                if (!systems) return;
+            var updateLastMarkers = function(){
+                if (!scope.systems) return;
                 var lastpos = [];
-                angular.forEach(systems, function(sys) {
+                angular.forEach(scope.systems, function(sys) {
                     if (sys.dynamic && sys.dynamic.latitude) {
                         var off = scope.account.account.off;
                         if (!off.hasOwnProperty(sys.id)) {
+                            var hidden = false;
+
+                            if(scope.sfilter){  // Назначен фильтр
+                                if(!sys.tags) hidden = true;   // Ярлыки не назначены вовсе
+                                else if(sys.tags.length === 0) hidden = true;   // Ярлыки не назначены вовсе
+                                else if(sys.tags.indexOf(scope.sfilter.filter) === -1) hidden = true;   // Ятрыка в списке нет
+                            }
+                            // console.log('sys=', sys, scope.sfilter);
                             lastpos.push({
                                 key: sys.id,
                                 title: sys.title,
                                 icon: sys.icon,
                                 dynamic: sys.dynamic,
+                                hidden: hidden,
                                 hasFuelSensor: sys.car.hasFuelSensor
                             });
                         }
                     }
                 });
                 lastmarker.setData(lastpos);
+            };
+
+            scope.$watch('systems', function() {
+                updateLastMarkers();
             }, true);
+
+
+            scope.$watch('sfilter', function(){
+                updateLastMarkers();
+            });
         };
 
         return {
@@ -261,7 +279,8 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 config:  '=',
                 center:  '=',
                 account: '=',
-                systems: '='
+                systems: '=',
+                sfilter: '=sfilter'
             },
             link: link
         };

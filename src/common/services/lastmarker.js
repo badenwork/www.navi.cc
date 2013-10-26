@@ -177,7 +177,7 @@ angular.module('services.lastmarker', ['newgps.services'])
             points
                 .attr('style', function(d) {
                     var px = overlayProjection.fromLatLngToDivPixel(new google.maps.LatLng(d.dynamic.latitude, d.dynamic.longitude));
-                    return 'left: ' + (px.x) + 'px; top: ' + (px.y) + 'px';
+                    return 'left: ' + (px.x) + 'px; top: ' + (px.y) + 'px' + (d.hidden?';display: none':'');
                 })
                 .select('svg g path')
                 .attr('transform', function(d) {
