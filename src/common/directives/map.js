@@ -275,6 +275,39 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             scope.$watch('sfilter', function(){
                 updateLastMarkers();
             });
+
+
+            // '<div class="map-search">'
+            //     '<div class="input-group">'
+            //         '<span class="input-group-addon"><i class="icon-search icon-large"></i></span>'
+            //         '<input type="text" class="form-control" google-maps-search="bounds">'
+            //     '</div>'
+            // '</div>'
+            var searchpanel = d3.select(element[0]).append('div')
+                .attr('class', 'map-search').append('div')
+                    .attr('class', 'input-group');
+
+            searchpanel.append('span')
+                .attr('class', 'input-group-addon').append('i')
+                    .attr('class', 'icon-search icon-large');
+
+            var input = searchpanel.append('input')
+                .attr('type', 'text')
+                .attr('class', 'form-control');
+
+            var autocomplete = new google.maps.places.Autocomplete(input[0][0]);
+            google.maps.event.addListener(autocomplete, 'place_changed', function() {
+                var place = autocomplete.getPlace();
+                if (!place.geometry) return;
+
+                if (place.geometry.viewport) {
+                    map.fitBounds(place.geometry.viewport);
+
+                } else {
+                    map.setCenter(place.geometry.location);
+                    map.setZoom(17);  // Why 17? Because it looks good.
+                }
+            });
         };
 
         return {
