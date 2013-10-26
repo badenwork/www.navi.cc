@@ -149,7 +149,6 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
         };
 
         $scope.hideTrack = function(){
-            console.log('track', angular.copy($scope.track))
             $scope.track.track = [];
             $scope.track.points = [];
             $scope.track.ranges = [];
@@ -159,7 +158,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             var params = angular.copy($routeParams);
             if(params.hasOwnProperty('day')) delete params.day;
             $location.search(params);
-        }
+        };
 
         // $scope.hideTrack = false;
         // $scope.track_hide = null;
