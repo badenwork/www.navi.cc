@@ -90,17 +90,18 @@ angular.module('directives.timeline', [])
                 chart.append('rect') // Невидимый объект, чтобы получать события мыши и тача
                 .attr('style', 'opacity: 0')
                     .attr('class', 'overlay')
+                    // .attr('class', 'chart')
                     .attr('width', width)
                     .attr('height', height);
 
                 // svg.
-                // var axis = chart.append('g')
-                //     .attr('class', 'x axis')
-                //     .attr('transform', 'translate(0,1)')
-                //     .call(xAxis);
+                var axis = chart.append('g')
+                    .attr('class', 'x axis')
+                    .attr('transform', 'translate(0,1)')
+                    .call(xAxis);
 
-                // var graph = chart.append('g')
-                //     .attr('class', 'chart');
+                var graph = chart.append('g')
+                    .attr('class', 'chart');
 
                 // Данные
                 var intervals = svg.select('.chart').selectAll('.interval')
@@ -142,6 +143,7 @@ angular.module('directives.timeline', [])
             var scaledelta = Math.pow(2, 120 * 0.002);
 
             element.find('#plusButton').on('click', function() {
+                if(!data || (data.length === 0)) return;
                 var tx = zoom.translate()[0];
                 var scale = zoom.scale();
                 var newscale = scale * scaledelta;
@@ -151,6 +153,7 @@ angular.module('directives.timeline', [])
             });
 
             element.find('#minusButton').on('click', function() {
+                if(!data || (data.length === 0)) return;
                 var tx = zoom.translate()[0];
                 var scale = zoom.scale();
                 var newscale = Math.max(1.0, zoom.scale() / scaledelta);

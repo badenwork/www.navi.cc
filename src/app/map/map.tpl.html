@@ -7,7 +7,9 @@
     </div>
 </div>
 
-<div class="map-timeline" id="timeline" data="timeline" timeline on-hover="onTimelineHover" on-click="onTimelineClick"></div>
+<div class="map-timeline" ng-class="{true: 'disabled'}[points==0]" data-points="{{points}}">
+    <div id="timeline" data="timeline" timeline on-hover="onTimelineHover" on-click="onTimelineClick"></div>
+</div>
 
 <div class="map-toolbar">
     <a title="Пользователь" href="#/"><i class="icon-user icon-large"></i> {{account.account.title}}</a>

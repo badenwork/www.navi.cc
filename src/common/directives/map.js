@@ -182,6 +182,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     scope.infowindow.open(map);
                 });
 
+    console.log('data=', angular.copy(data));
                 if (data.select) {
                     var start = data.select.start_index;
                     var stop = data.select.stop_index;
@@ -226,7 +227,12 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     path = null;
                     eventmarker.setData([]);
                 }
-                if ((data === null) || (data.points.length === 0)) return;
+                if ((data === null) || (data.points.length === 0)) {
+                    if (select) {
+                        select.setPath([]);
+                    }
+                    return;
+                }
                 showTrack(data);
             }, true);
 

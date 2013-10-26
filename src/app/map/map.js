@@ -51,6 +51,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
         $scope.skey = $routeParams.skey;
         $scope.day = $routeParams.day || 0;
         $scope.track = null;
+        $scope.points = 0;
 
         var dp = $('#datepicker').datepicker({
             language: i18n.shortLang(),
@@ -148,14 +149,15 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
         };
 
         $scope.hideTrack = function(){
-            $scope.track = null;
+            console.log('track', angular.copy($scope.track))
+            $scope.track.track = [];
+            $scope.track.points = [];
+            $scope.track.ranges = [];
             $scope.points = 0;
             $scope.timeline = [];
+            if($scope.track.select) delete $scope.track.select;
             var params = angular.copy($routeParams);
             if(params.hasOwnProperty('day')) delete params.day;
-            // angular.extend(params, {
-            //     day: day
-            // });
             $location.search(params);
         }
 
