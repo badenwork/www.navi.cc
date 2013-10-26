@@ -1,19 +1,16 @@
 <h4><navtool></navtool> Детальная конфигурация</h4>
-
-<div class="scrollable">
-
-
+<!-- <div class="scrollable"> -->
 <!--div class="span4"-->
 
-<div class="well well-small">
-    <h4>Программирование параметров системы</h4>
+<div class="container">
+    <h4>Программирование параметров системы {{ system.title }}</h4>
     <!-- a href="/#/config/{{skey}}/params/master" class="btn btn-primary"><i class="icon-magic icon-large"></i> Мастер настройки</a-->
 
     <div ng-hide="params.$isEmpty(params.data)">
         <table class="table table-bordered table-condensed table-striped table-hover">
             <thead>
             <tr>
-                <th><i class="icon-filter cmd" data-tooltip="1" rel="tooltip" bs-tooltip="tooltip.title" ng-click="showall =! showall"></i>Имя</th>
+                <th><i class="icon-filter cmd" data-tooltip="1" rel="tooltip" bs-tooltip="tooltip.title" ng-click="onFilter()"></i>Имя</th>
                 <th>Описание</th>
                 <!-- <th>Тип</th> -->
                 <th>Значение</th>
@@ -26,7 +23,7 @@
             <!-- <tr ng-repeat="(k, p) in params.value | filter:isFiltered"> -->
 
             <!-- <tr ng-repeat="(k, p) in filtered(params.data)"> -->
-            <tr ng-repeat="(k, p) in params.data">
+            <tr ng-repeat="(k, p) in params.data | isFiltered:filtered">
                 <td>{{k}}</td>
                 <td>{{extend(k).desc}}</td>
                 <!-- <td>{{p.type}}</td> -->
@@ -129,4 +126,4 @@
     </div>
 
 
-</div>
+<!-- </div> -->

@@ -8,6 +8,8 @@ angular.module('resources.system', ['services.connect'])
 
         var Systems = new REST('system');
 
+        // Models.prototype.$add
+
         // Построим формулу преобразования значения АЦП в объем топлива
         // В цепи измерения делитель: 22k/10k
         // В перспективе значение должно быть привязано к hwid
@@ -46,10 +48,28 @@ angular.module('resources.system', ['services.connect'])
             }
         };
 
+        var removeSysErrors = function(sys) {
+            if (sys.dynamic) {
+                switch (sys.dynamic.fsource) {
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 7:
+                        sys.dynamic.speed = 0;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (sys.car && angular.isUndefined(sys.car.hasFuelSensor))
+                sys.car.hasFuelSensor = false;
+        };
+
         Systems.$update = function() {
             if (this.dynamic && this.dynamic.fuel) {
                 this.dynamic.fuel = fuel(this.params.fuel, this.dynamic.fuel);
             }
+            removeSysErrors(this);
         };
 
         return Systems;

@@ -409,11 +409,15 @@
                 return params_descs[key];
             };
 
-            $scope.isFiltered = function(item) {
-                if (!$scope.filtered) {
-                    return true;
-                }
-                return item.filter;
+            // $scope.isFiltered = function(item) {
+            //     if (!$scope.filtered) {
+            //         return true;
+            //     }
+            //     return item.filter;
+            // };
+
+            $scope.onFilter = function(){
+                $scope.filtered = !$scope.filtered;
             };
 
             $scope.cancelqueue = function(k) {
@@ -430,15 +434,15 @@
                 return System.$fuel(system, system.dynamic.fuel);
             };
 
-            $scope.filtered = function(items) {
-                var result = {};
-                angular.forEach(items, function(value, key) {
-                    if ($scope.showall || value.hasOwnProperty('primary')) {
-                        result[key] = value;
-                    }
-                });
-                return result;
-            };
+            // $scope.filtered = function(items) {
+            //     var result = {};
+            //     angular.forEach(items, function(value, key) {
+            //         if ($scope.showall || value.hasOwnProperty('primary')) {
+            //             result[key] = value;
+            //         }
+            //     });
+            //     return result;
+            // };
 
             $scope.param = {
                 key: null,
@@ -473,16 +477,16 @@
     ])
 
     .filter('isFiltered', function() {
-        return function(value, status) {
+        return function(invalue, status) {
             if (!status) {
-                return value;
+                return invalue;
             }
-            var out = [];
-            for (var i = 0; i < value.length; i++) {
-                if (value[i].filter) {
-                    out.push(value[i]);
+            var out = {};
+            angular.forEach(invalue, function(value, key) {
+                if (params_descs[key] && params_descs[key].primary) {
+                    out[key] = value;
                 }
-            }
+            });
             return out;
         };
     });
