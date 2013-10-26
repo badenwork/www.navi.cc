@@ -147,26 +147,38 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             }
         };
 
-        $scope.hideTrack = false;
-        $scope.track_hide = null;
-        $scope.timeLine_hide = [];
-        $scope.revertVisibleTrack = function() {
-            if ($scope.hideTrack) {
-                $scope.track = $scope.track_hide;
-                $scope.timeline = $scope.timeLine_hide;
-                $scope.track_hide = null;
-                $scope.timeLine_hide = [];
-                $scope.hideTrack = false;
+        $scope.hideTrack = function(){
+            $scope.track = null;
+            $scope.points = 0;
+            $scope.timeline = [];
+            var params = angular.copy($routeParams);
+            if(params.hasOwnProperty('day')) delete params.day;
+            // angular.extend(params, {
+            //     day: day
+            // });
+            $location.search(params);
+        }
 
-            } else {
-                $scope.track_hide = $scope.track;
-                $scope.timeLine_hide = $scope.timeline;
-                $scope.track = null;
-                $scope.timeline = [];
-                $scope.hideTrack = true;
-            }
+        // $scope.hideTrack = false;
+        // $scope.track_hide = null;
+        // $scope.timeLine_hide = [];
+        // $scope.revertVisibleTrack = function() {
+        //     if ($scope.hideTrack) {
+        //         $scope.track = $scope.track_hide;
+        //         $scope.timeline = $scope.timeLine_hide;
+        //         $scope.track_hide = null;
+        //         $scope.timeLine_hide = [];
+        //         $scope.hideTrack = false;
 
-        };
+        //     } else {
+        //         $scope.track_hide = $scope.track;
+        //         $scope.timeLine_hide = $scope.timeline;
+        //         $scope.track = null;
+        //         $scope.timeline = [];
+        //         $scope.hideTrack = true;
+        //     }
+
+        // };
 
         $scope.onTimelineHover = function() {};
 
