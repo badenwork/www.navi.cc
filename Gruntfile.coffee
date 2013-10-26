@@ -23,6 +23,24 @@ module.exports = (grunt) ->
       less: ['src/less/main.less']  # recess:build doesn't accept ** in its file patterns
 
     ngtemplates:
+      components:
+        cwd:    'components/angular-ui-bootstrap'
+        src:    ["template/datepicker/*.html"]
+        dest:   'temp/templates-components.js'
+        options:
+          module: 'app'
+          prefix: ''
+          # url:    (url) -> return 'templates/' + url  # .replace '.tpl.html', '.html'
+          htmlmin:
+            collapseBooleanAttributes:      false
+            collapseWhitespace:             true
+            removeAttributeQuotes:          false
+            removeComments:                 true # Only if you don't use comment directives!
+            removeEmptyAttributes:          false
+            removeRedundantAttributes:      false
+            removeScriptTypeAttributes:     false
+            removeStyleLinkTypeAttributes:  false
+
       production:
         cwd:    'src/app'
         src:    ["**/*.tpl.html"]
@@ -266,6 +284,7 @@ module.exports = (grunt) ->
           'src/app/**/*.js'
           'temp/templates.js'
           'temp/templates-jade.js'
+          # 'temp/templates-components.js'    # Некрасивый :(
         ],
         dest:'<%= distdir %>/js/<%= pkg.name %>.js'
 
@@ -292,6 +311,8 @@ module.exports = (grunt) ->
             'components/angular-translate/angular-translate.min.js',
             'components/angular-ui-sortable/src/sortable.js',
             'components/angular-ui-bootstrap/src/buttons/buttons.js',
+            'components/angular-ui-bootstrap/src/position/position.js',     # Необходим для ui-datepicker
+            'components/angular-ui-bootstrap/src/datepicker/datepicker.js',
             'components/angular-ui-select2/src/select2.js',
             'components/angular-bindonce/bindonce.js',
             'components/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
@@ -311,7 +332,7 @@ module.exports = (grunt) ->
           dest: '<%= distdir %>/css/components.css'
         ]
 
-      conponents_min:
+      conponents_min:             # Minified versions
         files: [
           src: [
             'components/xlsx.js/xlsx.js',
@@ -334,6 +355,8 @@ module.exports = (grunt) ->
             'components/angular-translate/angular-translate.min.js',
             'components/angular-ui-sortable/src/sortable.js',
             'components/angular-ui-bootstrap/src/buttons/buttons.js',
+            'components/angular-ui-bootstrap/src/position/position.js',     # Необходим для ui-datepicker
+            'components/angular-ui-bootstrap/src/datepicker/datepicker.js',
             'components/angular-ui-select2/src/select2.js',
             'components/angular-bindonce/bindonce.js',
             'components/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
@@ -531,6 +554,7 @@ module.exports = (grunt) ->
     "clean"
     "jshint"
     "jade:production"
+    "ngtemplates:components"
     "ngtemplates:production"
     "ngtemplates:production_jade"
     "less:dist"

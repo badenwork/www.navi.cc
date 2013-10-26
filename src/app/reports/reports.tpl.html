@@ -30,7 +30,7 @@
           <td ng-show="report.hasFuelSensor">{{item.fuel}}</td>
           <td>{{item.duration}}</td>
           <td>{{item.speed}}</td>
-          <td>{{item.distance}}</td>      
+          <td>{{item.distance}}</td>
         </tr>
         </tbody>
       </table>
@@ -49,7 +49,7 @@
         </thead>
         <tbody ng-repeat="items in report.reportData.days | orderBy:-date.getTime()">
         <tr >
-          <td colspan = 8 ng-show="items.events.length>0">{{items.strFormatted}}</td>	  
+          <td colspan = 8 ng-show="items.events.length>0">{{items.strFormatted}}</td>
         </tr>
         <tr ng-repeat="item in items.events | orderBy: dt">
           <td>{{item.event}}</td>
@@ -61,7 +61,7 @@
           <td ng-show="report.hasFuelSensor">{{item.fuel}}</td>
           <td>{{item.duration}}</td>
           <td>{{item.speed}}</td>
-          <td>{{item.distance}}</td>      
+          <td>{{item.distance}}</td>
         </tr>
         </tbody>
       </table>
@@ -81,9 +81,9 @@
           <tr ng-show="report.hasFuelSensor"><td>Расход топлива</td><td>{{report.reportData.summary.fuel}}</td></tr>
         </tbody>
       </table>
-      
+
     </div>
-    
+
     <div id="downloadLink">
      <a href="" ng-click="refreshLink()" download="{{report.title+'.xlsx'}}">Загрузить отчет</a>
     </div>
@@ -99,14 +99,14 @@
 	            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 	            <h3>Настройки отчёта</h3>
 	        </div>
-	          <div class="modal-body">
-	          <div class="name-select-group">
-			    <label>Система:</label>
-			    <select class="" ng-model="report.systemKey" ng-options="key as systems[key].title for key in  account.account.skeys"></select>
-			  </div>
+            <div class="modal-body">
+                <div class="name-select-group">
+  			       <label>Система:</label>
+  			       <select class="form-control" ng-model="report.systemKey" ng-options="key as systems[key].title for key in  account.account.skeys"></select>
+                </div>
 			    <div class="name-select-group">
-			      <label>Шаблон отчёта:</label>
-			      <select class="" ng-model="report.templateId" ng-options="value.id as value.name for (key, value) in templates"></select>
+                    <label>Шаблон отчёта:</label>
+                    <select class="form-control" ng-model="report.templateId" ng-options="value.id as value.name for (key, value) in templates"></select>
 			    </div>
 			    <br>
 			    <div class="btn-group">
@@ -117,18 +117,21 @@
 			      <div>
 			        <label ng-show="report.interval.radio.value == 'perInterval'">Начало:</label>
 			        <div class="control-group input-append">
-			          <input type="text" ng-model="report.interval.start" data-date-format="d/m/yyyy" bs-datepicker>
+			          <input class="form-control" type="text" ng-model="report.interval.start" data-date-format="d/m/yyyy" bs-datepicker>
+
+
+
 			          <!--<button type="button" class="btn" data-toggle="report.interval.start"><i class="icon-calendar"></i></button>-->
 			        </div>
 			      </div>
 			      <div ng-show="report.interval.radio.value == 'perInterval'">
 			        <label>Конец:</label>
 			        <div class="control-group input-append">
-			          <input type="text" ng-model="report.interval.end" data-date-format="d/m/yyyy" bs-datepicker>
+			          <input class="form-control" type="text" ng-model="report.interval.end" data-date-format="d/m/yyyy" bs-datepicker>
 			          <!--<button type="button" class="btn" data-toggle="report.interval.end"><i class="icon-calendar"></i></button>-->
 			        </div>
 			      </div>
-			    </div> 
+			    </div>
 			</div>
 	      <div class="modal-footer">
 	        <button class="btn"  data-dismiss="modal">Отмена</button>
