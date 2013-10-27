@@ -1,4 +1,7 @@
-<div gmap="main" track="track" account="account" systems="systems" config="mapconfig" center="center" sfilter="sfilter"></div>
+<div class="map-main">
+    <gmap track="track" account="account" systems="systems" config="mapconfig" center="center" sfilter="sfilter" on-hide="onHide()"></gmap>
+</div>
+
 <div class="map-control">
     <mapsyslist skey="skey" account="account" systems="systems" zoom="{{zoomlist}}" select="onSelect" sfilter="sfilter"></mapsyslist>
 
@@ -9,20 +12,5 @@
 
 <div class="map-timeline" ng-class="{true: 'disabled'}[points==0]" data-points="{{points}}">
     <div id="timeline" data="timeline" timeline on-hover="onTimelineHover" on-click="onTimelineClick"></div>
-</div>
-
-<div class="map-toolbar">
-    <a title="Пользователь" href="#/"><i class="icon-user icon-large"></i> {{account.account.title}}</a>
-    <a title="{{'Display Settings' | translate}}" ng-click="showconfig = !showconfig"><i class="icon-wrench icon-large"></i></a>
-    <div class="map-toolbar-config" ng-show="showconfig">
-        <ul class="unstyled">
-            <li config-map-item item="mapconfig.autobounds" icon-off="unlock" icon-on="lock">{{ 'AUTO_BOUND_TRACK' | translate }}</li>
-            <li config-map-item item="mapconfig.animation" icon-off="truck" icon-on="truck">{{ 'ANIMATION_DIR' | translate}}</li>
-            <li config-map-item item="mapconfig.numbers" icon-off="map-marker" icon-on="map-marker">{{ 'STOP_NUMBERS' | translate}}</li>
-        </ul>
-    </div>
-    <a onclick="document.documentElement.webkitRequestFullScreen()" title="На весь экран"><i class="icon-fullscreen icon-large"></i></a>
-    <button ng-click="hideTrack()" class="btn" translate>Hide track</button>
-    <!-- {{'points_in_track' | translate:{value: points} }} -->
 </div>
 

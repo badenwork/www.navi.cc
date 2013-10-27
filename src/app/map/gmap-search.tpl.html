@@ -1,0 +1,28 @@
+<div class="map-search">
+    <div class="input-group search">
+        <span class="input-group-addon" title="Поиск" ng-click="onSearch()"><i class="icon-search icon-large"></i></span>
+        <input type="text" class="form-control">
+        <span class="input-group-addon" title="Проложить маршрут" ng-click="onRoute()"><i class="icon-reply-all icon-large"></i></span>
+    </div>
+    <div class="route" ng-show="showroute">
+        <div class="input-group">
+            <label class="form-control">Прокладка маршрута</label>
+            <span class="input-group-addon" title="Проложить маршрут" ng-click="onRoute()"><i class="icon-reply-all icon-large"></i></span>
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" title="Начальная точка" ng-click="onStart()"><i class="icon-star-empty icon-large"></i></span>
+            <input type="text" class="form-control">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" title="Конечная точка" ng-click="onFinish()"><i class="icon-star icon-large"></i></span>
+            <input type="text" class="form-control">
+        </div>
+        <i class="ellipsis icon-ellipsis-vertical icon-large"></i>
+        <div class="info">
+            <div class="row">
+                <div class="col-md-6">Расстояние: <strong>{{ distance }}</strong></div>
+                <div class="col-md-6">Время в пути: <strong>{{ duration }}</strong></div>
+            </div>
+        </div>
+    </div>
+</div>

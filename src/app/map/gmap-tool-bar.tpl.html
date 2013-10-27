@@ -1,0 +1,15 @@
+<div class="map-toolbar">
+    <a title="Пользователь" href="#/"><i class="icon-user icon-large"></i> {{account.account.title}}</a>
+    <a title="{{'Display Settings' | translate}}" ng-click="showconfig = !showconfig"><i class="icon-wrench icon-large"></i></a>
+    <div class="map-toolbar-config" ng-show="showconfig">
+        <ul class="list-unstyled">
+            <li config-map-item item="config.autobounds" icon-off="unlock" icon-on="lock">{{ 'AUTO_BOUND_TRACK' | translate }}</li>
+            <li config-map-item item="config.animation" icon-off="truck" icon-on="truck">{{ 'ANIMATION_DIR' | translate}}</li>
+            <li config-map-item item="config.numbers" icon-off="map-marker" icon-on="map-marker">{{ 'STOP_NUMBERS' | translate}}</li>
+        </ul>
+    </div>
+    <a onclick="document.documentElement.webkitRequestFullScreen()" title="На весь экран"><i class="icon-fullscreen icon-large"></i></a>
+    <button ng-click="hideTrack()" class="btn" translate>Hide track</button>
+    <!-- {{'points_in_track' | translate:{value: points} }} -->
+</div>
+

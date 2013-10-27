@@ -1,4 +1,4 @@
-/* global angular:true, window:true, google:true, moment:true */
+/* global angular:true, window:true, google:true, moment:true, $:true, console:true */
 
 // Enable the visual refresh
 if (google && google.maps) {
@@ -39,7 +39,12 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 mapTypeId: prev_config.typeId,
                 zoom: prev_config.zoom
             };
-            var map = new google.maps.Map(element[0], myOptions);
+            var map_element = element.find('.gmap-container');
+            // console.log('map_element=', map_element);
+            var map = new google.maps.Map(map_element[0], myOptions);
+            // console.log('scope=', scope);
+            // scope.gmap(map);
+            scope.map = map;
 
             var saveMapState = function() {
                 window.localStorage.setItem('map.config', JSON.stringify({
@@ -182,7 +187,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     scope.infowindow.open(map);
                 });
 
-    console.log('data=', angular.copy(data));
+    // console.log('data=', angular.copy(data));
                 if (data.select) {
                     var start = data.select.start_index;
                     var stop = data.select.stop_index;
@@ -276,6 +281,19 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 updateLastMarkers();
             });
 
+            scope.hideTrack = function(){
+                console.log('gmap:hideTrack');
+                scope.track.track = [];
+                scope.track.points = [];
+                scope.track.ranges = [];
+
+                scope.onHide();
+
+                // $scope.track.track = [];
+                // $scope.track.points = [];
+                // $scope.track.ranges = [];
+            };
+
 
             // '<div class="map-search">'
             //     '<div class="input-group">'
@@ -283,46 +301,334 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             //         '<input type="text" class="form-control" google-maps-search="bounds">'
             //     '</div>'
             // '</div>'
-            var searchpanel = d3.select(element[0]).append('div')
-                .attr('class', 'map-search').append('div')
-                    .attr('class', 'input-group');
 
-            searchpanel.append('span')
-                .attr('class', 'input-group-addon').append('i')
-                    .attr('class', 'icon-search icon-large');
-
-            var input = searchpanel.append('input')
-                .attr('type', 'text')
-                .attr('class', 'form-control');
-
-            var autocomplete = new google.maps.places.Autocomplete(input[0][0]);
-            google.maps.event.addListener(autocomplete, 'place_changed', function() {
-                var place = autocomplete.getPlace();
-                if (!place.geometry) return;
-
-                if (place.geometry.viewport) {
-                    map.fitBounds(place.geometry.viewport);
-
-                } else {
-                    map.setCenter(place.geometry.location);
-                    map.setZoom(17);  // Why 17? Because it looks good.
-                }
-            });
         };
 
         return {
-            restrict: 'A',
+            restrict: 'E',
             transclude: false,
+            template:
+                '<div class="gmap">'+
+                    '<div class="gmap-container"></div>'+
+                    '<gmap-search map="map"></gmap-search>'+
+                    '<gmap-tool-bar map="map" config="config" on-hide="hideTrack()"></gmap-tool-bar>'+
+                '</div>',
+            replace: true,
             scope: {
                 track:   '=',
                 config:  '=',
                 center:  '=',
                 account: '=',
                 systems: '=',
+                onHide: '&',
                 sfilter: '=sfilter'
             },
             link: link
         };
     }
-]);
+])
 
+.directive('gmapToolBar', [
+    function() {
+        'use strict';
+
+        var link = function(scope) {
+            console.log('gmapToolBar:link', scope);
+
+            scope.showconfig = false;
+
+            scope.$watch('config.numbers', function() {
+                if (scope.config.numbers) {
+                    $('.eventmarker .track.STOP .eventmarker-nonumber').attr('style', '');
+                    $('.eventmarker .track.STOP .eventmarker-number').attr('style', 'display: initial');
+                } else {
+                    $('.eventmarker .track.STOP .eventmarker-nonumber').attr('style', 'display: initial');
+                    $('.eventmarker .track.STOP .eventmarker-number').attr('style', 'display: none');
+                }
+            });
+
+            scope.hideTrack = function(){
+                console.log('hideTrack');
+                scope.onHide();
+            };
+
+        };
+        return {
+            restrict: 'E',
+            // require: '^gmap',
+            templateUrl: 'templates/map/gmap-tool-bar.tpl.html',
+            replace: true,
+            scope: {
+                map: '=',
+                config: '=',
+                onHide: '&'
+            },
+            link: link
+        };
+    }
+])
+
+.directive('gmapSearch', [
+    function() {
+        'use strict';
+
+        var link = function(scope, element) {
+            // console.log('gmapSearch:link', scope, element);
+
+            var inputs = element.find('input');
+
+            var autocomplete = new google.maps.places.Autocomplete(inputs[0]);
+            google.maps.event.addListener(autocomplete, 'place_changed', function() {
+                var place = autocomplete.getPlace();
+                if (!place.geometry) return;
+
+                if (place.geometry.viewport) {
+                    scope.map.fitBounds(place.geometry.viewport);
+
+                } else {
+                    scope.map.setCenter(place.geometry.location);
+                    scope.map.setZoom(17);  // Why 17? Because it looks good.
+                }
+            });
+
+
+            var geocoder = new google.maps.Geocoder();
+            var input_from = inputs[1];
+            var route_from = null,
+                route_to = null;
+
+            // null;
+            var directionsDisplay = new google.maps.DirectionsRenderer({
+                'map': scope.map,
+                //'preserveViewport': true,
+                'hideRouteList': true,
+                'draggable': true
+                //'suppressMarkers': true
+                //'panel': dir_panel.querySelector('#directions_panel')
+                //'markerOptions': {icon: }
+            });
+
+            var currentDirections = null;
+            scope.distance = '';
+            scope.duration = '';
+
+            google.maps.event.addListener(directionsDisplay, 'directions_changed', function(){
+                console.log('directions_changed');
+                currentDirections = directionsDisplay.getDirections();
+                if(currentDirections.routes.length>1){
+                    console.log('Предлагается более одного маршрута');
+                }
+                var leg = currentDirections.routes[0].legs[0];
+                // for(var i=0, l=leg.via_waypoint.length+2-points.length; i<l; i++){
+                //     add_way_point('');
+                // }
+                console.log('currentDirections=', currentDirections, leg);
+
+                // points[0].point_div.querySelector('input').value = leg.start_address;
+                // //if(points[0].marker) points[0].marker.setPosition(leg.start_location);
+                // setMarker(points[0], leg.start_location);
+
+                // points[points.length-1].point_div.querySelector('input').value = leg.end_address;
+                // //if(points[points.length-1].marker) points[points.length-1].marker.setPosition(leg.end_location);
+                // setMarker(points[points.length-1], leg.end_location);
+
+                // for(var i=0, l=leg.via_waypoints.length; i<l; i++){
+                //     points[i+1].point_div.querySelector('input').value = leg.via_waypoints[i].toString();  Требуется определение адреса
+
+                //     //if(points[i+1].marker) points[i+1].marker.setPosition(leg.via_waypoint[i].location);
+                //     setMarker(points[i+1], leg.via_waypoints[i]);
+                // }
+
+                scope.$apply(function(){
+                    scope.distance = currentDirections.routes[0].legs[0].distance.text;
+                    scope.duration = currentDirections.routes[0].legs[0].duration.text;
+                });
+            });
+
+            var directionsService = new google.maps.DirectionsService();
+            // console.log('directionsService=', directionsService);
+            var route = function(){
+                if((route_from === null) || (route_to === null)) return;
+                if(from_marker !== null) {
+                    from_marker.setMap(null);
+                }
+                if(to_marker !== null) {
+                    to_marker.setMap(null);
+                }
+                var request = {
+                    origin: route_from,
+                    destination: route_to,
+                    travelMode: google.maps.DirectionsTravelMode.DRIVING,
+                    unitSystem : google.maps.DirectionsUnitSystem.METRIC,
+                    region: 'de'
+                };
+
+                directionsService.route(request, function(response, status) {
+                    console.log('Route done', response, status);
+                    if (status == google.maps.DirectionsStatus.OK) {
+                        directionsDisplay.setDirections(response);
+                    }
+                });
+
+            };
+
+            var autocomplete_from = new google.maps.places.Autocomplete(input_from);
+            $(input_from).attr('placeholder', 'Начальная точка');
+
+            google.maps.event.addListener(autocomplete_from, 'place_changed', function() {
+                var place = autocomplete_from.getPlace();
+                if (!place.geometry) return;
+
+                // console.log('route_from', place, );
+                route_from = place.geometry.location;
+                if (place.geometry.viewport) {
+                    scope.map.fitBounds(place.geometry.viewport);
+                } else {
+                    scope.map.setCenter(place.geometry.location);
+                    scope.map.setZoom(17);  // Why 17? Because it looks good.
+                }
+                route();
+            });
+
+            var input_to = inputs[2];
+            var autocomplete_to = new google.maps.places.Autocomplete(input_to);
+            $(input_to).attr('placeholder', 'Конечная точка');
+
+            google.maps.event.addListener(autocomplete_to, 'place_changed', function() {
+                var place = autocomplete_to.getPlace();
+                if (!place.geometry) return;
+
+                route_to = place.geometry.location;
+                if (place.geometry.viewport) {
+                    scope.map.fitBounds(place.geometry.viewport);
+                } else {
+                    scope.map.setCenter(place.geometry.location);
+                    scope.map.setZoom(17);  // Why 17? Because it looks good.
+                }
+                route();
+            });
+
+            scope.onSearch = function(){
+                $(inputs[0]).focus();
+            };
+
+            scope.showroute = true;
+            scope.onRoute = function(){
+                console.log('TODO route');
+                scope.showroute = !scope.showroute;
+            };
+
+            var from_marker = null;
+            var geocodeStart = function(){
+                geocoder.geocode({'latLng': from_marker.getPosition()}, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        var address = results[0].formatted_address;
+                        console.log(address, results);
+                        $(input_from).val(address);
+                    }
+                });
+            };
+
+            scope.onStart = function() {
+                $(input_from).attr('placeholder', 'Укажите точку на карте...');
+                google.maps.event.addListenerOnce(scope.map, 'click', function(event){
+                    var position = event.latLng;
+                    route_from = position;
+                    console.log('Start point', position);
+
+                    if(from_marker === null){
+                        from_marker = new google.maps.Marker({
+                            position: position,
+                            map: scope.map,
+                            title: 'Старт',
+                            //icon: $.gmap.images['start'],
+                            draggable: true
+                        });
+                    } else {
+                        from_marker.setPosition(position);
+                    }
+                    geocodeStart();
+                    route();
+
+                    // setMarker(point_data, event.latLng);
+                });
+            };
+
+            var to_marker = null;
+            var geocodeFinish = function(){
+                geocoder.geocode({'latLng': to_marker.getPosition()}, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        var address = results[0].formatted_address;
+                        console.log(address, results);
+                        $(input_to).val(address);
+                    }
+                });
+            };
+
+            scope.onFinish = function() {
+                $(input_to).attr('placeholder', 'Укажите точку на карте...');
+                google.maps.event.addListenerOnce(scope.map, 'click', function(event){
+                    var position = event.latLng;
+                    route_to = position;
+                    console.log('Finish point', event.latLng);
+                    // setMarker(point_data, event.latLng);
+                    if(to_marker === null){
+                        to_marker = new google.maps.Marker({
+                            position: position,
+                            map: scope.map,
+                            title: 'Старт',
+                            //icon: $.gmap.images['start'],
+                            draggable: true
+                        });
+                    } else {
+                        to_marker.setPosition(position);
+                    }
+                    geocodeFinish();
+                    route();
+                });
+            };
+
+        };
+        return {
+            restrict: 'E',
+            // require: '^gmap',
+            templateUrl: 'templates/map/gmap-search.tpl.html',
+            replace: true,
+            scope: {
+                map: '='
+            },
+            link: link
+        };
+    }
+])
+
+.directive('configMapItem', function() {
+    'use strict';
+    return {
+        restrict: 'EA',
+        scope: {
+            item: '=',
+            iconOn: '@',
+            iconOff: '@'
+        },
+        replace: true,
+        transclude: true,
+        template: '<li ng-click=\'toggleValue()\'><span></span><span ng-transclude></span></li>',
+        link: function(scope, element) {
+            var icon = element[0].querySelector('span');
+            scope.toggleValue = function() {
+                scope.item = !scope.item;
+            };
+            scope.$watch('item', function(item) {
+                icon.className = 'icon-' + (item ? scope.iconOn : scope.iconOff) + ' icon-large';
+                if (item) {
+                    element.addClass('on');
+                    element.removeClass('off');
+                } else {
+                    element.addClass('off');
+                    element.removeClass('on');
+                }
+            });
+        }
+    };
+});
