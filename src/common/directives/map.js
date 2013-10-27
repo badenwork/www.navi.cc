@@ -512,7 +512,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 $(inputs[0]).focus();
             };
 
-            scope.showroute = true;
+            scope.showroute = false;
             scope.onRoute = function(){
                 console.log('TODO route');
                 scope.showroute = !scope.showroute;
