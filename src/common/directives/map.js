@@ -37,6 +37,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             var myOptions = {
                 center: new google.maps.LatLng(prev_config.center[0], prev_config.center[1]),
                 mapTypeId: prev_config.typeId,
+                scaleControl: true,
                 zoom: prev_config.zoom
             };
             var map_element = element.find('.gmap-container');
