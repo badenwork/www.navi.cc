@@ -283,7 +283,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             });
 
             scope.hideTrack = function(){
-                console.log('gmap:hideTrack');
+                // console.log('gmap:hideTrack');
                 scope.track.track = [];
                 scope.track.points = [];
                 scope.track.ranges = [];
@@ -334,7 +334,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
         'use strict';
 
         var link = function(scope) {
-            console.log('gmapToolBar:link', scope);
+            // console.log('gmapToolBar:link', scope);
 
             scope.showconfig = false;
 
@@ -349,7 +349,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             });
 
             scope.hideTrack = function(){
-                console.log('hideTrack');
+                // console.log('hideTrack');
                 scope.onHide();
             };
 
@@ -414,7 +414,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             scope.duration = '';
 
             google.maps.event.addListener(directionsDisplay, 'directions_changed', function(){
-                console.log('directions_changed');
+                // console.log('directions_changed');
                 currentDirections = directionsDisplay.getDirections();
                 if(currentDirections.routes.length>1){
                     console.log('Предлагается более одного маршрута');
@@ -423,7 +423,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 // for(var i=0, l=leg.via_waypoint.length+2-points.length; i<l; i++){
                 //     add_way_point('');
                 // }
-                console.log('currentDirections=', currentDirections, leg);
+                // console.log('currentDirections=', currentDirections, leg);
 
                 // points[0].point_div.querySelector('input').value = leg.start_address;
                 // //if(points[0].marker) points[0].marker.setPosition(leg.start_location);
@@ -465,7 +465,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 };
 
                 directionsService.route(request, function(response, status) {
-                    console.log('Route done', response, status);
+                    // console.log('Route done', response, status);
                     if (status == google.maps.DirectionsStatus.OK) {
                         directionsDisplay.setDirections(response);
                     }
@@ -515,7 +515,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             scope.showroute = false;
             scope.onRoute = function(){
-                console.log('TODO route');
+                // console.log('TODO route');
                 scope.showroute = !scope.showroute;
             };
 
@@ -524,7 +524,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 geocoder.geocode({'latLng': from_marker.getPosition()}, function(results, status) {
                     if (status == google.maps.GeocoderStatus.OK) {
                         var address = results[0].formatted_address;
-                        console.log(address, results);
+                        // console.log(address, results);
                         $(input_from).val(address);
                     }
                 });
@@ -535,7 +535,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 google.maps.event.addListenerOnce(scope.map, 'click', function(event){
                     var position = event.latLng;
                     route_from = position;
-                    console.log('Start point', position);
+                    // console.log('Start point', position);
 
                     if(from_marker === null){
                         from_marker = new google.maps.Marker({
@@ -560,7 +560,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 geocoder.geocode({'latLng': to_marker.getPosition()}, function(results, status) {
                     if (status == google.maps.GeocoderStatus.OK) {
                         var address = results[0].formatted_address;
-                        console.log(address, results);
+                        // console.log(address, results);
                         $(input_to).val(address);
                     }
                 });
@@ -571,7 +571,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 google.maps.event.addListenerOnce(scope.map, 'click', function(event){
                     var position = event.latLng;
                     route_to = position;
-                    console.log('Finish point', event.latLng);
+                    // console.log('Finish point', event.latLng);
                     // setMarker(point_data, event.latLng);
                     if(to_marker === null){
                         to_marker = new google.maps.Marker({

@@ -59,13 +59,16 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 date.setHours(-date.getTimezoneOffset() / 60);
                 var hour = (date.valueOf() / 1000 / 3600) | 0,
                     day = (hour / 24) | 0;
+                // console.log('beforeShowDay', day, hour);
                 return GeoGPS.checkDay(day) ? 'enabled' : 'disabled';
             }
         }).on('changeDate', function(ev) {
             var date = ev.date;
-            var tz = (new Date()).getTimezoneOffset() / 60;
+            // var tz = (new Date()).getTimezoneOffset() / 60;
+            var tz = (date).getTimezoneOffset() / 60;
             var hourfrom = date.valueOf() / 1000 / 3600;
             var day = (hourfrom - tz) / 24;
+            // console.log('changeDate', date, tz, hourfrom, day);
             $scope.$apply(function() { // Без этого не будет индикации процесса загрузки
                 var params = angular.copy($routeParams);
                 angular.extend(params, {

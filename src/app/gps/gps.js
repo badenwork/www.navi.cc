@@ -153,6 +153,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         }).on('changeDate', function(ev) {
             $scope.$apply(function() {
                 var date = ev.date;
+                var tz = (date).getTimezoneOffset() / 60;
                 var newday = (date.valueOf() / 1000 / 3600 - tz) / 24;
                 $location.path('/gps/' + $scope.skey + '/' + newday);
             });
