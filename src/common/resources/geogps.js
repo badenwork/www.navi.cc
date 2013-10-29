@@ -190,7 +190,7 @@ angular.module('resources.geogps', [])
                         bounds.extend(gpoint);
                     }
 
-                    var hour = ~~ (point.dt / 60);
+                    var hour = ~~ (point.dt / 3600);
                     if (hour < min_hour) min_hour = hour;
                     if (hour > max_hour) max_hour = hour;
                     hours[hour] = (hours[hour] || 0) + 1;

@@ -1,0 +1,73 @@
+.timechart {
+    width: 100%;
+    // height: 100%;
+    padding-bottom: 60%;
+    border: 1px solid black;
+    background-color: white;
+    position: relative;
+
+    .timechart-container {
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+
+
+        // .chart{
+        //     /*border: 1px solid blue;*/
+        //     box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+        //     width: 650px;
+        //     height: 350px;
+        //     border-radius: 10px;
+        //     padding: 0;
+        //     margin: 0;
+
+        // }
+        svg {
+            .axis path,
+            .axis line {
+                fill: none;
+                stroke: #000;
+                shape-rendering: crispEdges;
+            }
+            .y.axis line {
+                stroke: #ddd;
+            }
+
+            .overlay{
+                cursor: move;
+                fill: #eee;
+                pointer-events: all;
+            }
+
+            path.line {
+                fill: none;
+                stroke: steelblue;
+                stroke-width: 5px;
+            }
+
+            /*    .chart svg .x.axis path {
+                display: none;
+            }
+            */
+
+            .dot {
+                fill: steelblue;
+                // stroke: #000;
+                // stroke-width: 1px;
+            }
+
+            .dot:hover {
+                fill: lightblue;
+            }
+
+        }
+
+    }
+
+    .timechart-control {
+        position: absolute;
+        right: 30px;
+        top: 30px;
+        // background-color: white;
+        padding: 8px;
+    }
+}

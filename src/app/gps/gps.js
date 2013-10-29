@@ -69,7 +69,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         var date;
         var hourfrom;
 
-        var tz = (new Date()).getTimezoneOffset() / 60;
+        // var tz = (new Date()).getTimezoneOffset() / 60;
 
         if ((1 * day) === 0) {
             hourfrom = (new Date((new Date()).toDateString())).valueOf() / 1000 / 3600;
@@ -77,6 +77,8 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         } else if ((1 * day) === -1) {
             hourfrom = (new Date((new Date()).toDateString())).valueOf() / 1000 / 3600 - 24;
         } else {
+            hourfrom = day * 24;
+            var tz = (new Date(hourfrom * 3600 * 1000)).getTimezoneOffset() / 60;   // Уточняем временную зону
             hourfrom = day * 24 + tz;
         }
         date = new Date(hourfrom * 3600 * 1000);
