@@ -2,4 +2,9 @@
 
 <h5>{{ system.title }}</h5>
 
-<timechart data="data"></timechart>
+<select ng-model="chart" ng-options="select.title for select in charts" ng-change="onSelect()">
+    <!-- <option value="">Выберите график</option> -->
+</select>
+<!-- [{{ chart }}] -->
+
+<timechart data="data" chart="{{chart.field}}"></timechart>
