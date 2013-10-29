@@ -76,13 +76,16 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
     function() {
         'use strict';
 
+
+        var bisect = d3.bisector(function(d) { return d.dt; }).right;
+
         var link = function(scope, element){
 
             var margin = {
                 top: 20,
                 right: 20,
-                bottom: 30,
-                left: 50
+                bottom: 60,
+                left: 60
             };
             var svg;
 
@@ -107,57 +110,126 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 .orient('left');
 
             var zoom = d3.behavior.zoom()
-                // .x(x)
-                // .y(y)
-                .scaleExtent([1, 100])
+                // .scaleExtent([1, 100])
                 .on("zoom", zoomed);
 
-            var svg = d3.select(element[0]).select('.timechart-container')
-                    .append('svg');
+            var zoomX = d3.behavior.zoom()
+                .on("zoom", zoomedX);
 
-            var chart = svg
-                .append('g')
-                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-                .call(zoom);
+            var zoomY = d3.behavior.zoom()
+                .on("zoom", zoomedY);
+
+
+            var svg = d3.select(element[0]).select('.timechart-container').append('svg');
+                    // .on('mousemove.drag', mousemove)
+                    // .on("touchmove.drag", mousemove)
+                    // .on("mouseup.drag",   mouseup)
+                    // .on("touchend.drag",  mouseup);
 
             var clip = svg.append("clipPath")
                 .attr("id", "clip")
                 .append("rect");
 
+            var chart = svg
+                        .append('g')
+                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-            var plot = chart.append('rect')    // Невидимый объект, чтобы получать события мыши и тача, а также обрезка графика
-                // .attr('style', 'opacity: 0')
-                .attr('class', 'overlay');
+            // Иерархия:
+            // .plot -> график
+            // .axisx -> Ось времени
+            // .axisy -> Ось значения
 
-            var xaxis = chart.append('g')
+
+            var axisx = chart.append('g')
+                        .attr('class', 'axisx')
+                        .call(zoomX);
+
+            axisx.append('rect')    // Невидимый объект, чтобы получать события мыши и тача, а также обрезка графика
+                .attr('height', margin.bottom)
+                .attr('class', 'helper');
+
+            var axisy = chart.append('g')
+                        .attr('class', 'axisy')
+                        .call(zoomY);
+
+            axisy.append('rect')    // Невидимый объект, чтобы получать события мыши и тача, а также обрезка графика
+                .attr('x', -margin.left)
+                .attr('width', margin.left)
+                .attr('class', 'helper');
+
+
+            var xaxis = axisx.append('g')
                 .attr('class', 'x axis');
+                // .on("mousedown.drag",  xaxis_drag)
+                // .on("touchstart.drag", xaxis_drag);
 
             // Ось Y: 0..10V
-            var yaxis = chart.append('g')
+            var yaxis = axisy.append('g')
                 .attr('class', 'y axis');
 
-            yaxis.append('text')
-                    .attr('transform', 'rotate(-90)')
-                    .attr('y', 6)
-                    .attr('dy', '.71em')
-                    .style('text-anchor', 'end')
-                    .text('Уровень топлива (л)');
+            // yaxis.append('text')
+            //         .attr('transform', 'rotate(-90)')
+            //         .attr('y', 6)
+            //         .attr('dy', '.71em')
+            //         .style('text-anchor', 'end')
+            //         .text('Уровень топлива (л)');
+
+
+            var plot = chart.append('g')
+                        .attr('class', 'plot')
+                        .on('mousemove', hover)
+                        .call(zoom);
+
+            plot.append('rect')    // Невидимый объект, чтобы получать события мыши и тача, а также обрезка графика
+                .attr('class', 'helper');
 
 
             var line = d3.svg.line()
-            .x(function(d) {
-                return x(new Date(d.dt * 1000));
-            })
-            .y(function(d) {
-                return y(d.fuel);
-            });
+                .x(function(d) {
+                    return x(new Date(d.dt * 1000));
+                })
+                .y(function(d) {
+                    return y(d.fuel);
+                });
 
-            chart.append('path')
+            plot.append('path')
                 .datum([])
                 .attr('class', 'line')
                 .attr("clip-path", "url(#clip)")
                 .attr('d', line);
 
+            var cursor = plot.append('circle')
+                .attr('class', 'dot')
+                .attr('r', 5);
+
+            var projectx = plot.append('line')
+                .attr('class', 'project');
+
+            var projecty = plot.append('line')
+                .attr('class', 'project');
+
+            var startdragx = null;
+
+            function mousemove(e){
+                if(startdragx){
+                    console.log('mousemove');
+                }
+            }
+
+            function mouseup(e){
+                if(startdragx){
+                    console.log('mouseup');
+                    startdragx = null;
+                    d3.event.preventDefault();
+                    d3.event.stopPropagation();
+                }
+            }
+
+            function xaxis_drag(e){
+                var p = d3.mouse(this);
+                startdragx = x.invert(p[0])
+                console.log('xaxis_drag', this, p, startdragx);
+            }
 
             var draw = function(){
                 // TODO: SVG не масштабируется автоматически
@@ -167,8 +239,15 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 svg.attr('width', width + margin.left + margin.right)
                    .attr('height', height + margin.top + margin.bottom);
 
-                plot
+                plot.select('rect.helper')
                     .attr("width", width)
+                    .attr("height", height);
+
+                axisx.select('rect.helper')
+                    .attr("y", height)
+                    .attr("width", width);
+
+                axisy.select('rect.helper')
                     .attr("height", height);
 
                 // var x = d3.scale.linear()
@@ -191,30 +270,16 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                     return d.fuel;
                 }));
 
-                xAxis.ticks((width / 100) | 0);
+                xAxis.ticks((width / 120) | 0);
                 yAxis.ticks((height / 20) | 0).tickSize(-width);
-
-                // var xAxis = d3.svg.axis()
-                //     .scale(x)
-                //     // .tickSubdivide(2)
-                //     .tickSize(6, 4, 0)
-                //     .orient('bottom')
-                //     .ticks((width / 100) | 0)
-                //     .tickFormat(d3.time.format('%H:%M:%S'));
-
-                // var yAxis = d3.svg.axis()
-                //     .scale(y)
-                //     // .tickValues([1, 2, 3, 5, 8, 13, 21])
-                //     .tickSubdivide(1)
-                //     .tickSize(4, 2, 0)
-                //     .orient('left');
 
                 y.range([height, 0]);
 
-
-
-                zoom.x(x);
-                if(scope.zoomY) zoom.y(y);// else zoom.y(null);
+                zoom.x(x); zoom.y(y);
+                zoomX.x(x);
+                zoomY.y(y);
+                // zoom.y(y);
+                // if(scope.zoomY) zoom.y(y);// else zoom.y(null);
                     // .call(zoom);
 
                 clip
@@ -245,13 +310,55 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                     .datum(data.points) //.transition()
                     .attr('d', line);
 
+                // Проекции
+                projectx
+                    .attr('y2', height);
+
+                projecty
+                    .attr('x2', 0);
+
+            }
+
+            scope.hover = {
+                dt: 0,
+                value: 0
+            };
+
+            function hover() {
+                var data = scope.data.points;
+                var mx = d3.mouse(this);
+                var dx = x.invert(mx[0]);
+                var i = bisect(data, dx.valueOf() / 1000);
+                console.log('hover', dx, i);
+                // var
+                scope.$apply(function(){
+                    scope.hover.dt = data[i].dt;
+                    scope.hover.value = data[i].fuel;
+                });
+
+                var cx = x(new Date(data[i].dt * 1000));
+                var cy = y(data[i].fuel);
+
+                cursor
+                    .attr('cx', cx)
+                    .attr('cy', cy);
+
+                projectx
+                    .attr('x1', cx)
+                    .attr('y1', cy)
+                    .attr('x2', cx);
+
+                projecty
+                    .attr('x1', cx)
+                    .attr('y1', cy)
+                    .attr('y2', cy);
 
             }
 
             function zoomed() {
                 // var d = x.domain();
                 // var dt = x(d[1]) - x(d[0]);
-                // console.log('zoomed', zoom.translate(), x(d[0]), x(d[1]), dt);
+                // console.log('zoomed', x.domain(), x.range());
 
                 // var t = d3.event.translate;
                 // zoom.translate([
@@ -263,12 +370,42 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 yaxis.call(yAxis);
                 chart.select('path.line')
                     .attr('d', line);
+
+
+                zoomX.x(x);
+                zoomY.y(y);
+
             }
+
+            function zoomedX() {
+                // console.log('zoomedX', x.domain(), x.range());
+                xaxis.call(xAxis);
+                chart.select('path.line')
+                    .attr('d', line);
+
+                zoom.x(x); zoom.y(y);
+                zoomY.y(y);
+
+            }
+
+            function zoomedY() {
+                // console.log('zoomedY', x.domain(), x.range());
+                yaxis.call(yAxis);
+                chart.select('path.line')
+                    .attr('d', line);
+
+                zoom.x(x); zoom.y(y);
+                zoomX.x(x);
+
+            }
+
 
             var resizebind = $(window).bind('resize', function(){
                 console.log('resize', element[0].clientWidth, element[0].clientHeight);
                 draw();
             });
+
+            scope.reZoom = draw;
 
             // scope.$on('$routeChangeSuccess', function() {
             //     console.log('on out');
@@ -305,9 +442,13 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 '<div class="timechart">'+
                     '<div class="timechart-container"></div>'+
                     '<div class="timechart-control">'+
-                        '<div>'+
-                            '<label><input type="checkbox" ng-model="zoomY"> Масштаб Y</label>' +
-                        '</div>'+
+                        '<button class="btn" ng-click="reZoom()"><i class="icon-resize-full icon-2x"></i></button>' +
+                        '<br/>' +
+                        '{{ hover.dt | datetime:true:\'time\' }}<br>' +
+                        '{{ hover.value | number:2  }}<br>' +
+                        // '<div>'+
+                        //     '<label><input type="checkbox" ng-model="zoomY"> Масштаб Y</label>' +
+                        // '</div>'+
                     '</div>'+
                 '</div>',
             replace: true,
