@@ -100,19 +100,24 @@
     .timechart-control {
         position: absolute;
         right: 30px;
-        top: 30px;
+        bottom: 60px;
         background-color: rgba(255, 255, 255, 0.8);
-        padding: 8px;
-        box-shadow: 0px 0px 5px rgba(255,255,255,1.0);
+        padding: 8px 8px 3px 8px;
+        // box-shadow: 0px 0px 5px rgba(255,255,255,1.0);
+        box-shadow: 0px 0px 5px #F09624;
         border-radius: 10px;
+        text-align: center;
 
         button {
             padding: 8px 12px 8px 12px;
+            margin-bottom: 4px;
+            opacity: 0.8;
             i {
                 margin: 0;
             }
             &:hover{
                 background-color: #ccf;
+                opacity: 1.0;
             }
         }
     }

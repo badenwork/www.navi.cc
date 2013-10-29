@@ -38,11 +38,11 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
         // console.log('$routeParams = ', $routeParams, $scope.chart);
 
         $scope.charts = [
-            {name: 'vout', title: 'Напряжение основного питания', field: 'vout'},
-            {name: 'vin', title: 'Напряжение резервного питания', field: 'vin'},
-            {name: 'fuel', title: 'Уровень топлива', field: 'fuel'},
-            {name: 'speed', title: 'Скорость', field: 'speed'},
-            {name: 'sats', title: 'Спутники', field: 'sats'}
+            {name: 'vout', title: 'Напряжение основного питания', field: 'vout', min: 0.0},
+            {name: 'vin', title: 'Напряжение резервного питания', field: 'vin', min: 3.0},
+            {name: 'fuel', title: 'Уровень топлива', field: 'fuel', min: 0.0},
+            {name: 'speed', title: 'Скорость', field: 'speed', min: 0.0},
+            {name: 'sats', title: 'Спутники', field: 'sats', min: 0.0}
             // {name: 'temp', title: 'Температура окружающей среды', field: 'temp'}
         ];
 
@@ -173,7 +173,9 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
 
             var clip = svg.append('clipPath')
                 .attr('id', 'clip')
-                .append('rect');
+                .append('rect')
+                    .attr('x', -3)
+                    .attr('y', -3);
 
             var chart = svg
                         .append('g')
@@ -313,10 +315,17 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 x.domain([start, stop])
                     .range([0, width]);
 
-                // y.domain([40, 50]);
-                y.domain(d3.extent(data.points, function(d) {
+                // y.domain(d3.extent(data.points, function(d) {
+                //     return d[field];
+                // }));
+                var _min = (scope.min || '0.0') * 1.0;
+                var _max = d3.max(data.points, function(d) {
                     return d[field];
-                }));
+                });
+                if((_max - _min) <= 0.1) {
+                    _max = _min + 1.0;
+                }
+                y.domain([_min, _max]);
 
                 xAxis.ticks((width / 120) | 0);
                 yAxis.ticks((height / 20) | 0).tickSize(-width);
@@ -335,10 +344,10 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                     // .attr("y", y(1))
                     // .attr("width", x(1) - x(0))
                     // .attr("height", y(0) - y(1));
-                    .attr('x', 0)
-                    .attr('y', 0)
-                    .attr('width', width)
-                    .attr('height', height);
+                    // .attr('x', 0)
+                    // .attr('y', 0)
+                    .attr('width', width+6)
+                    .attr('height', height+6);
 
                 chart.select('rect.overlay').attr('width', width).attr('height', height);
 
@@ -402,7 +411,13 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 var data = scope.data.points;
                 var mx = d3.mouse(plot[0][0]);
                 var dx = x.invert(mx[0]);
-                scope.hover.i = bisect(data, dx.valueOf() / 1000);
+                var i = bisect(data, dx.valueOf() / 1000);
+                if(i>0) {
+                    if( Math.abs(x(new Date(data[i].dt * 1000)) - mx[0]) >  Math.abs(x(new Date(data[i-1].dt * 1000)) - mx[0]) ) {
+                        i = i - 1;
+                    }
+                }
+                scope.hover.i = i;
                 // console.log('hover', dx, i);
                 // var
                 if(!data[scope.hover.i]) return;
@@ -504,14 +519,15 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
             restrict: 'E',
             scope: {
                 data: '=',
-                chart: '@'
+                chart: '@',
+                min: '@'
             },
             // template: '<svg width='500px' height='250px' class='chart'></svg>',
             template:
                 '<div class="timechart">'+
                     '<div class="timechart-container"></div>'+
                     '<div class="timechart-control">'+
-                        '<button class="btn" ng-click="reZoom()"><i class="icon-resize-full icon-2x"></i></button>' +
+                        '<button class="btn" ng-click="reZoom()" title="Вернуть мастаб"><i class="icon-resize-full icon-2x"></i></button>' +
                         '<br/>' +
                         '{{ hover.dt | datetime:true:\'time\' }}<br>' +
                         '{{ hover.value | number:2  }}<br>' +
