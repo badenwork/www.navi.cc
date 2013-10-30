@@ -88,8 +88,10 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         $scope.onSysSelect = function() {
             if ($scope.skey) {
                 $location.path('/gps/' + $scope.skey);
+                $location.replace();
             } else {
                 $location.path('/gps');
+                $location.replace();
             }
         };
 

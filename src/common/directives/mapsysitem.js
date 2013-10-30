@@ -82,6 +82,7 @@ angular.module('directives.main', ['newgps.services', 'services.tags'])
                             skey: skey
                         });
                         $location.search(params);
+                        $location.replace();
                         $scope.select(skey);
                     };
 
