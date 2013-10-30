@@ -2,9 +2,21 @@
 
 <h5>{{ system.title }}</h5>
 
-<select ng-model="chart" ng-options="select.title for select in charts" ng-change="onSelect()">
-    <!-- <option value="">Выберите график</option> -->
-</select>
+<!-- <form class="form-inline"> -->
+<!-- <div class="form-group"> -->
+
+    <select class="form-control" ng-model="chart" ng-options="select.title for select in charts" ng-change="onSelect()">
+        <!-- <option value="">Выберите график</option> -->
+    </select>
+
+    <datepicker date-from="dateFrom" date-to="dateTo" range="range" on-change="changeDate()"></datepicker>
+    <!-- <p>dateFrom: {{ dateFrom | date:'dd/MM/yyyy HH:mm:ssZ' }}</p> -->
+    <!-- <p>dateTo: {{ dateTo | date:'dd/MM/yyyy HH:mm:ssZ' }}</p> -->
+
+
+<!-- </div> -->
+<!-- </form> -->
+
 <!-- [{{ chart }}] -->
 
 <timechart data="data" chart="{{chart.field}}" min="{{chart.min}}"></timechart>

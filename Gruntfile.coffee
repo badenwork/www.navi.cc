@@ -103,6 +103,7 @@ module.exports = (grunt) ->
           "angular-translate": ""
           # "bootstrap-datepicker": ""  # Не совместим с bootstrap 3.x
           "bootstrap3-datepicker": ""   # Форк предыдущего с поддерхкой twbs3
+          "bootstrap-daterangepicker": ""
           # "angular-strap": ""       # Не совместим с bootstrap 3.x
           # "angular-virtual-scroll": ""    # Сомнительная производительность
           # ngInfiniteScroll: ""
@@ -304,6 +305,7 @@ module.exports = (grunt) ->
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.uk.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.pl.js',
+            # 'components/bootstrap-daterangepicker/daterangepicker.js',
             'components/angular/angular.js',
             'components/angular-route/angular-route.min.js',
             'components/angular-resource/angular-resource.min.js',
@@ -328,6 +330,7 @@ module.exports = (grunt) ->
             'components/bootstrap/dist/css/bootstrap.min.css'
             'components/components-font-awesome/css/font-awesome.min.css'
             'components/bootstrap-datepicker/css/datepicker.css'
+            # 'components/bootstrap-daterangepicker/daterangepicker-bs3.css'
           ]
           dest: '<%= distdir %>/css/components.css'
         ]
@@ -348,6 +351,7 @@ module.exports = (grunt) ->
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.uk.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.pl.js',
+            # 'components/bootstrap-daterangepicker/daterangepicker.js',
             'components/angular/angular.min.js',
             'components/angular-route/angular-route.min.js',
             'components/angular-resource/angular-resource.min.js',
@@ -373,6 +377,7 @@ module.exports = (grunt) ->
             'temp/components/bootstrap.css'
             'components/components-font-awesome/css/font-awesome.min.css'
             'components/bootstrap-datepicker/css/datepicker.css'
+            # 'components/bootstrap-daterangepicker/daterangepicker-bs3.css'
           ]
           dest: '<%= distdir %>/css/components.css'
         ]

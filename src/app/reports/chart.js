@@ -1,12 +1,12 @@
-/* global angular:true, d3:true, $:true  */
+/* global angular:true, d3:true, $:true, console:true, moment:true  */
 
 
-angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps', 'app.filters', 'config.system.params.master', 'config.system.params.fuel', 'services.tags'])
+angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps', 'app.filters', 'config.system.params.master', 'config.system.params.fuel', 'services.tags', 'i18n'])
 
 .config(['$routeProvider',
     function($routeProvider) {
         'use strict';
-        $routeProvider.when('/reports/:skey/chart/:day', {
+        $routeProvider.when('/reports/:skey/chart', {
             templateUrl: 'templates/reports/chart.tpl.html',
             controller: 'ReportsChartCtrl as ctrl',
             resolve: {
@@ -26,16 +26,50 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
     }
 ])
 
-.controller('ReportsChartCtrl', ['$scope', '$route', '$routeParams', '$location', 'account', 'system', 'System', 'GeoGPS',
-    function($scope, $route, $routeParams, $location, account, system, System, GeoGPS) {
+.service('ParamParser', function(){
+    'use strict';
+    console.log('ParamParser', this);
+    var format = d3.time.format('%d/%m/%Y');
+    return {
+        day: function(day){ // День от рождества или 0, -1, -2 - относительно Сегодня
+
+            day = (day || '0') | 0;
+            if (day <= 0) {
+                return format.parse(format(moment().subtract('days', (-day)).toDate()));
+            } else {
+                // TODO: Я не очень уверен на счет правильности.
+                return format.parse(format(moment(0).add('days', (day)).toDate()));
+            }
+
+        },
+
+        asday:function(date){   // Делает обратное преобразование
+            var first = format.parse(format(moment(0).toDate()));
+            return Math.round(moment.duration(moment(date) - moment(first)).asDays());
+        }
+    };
+})
+
+.controller('ReportsChartCtrl', ['$scope', '$route', '$routeParams', '$location', 'account', 'system', 'System', 'GeoGPS', 'ParamParser',
+    function($scope, $route, $routeParams, $location, account, system, System, GeoGPS, ParamParser) {
         'use strict';
 
-        var day = $scope.day = $routeParams.day || 0;
-        this.skey = $routeParams.skey;
-        var date;
-        var hourfrom;
+        // var day = $scope.day = $routeParams.day || 0;
+
+        // console.log('ParamParser=', ParamParser, day_from, day_to);
+
+        // this.skey = $routeParams.skey;
+        // var date;
+        // var hourfrom;
+
+        // var format = d3.time.format('%d/%m/%Y');
+
 
         // console.log('$routeParams = ', $routeParams, $scope.chart);
+        $scope.system = system;
+        $scope.skey = $routeParams.skey;
+
+        // var day_from =
 
         $scope.charts = [
             {name: 'vout', title: 'Напряжение основного питания', field: 'vout', min: 0.0},
@@ -46,7 +80,36 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
             // {name: 'temp', title: 'Температура окружающей среды', field: 'temp'}
         ];
 
+        $scope.dateFrom = ParamParser.day($routeParams.from);
+        $scope.dateTo = ParamParser.day($routeParams.to);
+        $scope.range = ($routeParams.from != $routeParams.to);
+
+        var hourfrom = $scope.dateFrom.valueOf() / 1000 / 3600;
+        var hourto = $scope.dateTo.valueOf() / 1000 / 3600 + 23;
+
+        var reload = function(){
+            console.log('reload', hourfrom, hourto);
+            if ($scope.skey && ($scope.skey !== '') && ($scope.skey !== '+')) {
+                GeoGPS.select($scope.skey);
+                GeoGPS.getTrack(hourfrom, hourto)
+                    .then(function(data) {
+                        $scope.data = data;
+                    });
+            }
+        };
+
         var reroute = function(){
+            // var day_from = $scope.dateFrom = ParamParser.day($routeParams.from);
+            // var day_to = $scope.dateTo = ParamParser.day($routeParams.to);
+            var _hourfrom = $scope.dateFrom.valueOf() / 1000 / 3600;
+            var _hourto = $scope.dateTo.valueOf() / 1000 / 3600 + 23;
+            console.log('reroute', _hourfrom, _hourto);
+            if((_hourfrom != hourfrom) || (_hourto != hourto)){
+                hourfrom = _hourfrom;
+                hourto = _hourto;
+                reload();
+            }
+
             if($routeParams.chart){
                 $scope.charts.some(function(el){
                     if(el.name === $routeParams.chart) {
@@ -58,6 +121,7 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
         };
 
         reroute();
+        reload();
 
         // TODO: То, что смена графика заполняет history может быть неудобно
         // Можно воспользоваться следующим подходом: http://johan.driessen.se/posts/Manipulating-history-with-the-HTML5-History-API-and-AngularJS
@@ -68,12 +132,35 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 $location.search({});
             } else {
                 var params = {
-                    chart: $scope.chart.name
+                    chart: $scope.chart.name,
+                    'from': $routeParams.from,
+                    'to': $routeParams.to
                 };
                 $location.search(params);
             }
             // $location.path('/gps/' + $scope.skey);
         };
+
+        // var init_ = $scope.dateFrom;
+        var dayChange = function(){
+            var day_from = ParamParser.asday($scope.dateFrom);
+            var day_to = ParamParser.asday($scope.dateTo);
+
+            if((($routeParams.from | 0) != day_from) || (($routeParams.to | 0) != day_to)){
+                var params = {
+                    chart: $scope.chart.name,
+                    'from': day_from,
+                    'to': day_to
+                };
+
+                console.log('change search =', $scope.dateFrom, $scope.dateTo, params);
+                $location.search(params);
+                // $scope.dateFrom
+            }
+        };
+
+        $scope.$watch('dateFrom+dateTo', dayChange);
+        // $scope.$watch('dateTo', dayChange);
 
 
         $scope.$on('$routeUpdate', function() {
@@ -81,43 +168,148 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
             reroute();
         });
 
-        // var tz = (new Date()).getTimezoneOffset() / 60;
-
-        if ((1 * day) === 0) {
-            hourfrom = (new Date((new Date()).toDateString())).valueOf() / 1000 / 3600;
-            date = new Date(hourfrom * 3600 * 1000);
-        } else if ((1 * day) === -1) {
-            hourfrom = (new Date((new Date()).toDateString())).valueOf() / 1000 / 3600 - 24;
-        } else {
-            // hourfrom = day * 24 + tz;
-            hourfrom = day * 24;
-            var tz = (new Date(hourfrom * 3600 * 1000)).getTimezoneOffset() / 60;   // Уточняем временную зону
-            hourfrom = day * 24 + tz;
-        }
-        date = new Date(hourfrom * 3600 * 1000);
-        $scope.datetime = hourfrom * 3600;
-
-        // console.log('ReportsChartCtrl', this, $scope, date, hourfrom);
-
-        $scope.system = system;
-        $scope.skey = $routeParams.skey;
+        // $scope.date = date;
 
 
-        if ($scope.skey && ($scope.skey !== '') && ($scope.skey !== '+')) {
-            GeoGPS.select($scope.skey);
-            GeoGPS.getTrack(hourfrom, hourfrom + 23)
-                .then(function(data) {
-                    $scope.data = data;
-                    // $scope.myPagingFunction();
-                    // console.log('data=', data);
-                });
-
-            $scope.onMouseOver = function(g) {
-                $scope.center = g;
-            };
-        }
 
 }])
+
+.directive('datepicker', ['i18n',
+    function(i18n) {
+        'use strict';
+
+        var link = function(scope, element){
+            // console.log('datepicker scope=', scope);
+
+            var datepicker = element.find('.inputDate');
+            var dp = datepicker.datepicker({
+                todayBtn: 'linked',
+                language: i18n.shortLang(),
+                autoclose: true,
+                format: 'dd/mm/yyyy',
+                todayHighlight: true
+            }).on('changeDate', function() {
+                scope.$apply(function() {
+                    // var date = parseDate(element.find('.inputDate').val());
+                    var date = datepicker.datepicker('getDate');
+                    scope.dateFrom = date;
+                    scope.dateTo = date;
+                });
+                // scope.onChange({foo:'bar'});
+            });
+
+
+            // dp.datepicker('setDate', new Date());
+
+            var daterange = element.find('.input-daterange');
+            daterange.datepicker({
+                todayBtn: 'linked',
+                language: i18n.shortLang(),
+                autoclose: true,
+                format: 'dd/mm/yyyy',
+                todayHighlight: true
+            }).on('changeDate', function() {
+                scope.$apply(function() {
+                    // TODO: Я не знаю как доставать дату из daterange
+                    // var start = parseDate(element.find('input[name="start"]').val());
+                    // var stop  = parseDate(element.find( 'input[name="stop"]').val());
+                    var start = element.find('input[name="start"]').datepicker('getDate');
+                    scope.dateFrom = start;
+                    var stop = element.find('input[name="stop"]').datepicker('getDate');
+                    scope.dateTo = stop;
+
+                    // scope.onChange({start: start, stop: stop});
+                    // dp.datepicker('setDate', start);
+                });
+                // scope.onChange();
+            });
+
+
+            scope.selectday = function(day){
+                console.log('selectday', day);
+            };
+
+            scope.toggleRange = function(){
+                scope.range = true;
+
+                var date = datepicker.datepicker('getDate');
+                scope.dateFrom = date;
+                scope.dateTo = date;
+                // element.find('input[name="start"]').datepicker('setDate', date);
+                // element.find('input[name="stop"]').datepicker('setDate', date);
+            };
+
+            scope.toggleSingle = function(){
+                scope.range = false;
+
+                var start = element.find('input[name="start"]').datepicker('getDate');
+                // scope.dateFrom = start;
+                dp.datepicker('setDate', start);
+                if(scope.dateFrom != scope.dateTo){
+                    scope.dateTo = start;
+                    // scope.onChange();
+                }
+            };
+
+            scope.$watch('dateFrom', function(){
+                // console.log('dateFrom=', scope.dateFrom);
+                element.find('input[name="start"]').datepicker('setDate', scope.dateFrom);
+                if(!scope.range) {
+                    dp.datepicker('setDate', scope.dateFrom);
+                }
+            });
+
+            scope.$watch('dateTo', function(){
+                // console.log('dateTo=', scope.dateTo);
+                element.find('input[name="stop"]').datepicker('setDate', scope.dateTo);
+            });
+
+            scope.prevDay = function(){
+                var format = d3.time.format('%d/%m/%Y');
+                var prev = format.parse(format(moment(scope.dateFrom).subtract('days', 1).toDate()));
+                scope.dateFrom = prev;
+                console.log('prevDay', scope.dateFrom, prev);
+            };
+
+            scope.nextDay = function(){
+                var format = d3.time.format('%d/%m/%Y');
+                var next = format.parse(format(moment(scope.dateFrom).add('days', 1).toDate()));
+                scope.dateFrom = next;
+                console.log('nextDay', scope.dateFrom, next);
+            };
+
+        };
+        return {
+            restrict: 'E',
+            scope: {
+                dateFrom: '=',
+                dateTo: '=',
+                range: '='
+                // onChange: '&'
+            },
+            // template: '<svg width='500px' height='250px' class='chart'></svg>',
+            template:
+                '<div>'+
+                    '<div class="btn-group" ng-hide="range">'+
+                        '<button class="btn btn-primary" ng-click="prevDay()">&lt;</button>'+
+                        '<input  class="btn btn-primary inputDate" />'+
+                        '<button class="btn btn-primary" ng-click="toggleRange()">&hellip;</button>'+
+                        '<button class="btn btn-primary" ng-click="nextDay()">&gt;</button>'+
+                    '</div>'+
+
+                    '<div class="btn-group input-daterange" ng-show="range">'+
+                        '<input class="btn btn-primary" name="start" />'+
+                        '<button class="btn btn-primary" ng-class="" ng-click="toggleSingle()">&hellip;</button>'+
+                        '<input class="btn btn-primary" name="stop" />'+
+                    '</div>'+
+                '</div>',
+
+            replace: true,
+            link: link
+            // controller: ['$scope', '$element', function($scope, $element){}]
+        };
+    }
+])
 
 .directive('timechart', [
     function() {
@@ -137,13 +329,48 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
             var x = d3.time.scale.utc();
             var y = d3.scale.linear();
 
+            var hourformat = d3.time.format('%H:%M:%S');
+            // var dayformat = d3.time.format('%d %b');
+            // var monthformat = d3.time.format('%b %Y');
+            // var yearformat = d3.time.format('%y');
 
             var xAxis = d3.svg.axis()
                 .scale(x)
                 // .tickSubdivide(2)
                 .tickSize(6, 4, 0)
                 .orient('bottom')
-                .tickFormat(d3.time.format('%H:%M:%S'));
+                // .tickSubdivide(true)
+                .tickFormat(hourformat);
+
+            var xAxisD = d3.svg.axis()
+                .scale(x)
+                // .tickSubdivide(3)
+                .tickSize(0)
+                // .ticks(d3.min([d3.time.days, 2, 4]))
+                // .ticks(d3.time.days, 1)
+                .orient('bottom')
+                .tickFormat(Dformat)
+                // .tickFormat(dayformat);
+                // .tickSize(4)
+                // .tickPadding(0);
+                ;
+
+            function Dformat(d) {
+                var delta = moment.duration(x.domain()[1] - x.domain()[0]).asDays();
+                var step = Math.round(width / 100);
+                // console.log('Dformat', d, delta, step);
+                if(delta > 30 * step) {
+                    // return monthformat(d);
+                    return moment(d).format('DD/MM/YY');
+                } else {
+                    // return dayformat(d);
+                    return moment(d).format('D MMM');
+                }
+              // var s = formatNumber(d / 1e6);
+              // return d === y.domain()[1]
+              //     ? "$" + s + " million"
+              //     : s;
+            }
 
             var yAxis = d3.svg.axis()
                 .scale(y)
@@ -209,6 +436,9 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 .attr('class', 'x axis');
                 // .on("mousedown.drag",  xaxis_drag)
                 // .on("touchstart.drag", xaxis_drag);
+
+            var xaxisD = axisx.append('g')
+                .attr('class', 'x axis');
 
             // Ось Y: 0..10V
             var yaxis = axisy.append('g')
@@ -279,11 +509,12 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
             //     console.log('xaxis_drag', this, p, startdragx);
             // }
             var field;
+            var width = 1, height = 1;
 
             var draw = function(){
                 // TODO: SVG не масштабируется автоматически
-                var width = element[0].clientWidth - margin.left - margin.right,
-                    height = element[0].clientHeight - margin.top - margin.bottom;
+                width = element[0].clientWidth - margin.left - margin.right;
+                height = element[0].clientHeight - margin.top - margin.bottom;
 
                 svg.attr('width', width + margin.left + margin.right)
                    .attr('height', height + margin.top + margin.bottom);
@@ -312,7 +543,7 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
 
                 // console.log('timechart draw', scope.data, start, stop, field);
 
-                x.domain([start, stop])
+                x.domain([start, stop]) //.nice()
                     .range([0, width]);
 
                 // y.domain(d3.extent(data.points, function(d) {
@@ -325,10 +556,18 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 if((_max - _min) <= 0.1) {
                     _max = _min + 1.0;
                 }
-                y.domain([_min, _max]);
+                // Чуток растянем, для красоты
+                y.domain([_min, _max + (_max - _min) * 0.05]);
 
                 xAxis.ticks((width / 120) | 0);
+                xAxisD.ticks((width / 120) | 0);
                 yAxis.ticks((height / 20) | 0).tickSize(-width);
+
+                // xAxisD.ticks((width / 120) | 0);
+
+                // var days = moment.duration(moment(x.invert(width)) - moment(x.invert(0))).asDays();
+                // console.log('days=', days);
+                // xAxisD.ticks(d3.time.days, 1);
 
                 y.range([height, 0]);
 
@@ -356,6 +595,8 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 xaxis.attr('transform', 'translate(0,' + height + ')')
                     .call(xAxis);
 
+                xaxisD.attr('transform', 'translate(0,' + (height + 20) + ')')
+                    .call(xAxisD);
 
                 // Ось данных
 
@@ -412,7 +653,7 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 var mx = d3.mouse(plot[0][0]);
                 var dx = x.invert(mx[0]);
                 var i = bisect(data, dx.valueOf() / 1000);
-                if(i>0) {
+                if((i>0) && (i<(data.length-1))) {
                     if( Math.abs(x(new Date(data[i].dt * 1000)) - mx[0]) >  Math.abs(x(new Date(data[i-1].dt * 1000)) - mx[0]) ) {
                         i = i - 1;
                     }
@@ -441,6 +682,7 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 // ]);
 
                 xaxis.call(xAxis);
+                xaxisD.call(xAxisD);
                 yaxis.call(yAxis);
                 chart.select('path.line')
                     .attr('d', line);
@@ -455,11 +697,17 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
             function zoomedX() {
                 // console.log('zoomedX', x.domain(), x.range());
                 xaxis.call(xAxis);
+                xaxisD.call(xAxisD);
                 chart.select('path.line')
                     .attr('d', line);
 
                 zoom.x(x); zoom.y(y);
                 zoomY.y(y);
+
+                // var days = moment.duration(moment(x.invert(width)) - moment(x.invert(0))).asDays();
+                // var limit = Math.round(days / width * 50) + 1;
+                // console.log('days=', days, limit);
+                // xAxisD.ticks(d3.time.days, Math.pow(limit, 0.5));
 
                 dot();
             }
