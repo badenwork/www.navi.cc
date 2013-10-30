@@ -165,6 +165,8 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
 
         $scope.$on('$routeUpdate', function() {
             // console.log('$routeUpdate', $routeParams);
+            $scope.dateFrom = ParamParser.day($routeParams.from);
+            $scope.dateTo = ParamParser.day($routeParams.to);
             reroute();
         });
 
