@@ -268,6 +268,7 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 var format = d3.time.format('%d/%m/%Y');
                 var prev = format.parse(format(moment(scope.dateFrom).subtract('days', 1).toDate()));
                 scope.dateFrom = prev;
+                scope.dateTo = prev;
                 console.log('prevDay', scope.dateFrom, prev);
             };
 
@@ -275,6 +276,7 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                 var format = d3.time.format('%d/%m/%Y');
                 var next = format.parse(format(moment(scope.dateFrom).add('days', 1).toDate()));
                 scope.dateFrom = next;
+                scope.dateTo = next;
                 console.log('nextDay', scope.dateFrom, next);
             };
 
