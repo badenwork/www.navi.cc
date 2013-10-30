@@ -130,6 +130,7 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
             // console.log('select', $scope.chart);
             if($scope.chart === null) {
                 $location.search({});
+                $location.replace();
             } else {
                 var params = {
                     chart: $scope.chart.name,
@@ -137,6 +138,7 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
                     'to': $routeParams.to
                 };
                 $location.search(params);
+                $location.replace();
             }
             // $location.path('/gps/' + $scope.skey);
         };
@@ -155,6 +157,7 @@ angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps',
 
                 console.log('change search =', $scope.dateFrom, $scope.dateTo, params);
                 $location.search(params);
+                $location.replace();
                 // $scope.dateFrom
             }
         };
