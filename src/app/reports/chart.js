@@ -1,7 +1,7 @@
 /* global angular:true, d3:true, $:true, console:true, moment:true  */
 
 
-angular.module('config.system.params', ['ngRoute', '$strap', 'resources.geogps', 'app.filters', 'config.system.params.master', 'config.system.params.fuel', 'services.tags', 'i18n'])
+angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.filters', 'config.system.params.master', 'config.system.params.fuel', 'services.tags', 'i18n'])
 
 .config(['$routeProvider',
     function($routeProvider) {

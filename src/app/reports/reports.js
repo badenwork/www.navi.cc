@@ -6,7 +6,7 @@
     'use strict';
 
 
-angular.module('reports', ['ngRoute', 'resources.account', '$strap.directives', 'resources.geogps', 'resources.system', 'i18n'])
+angular.module('reports', ['ngRoute', 'reports.chart', 'resources.account', '$strap.directives', 'resources.geogps', 'resources.system', 'i18n'])
 
 .config(['$routeProvider',
     function($routeProvider) {
