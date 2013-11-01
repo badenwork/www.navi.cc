@@ -399,7 +399,6 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 .orient('right');
 
             var zoom = d3.behavior.zoom()
-                // .scaleExtent([1, 100])
                 .on('zoom', zoomed);
 
             var zoomX = d3.behavior.zoom()
@@ -416,37 +415,37 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                     // .on("touchmove.drag", mousemove)
                     // .on("mouseup.drag",   mouseup)
                                 // .on("touchend.drag",  mouseup);
-            svg.append("linearGradient")
-                    .attr("id", "line-gradient")
-                    .attr("gradientUnits", "userSpaceOnUse")
-                    .attr("x1", 0).attr("y1", 0)
-                    .attr("x2", 500).attr("y2", 0)
-                .selectAll("stop")
+            svg.append('linearGradient')
+                    .attr('id', 'line-gradient')
+                    .attr('gradientUnits', 'userSpaceOnUse')
+                    .attr('x1', 0).attr('y1', 0)
+                    .attr('x2', 500).attr('y2', 0)
+                .selectAll('stop')
                     .data([
-                        {offset: "0%", color: "blue", opacity: 0.3},
+                        {offset: '0%', color: 'blue', opacity: 0.3},
                         // {offset: "50%", color: "red"},
-                        {offset: "100%", color: "blue", opacity: 0}
+                        {offset: '100%', color: 'blue', opacity: 0}
                     ])
-                .enter().append("stop")
-                    .attr("offset", function(d) { return d.offset; })
-                    .attr("stop-color", function(d) { return d.color; })
-                    .attr("stop-opacity", function(d) { return d.opacity; });
+                .enter().append('stop')
+                    .attr('offset', function(d) { return d.offset; })
+                    .attr('stop-color', function(d) { return d.color; })
+                    .attr('stop-opacity', function(d) { return d.opacity; });
 
-            svg.append("linearGradient")
-                    .attr("id", "line-gradient2")
-                    .attr("gradientUnits", "userSpaceOnUse")
-                    .attr("x1", 0).attr("y1", 0)
-                    .attr("x2", -500).attr("y2", 0)
-                .selectAll("stop")
+            svg.append('linearGradient')
+                    .attr('id', 'line-gradient2')
+                    .attr('gradientUnits', 'userSpaceOnUse')
+                    .attr('x1', 0).attr('y1', 0)
+                    .attr('x2', -500).attr('y2', 0)
+                .selectAll('stop')
                     .data([
-                        {offset: "0%", color: "red", opacity: 0.3},
+                        {offset: '0%', color: 'red', opacity: 0.3},
                         // {offset: "50%", color: "red", opacity: 1},
-                        {offset: "100%", color: "red", opacity: 0}
+                        {offset: '100%', color: 'red', opacity: 0}
                     ])
-                .enter().append("stop")
-                    .attr("offset", function(d) { return d.offset; })
-                    .attr("stop-color", function(d) { return d.color; })
-                    .attr("stop-opacity", function(d) { return d.opacity; });
+                .enter().append('stop')
+                    .attr('offset', function(d) { return d.offset; })
+                    .attr('stop-color', function(d) { return d.color; })
+                    .attr('stop-opacity', function(d) { return d.opacity; });
 // stop-opacity:1
 
             var clip = svg.append('clipPath')
@@ -596,7 +595,7 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
             var width = 1, height = 1;
 
             var draw = function(){
-                console.log('draw', scope.chart, scope.chart2);
+                console.log('draw WTF?', scope.chart, scope.chart2);
                 // TODO: SVG не масштабируется автоматически
                 width = element[0].clientWidth - margin.left - margin.right;
                 height = element[0].clientHeight - margin.top - margin.bottom;
@@ -604,8 +603,8 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 svg.attr('width', width + margin.left + margin.right)
                    .attr('height', height + margin.top + margin.bottom);
 
-                svg.select('#line-gradient').attr("x2", width);
-                svg.select('#line-gradient2').attr("x2", -width);
+                svg.select('#line-gradient').attr('x2', width);
+                svg.select('#line-gradient2').attr('x2', -width);
 
                 plot.select('rect.helper')
                     .attr('width', width)
@@ -627,7 +626,7 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 if(!scope.data) return;
                 var data = scope.data;
                 field = scope.chart || 'vout';
-                field2 = scope.chart2;
+                field2 = scope.chart2;       // TODO: убрать умолчание
 
                 // var start = new Date('10/28/2013 00:00:00'),
                 //     stop = new Date('10/28/2013 23:59:59');
@@ -665,8 +664,8 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
 
                 xAxis.ticks((width / 120) | 0);
                 xAxisD.ticks((width / 120) | 0);
-                yAxis.ticks((height / 20) | 0).tickSize(-width+10);
-                yAxis2.ticks((height / 20) | 0).tickSize(-width+10);
+                yAxis.ticks((height / 40) | 0).tickSize(-width+10);
+                yAxis2.ticks((height / 40) | 0).tickSize(-width+10);
 
                 // xAxisD.ticks((width / 120) | 0);
 
@@ -677,10 +676,10 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 y.range([height, 0]);
                 y2.range([height, 0]);
 
-                zoom.x(x); zoom.y(y);      // Бля, как?
+                zoom.x(x); zoom.y(y);      // За основу берется zoomY
                 zoomX.x(x);
                 zoomY.y(y);
-                zoomY2.y(y2);
+                zoomY2.y(y2); Y2_base = 0; Y2_zoom = 1;
                 // zoom.y(y);
                 // if(scope.zoomY) zoom.y(y);// else zoom.y(null);
                     // .call(zoom);
@@ -739,7 +738,8 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
             scope.hover = {
                 i: 0,
                 dt: 0,
-                value: 0
+                value: 0,
+                value2: ''
             };
 
             function dot(){
@@ -761,16 +761,7 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
 
                 if(field2){
                     var cy2 = y2(data[scope.hover.i][field2]);
-                    cy = Math.min(cy, y2(data[scope.hover.i][field2]))
-                }
-
-                projectx
-                    .attr('x1', cx)
-                    .attr('y1', cy)
-                    .attr('x2', cx);
-
-
-                if(field2){
+                    cy = Math.min(cy, y2(data[scope.hover.i][field2]));
                     cursor2
                         .attr('cx', cx)
                         .attr('cy', cy2);
@@ -780,6 +771,13 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                         .attr('y1', cy2)
                         .attr('y2', cy2);
                 }
+
+                projectx
+                    .attr('x1', cx)
+                    .attr('y1', cy)
+                    .attr('x2', cx);
+
+
             }
 
             function hover() {
@@ -802,11 +800,20 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
 
                     scope.hover.dt = data[scope.hover.i].dt;
                     scope.hover.value = data[scope.hover.i][field];
+                    if(field2){
+                        scope.hover.value2 = data[scope.hover.i][field2];
+                    } else {
+                        scope.hover.value2 = '';
+                    }
                 });
                 dot();
             }
 
+            var Y2_base = 0, Y2_zoom = 1;
+
             function zoomed() {
+                // console.log('z');
+                // console.dir(zoomY2.scale());
                 // var d = x.domain();
                 // var dt = x(d[1]) - x(d[0]);
                 // console.log('zoomed', x.domain(), x.range());
@@ -816,9 +823,17 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 //     Math.min(0, t[0]),
                 //     t[1]
                 // ]);
-                console.log(d3.event);
+                // console.log(d3.event.translate);
 
-                zoomY2.scale(d3.event.scale).translate(d3.event.translate);
+                // zoomY2.y(y2);
+                // zoomX.scale(d3.event.scale).translate(d3.event.translate);
+                // zoomY.scale(d3.event.scale).translate(d3.event.translate);
+                var t = d3.event.translate;
+                zoomY2.scale(d3.event.scale * Y2_zoom).translate([0, t[1] + Y2_base]);
+                // Y2_base = t[1] + Y2_base;
+                // var scale = d3.event.scale;
+                // var translate = d3.event.translate;
+                // zoomY2.scale(zoomY2.scale() * scale).translate([zoomY2.translate()[0], zoomY2.translate()[1] + translate[1]]);
 
                 xaxis.call(xAxis);
                 xaxisD.call(xAxisD);
@@ -838,7 +853,13 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
             }
 
             function zoomedX() {
+                // console.log('zX');
                 // console.log('zoomedX', x.domain(), x.range());
+
+                // zoom.scale(d3.event.scale).translate([d3.event.translate[0], 0]);
+                // zoomY.scale(d3.event.scale).translate(d3.event.translate);
+                // zoomY2.scale(d3.event.scale).translate(d3.event.translate);
+
                 xaxis.call(xAxis);
                 xaxisD.call(xAxisD);
                 chart.select('path.line')
@@ -848,7 +869,7 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
 
                 zoom.x(x); zoom.y(y);
                 zoomY.y(y);
-                zoomY2.y(y2);
+                // zoomY2.y(y2);
 
                 // var days = moment.duration(moment(x.invert(width)) - moment(x.invert(0))).asDays();
                 // var limit = Math.round(days / width * 50) + 1;
@@ -859,7 +880,13 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
             }
 
             function zoomedY() {
+                // console.log('zY');
                 // console.log('zoomedY', x.domain(), x.range());
+
+                // zoom.scale(d3.event.scale).translate(d3.event.translate);
+                // zoomX.scale(d3.event.scale).translate(d3.event.translate);
+                // zoomY2.scale(d3.event.scale).translate(d3.event.translate);
+
                 yaxis.call(yAxis);
                 chart.select('path.line')
                     .attr('d', line);
@@ -868,16 +895,23 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
 
                 zoom.x(x); zoom.y(y);
                 zoomX.x(x);
-                // zoomY.y(y);
-                zoomY2.y(y2);
+                // // zoomY.y(y);
+                // zoomY2.y(y2);
 
                 dot();
             }
 
             function zoomedY2() {
+                // console.log('zY2', zoomY2.translate());
+
+                Y2_base = zoomY2.translate()[1];
+                Y2_zoom = zoomY2.scale();
                 // console.log('zoomedY', x.domain(), x.range());
 
                 // zoom.scale(d3.event.scale).translate(d3.event.translate);
+                // zoom.scale(d3.event.scale).translate(d3.event.translate);
+                // zoomX.scale(d3.event.scale).translate(d3.event.translate);
+                // zoomY.scale(d3.event.scale).translate(d3.event.translate);
 
                 yaxis2.call(yAxis2);
                 chart.select('path.line')
@@ -885,16 +919,18 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 chart.select('path.line2')
                     .attr('d', line2);
 
-                zoom.x(x); zoom.y(y);
-                zoomY.y(y);
-                zoomX.x(x);
+                zoom.x(x); zoom.y(y);       // Бля, почему это не пашет?
+                // zoomX.x(x);
+
+                // zoomY.y(y);
+                // zoomX.x(x);
                 // zoomY.y(y2);
                 // zoomY2.y(y2);
                 // zoom.scale(1).translate([0,0]);
                 // setTimeout(function(){
                 //     zoomY2.y(y2);
                 // }, 1000);
-                console.dir(zoom);
+                // console.dir(zoom);
 
                 dot();
             }
@@ -958,7 +994,7 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                         '<button class="btn" ng-click="reZoom()" title="Вернуть мастаб"><i class="icon-resize-full icon-2x"></i></button>' +
                         '<br/>' +
                         '{{ hover.dt | datetime:true:\'time\' }}<br>' +
-                        '{{ hover.value | number:2  }}<br>' +
+                        '{{ hover.value | number:2  }} {{ hover.value2 | number:2  }}<br>' +
                         // '<div>'+
                         //     '<label><input type="checkbox" ng-model="zoomY"> Масштаб Y</label>' +
                         // '</div>'+
