@@ -869,7 +869,7 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
 
                 zoom.x(x); zoom.y(y);
                 zoomY.y(y);
-                // zoomY2.y(y2);
+                zoomY2.y(y2); Y2_base = 0; Y2_zoom = 1;
 
                 // var days = moment.duration(moment(x.invert(width)) - moment(x.invert(0))).asDays();
                 // var limit = Math.round(days / width * 50) + 1;
@@ -896,7 +896,7 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 zoom.x(x); zoom.y(y);
                 zoomX.x(x);
                 // // zoomY.y(y);
-                // zoomY2.y(y2);
+                zoomY2.y(y2); Y2_base = 0; Y2_zoom = 1;
 
                 dot();
             }
