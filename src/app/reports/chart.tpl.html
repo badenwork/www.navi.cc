@@ -4,10 +4,16 @@
 
 <!-- <form class="form-inline"> -->
 <!-- <div class="form-group"> -->
-
-    <select class="form-control" ng-model="chart" ng-options="select.title for select in charts" ng-change="onSelect()">
-        <!-- <option value="">Выберите график</option> -->
+    <form class="form-inline" role="form">
+    <div class="form-group">
+    <select class="form-control" ng-model="chart" ng-options="select.title for select in charts" ng-change="onSelect()" style="width: auto">
     </select>
+
+    <select class="form-control" ng-model="chart2" ng-options="select.title for select in charts" ng-change="onSelect()" style="width: auto">
+        <option value="">Нет</option>
+    </select>
+    </div>
+    </form>
 
     <datepicker date-from="dateFrom" date-to="dateTo" range="range" on-change="changeDate()"></datepicker>
     <!-- <p>dateFrom: {{ dateFrom | date:'dd/MM/yyyy HH:mm:ssZ' }}</p> -->
@@ -19,4 +25,4 @@
 
 <!-- [{{ chart }}] -->
 
-<timechart data="data" chart="{{chart.field}}" min="{{chart.min}}"></timechart>
+<timechart data="data" chart="{{chart.field}}" chart2="{{chart2.field}}" min="{{chart.min}}"></timechart>

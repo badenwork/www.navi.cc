@@ -32,14 +32,20 @@
                 shape-rendering: crispEdges;
             }
             .y.axis line {
-                stroke: #ddd;
+                // stroke: #ddd;
+                stroke: url(#line-gradient);
+            }
+
+            .y2.axis line {
+                // stroke: #ddd;
+                stroke: url(#line-gradient2);
             }
 
             .axisx {
                 cursor: ew-resize;
                 rect.helper{
-                    // fill: #eee;
-                    fill: none;
+                    fill: #eee;
+                    // fill: none;
                     pointer-events: all;
                 }
             }
@@ -47,8 +53,8 @@
             .axisy {
                 cursor: ns-resize;
                 rect.helper{
-                    // fill: #eee;
-                    fill: none;
+                    fill: #eee;
+                    // fill: none;
                     pointer-events: all;
                 }
             }
@@ -71,23 +77,29 @@
                 stroke-linecap: round;
             }
 
+            path.line2 {
+                fill: none;
+                stroke: chocolate;
+                stroke-width: 5px;
+                stroke-linejoin: round;
+                stroke-linecap: round;
+            }
+
             /*    .chart svg .x.axis path {
                 display: none;
             }
             */
 
             circle.dot {
-                // fill: steelblue;
-
                 fill: white;
                 stroke: steelblue;
                 stroke-width: 3px;
+            }
 
-                // &:hover {
-                //     fill: lightblue;
-                //     // stroke-width: 5px;
-                // }
-
+            circle.dot2 {
+                fill: white;
+                stroke: chocolate;
+                stroke-width: 3px;
             }
 
             line.project {
@@ -97,12 +109,21 @@
                 stroke-width: 1px;
                 stroke-dasharray: 5,5;
             }
+
+            line.project2 {
+                fill: none;
+                stroke: #aaa;
+                shape-rendering: crispEdges;
+                stroke-width: 1px;
+                stroke-dasharray: 5,5;
+            }
+
         }
     }
 
     .timechart-control {
         position: absolute;
-        right: 30px;
+        right: 60px;
         bottom: 60px;
         background-color: rgba(255, 255, 255, 0.8);
         padding: 8px 8px 3px 8px;
