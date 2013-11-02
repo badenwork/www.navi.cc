@@ -399,16 +399,20 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 .orient('right');
 
             var zoom = d3.behavior.zoom()
-                .on('zoom', zoomed);
+                .on('zoom', zoomed)
+                .on('zoomend', zoomend);
 
             var zoomX = d3.behavior.zoom()
-                .on('zoom', zoomedX);
+                .on('zoom', zoomedX)
+                .on('zoomend', zoomend);
 
             var zoomY = d3.behavior.zoom()
-                .on('zoom', zoomedY);
+                .on('zoom', zoomedY)
+                .on('zoomend', zoomend);
 
             var zoomY2 = d3.behavior.zoom()
-                .on('zoom', zoomedY2);
+                .on('zoom', zoomedY2)
+                .on('zoomend', zoomend);
 
             var svg = d3.select(element[0]).select('.timechart-container').append('svg');
                     // .on('mousemove.drag', mousemove)
@@ -676,10 +680,11 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 y.range([height, 0]);
                 y2.range([height, 0]);
 
-                zoom.x(x); zoom.y(y);      // За основу берется zoomY
-                zoomX.x(x);
-                zoomY.y(y);
-                zoomY2.y(y2); Y2_base = 0; Y2_zoom = 1;
+                zoomend();
+                // zoom.x(x); zoom.y(y);      // За основу берется zoomY
+                // zoomX.x(x);
+                // zoomY.y(y);
+                // zoomY2.y(y2);
                 // zoom.y(y);
                 // if(scope.zoomY) zoom.y(y);// else zoom.y(null);
                     // .call(zoom);
@@ -815,31 +820,9 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 dot();
             }
 
-            var Y2_base = 0, Y2_zoom = 1;
 
             function zoomed() {
-                // console.log('z');
-                // console.dir(zoomY2.scale());
-                // var d = x.domain();
-                // var dt = x(d[1]) - x(d[0]);
-                // console.log('zoomed', x.domain(), x.range());
-
-                // var t = d3.event.translate;
-                // zoom.translate([
-                //     Math.min(0, t[0]),
-                //     t[1]
-                // ]);
-                // console.log(d3.event.translate);
-
-                // zoomY2.y(y2);
-                // zoomX.scale(d3.event.scale).translate(d3.event.translate);
-                // zoomY.scale(d3.event.scale).translate(d3.event.translate);
-                var t = d3.event.translate;
-                zoomY2.scale(d3.event.scale * Y2_zoom).translate([0, t[1] + Y2_base]);
-                // Y2_base = t[1] + Y2_base;
-                // var scale = d3.event.scale;
-                // var translate = d3.event.translate;
-                // zoomY2.scale(zoomY2.scale() * scale).translate([zoomY2.translate()[0], zoomY2.translate()[1] + translate[1]]);
+                zoomY2.scale(d3.event.scale).translate(d3.event.translate);
 
                 xaxis.call(xAxis);
                 xaxisD.call(xAxisD);
@@ -849,23 +832,11 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                     .attr('d', line);
                 chart.select('path.line2')
                     .attr('d', line2);
-
-
-                zoomX.x(x);
-                zoomY.y(y);
-                // zoomY2.y(y2);
 
                 dot();
             }
 
             function zoomedX() {
-                // console.log('zX');
-                // console.log('zoomedX', x.domain(), x.range());
-
-                // zoom.scale(d3.event.scale).translate([d3.event.translate[0], 0]);
-                // zoomY.scale(d3.event.scale).translate(d3.event.translate);
-                // zoomY2.scale(d3.event.scale).translate(d3.event.translate);
-
                 xaxis.call(xAxis);
                 xaxisD.call(xAxisD);
                 chart.select('path.line')
@@ -873,72 +844,30 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 chart.select('path.line2')
                     .attr('d', line2);
 
-                zoom.x(x); zoom.y(y);
-                zoomY.y(y);
-                zoomY2.y(y2); Y2_base = 0; Y2_zoom = 1;
-
-                // var days = moment.duration(moment(x.invert(width)) - moment(x.invert(0))).asDays();
-                // var limit = Math.round(days / width * 50) + 1;
-                // console.log('days=', days, limit);
-                // xAxisD.ticks(d3.time.days, Math.pow(limit, 0.5));
-
                 dot();
             }
 
             function zoomedY() {
-                // console.log('zY');
-                // console.log('zoomedY', x.domain(), x.range());
-
-                // zoom.scale(d3.event.scale).translate(d3.event.translate);
-                // zoomX.scale(d3.event.scale).translate(d3.event.translate);
-                // zoomY2.scale(d3.event.scale).translate(d3.event.translate);
-
                 yaxis.call(yAxis);
                 chart.select('path.line')
                     .attr('d', line);
-                // chart.select('path.line2')
-                //     .attr('d', line2);
-
-                zoom.x(x); zoom.y(y);
-                zoomX.x(x);
-                // // zoomY.y(y);
-                zoomY2.y(y2); Y2_base = 0; Y2_zoom = 1;
 
                 dot();
             }
 
             function zoomedY2() {
-                // console.log('zY2', zoomY2.translate());
-
-                Y2_base = zoomY2.translate()[1];
-                Y2_zoom = zoomY2.scale();
-                // console.log('zoomedY', x.domain(), x.range());
-
-                // zoom.scale(d3.event.scale).translate(d3.event.translate);
-                // zoom.scale(d3.event.scale).translate(d3.event.translate);
-                // zoomX.scale(d3.event.scale).translate(d3.event.translate);
-                // zoomY.scale(d3.event.scale).translate(d3.event.translate);
-
                 yaxis2.call(yAxis2);
-                chart.select('path.line')
-                    .attr('d', line);
                 chart.select('path.line2')
                     .attr('d', line2);
 
-                zoom.x(x); zoom.y(y);       // Бля, почему это не пашет?
-                // zoomX.x(x);
-
-                // zoomY.y(y);
-                // zoomX.x(x);
-                // zoomY.y(y2);
-                // zoomY2.y(y2);
-                // zoom.scale(1).translate([0,0]);
-                // setTimeout(function(){
-                //     zoomY2.y(y2);
-                // }, 1000);
-                // console.dir(zoom);
-
                 dot();
+            }
+
+            function zoomend() {
+                zoom.x(x); zoom.y(y);       // Бля, почему это не пашет?
+                zoomX.x(x);
+                zoomY.y(y);
+                zoomY2.y(y2);
             }
 
 
