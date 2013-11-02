@@ -713,13 +713,19 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
 
                 // График
 
-                chart.select('path.line')
-                    .datum(data.points) //.transition()
-                    .attr('d', line);
+                if(field){
+                    chart.select('path.line')
+                        .datum(data.points) //.transition()
+                        .attr('d', line);
+                }
 
                 if(field2){
                     chart.select('path.line2')
                         .datum(data.points) //.transition()
+                        .attr('d', line2);
+                } else {
+                    chart.select('path.line2')
+                        .datum([]) //.transition()
                         .attr('d', line2);
                 }
 
@@ -890,8 +896,8 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 yaxis.call(yAxis);
                 chart.select('path.line')
                     .attr('d', line);
-                chart.select('path.line2')
-                    .attr('d', line2);
+                // chart.select('path.line2')
+                //     .attr('d', line2);
 
                 zoom.x(x); zoom.y(y);
                 zoomX.x(x);
