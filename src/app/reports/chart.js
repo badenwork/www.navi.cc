@@ -318,8 +318,8 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
     }
 ])
 
-.directive('timechart', [
-    function() {
+.directive('timechart', ['$filter',
+    function($filter) {
         'use strict';
 
         var bisect = d3.bisector(function(d) { return d.dt; }).right;
@@ -560,6 +560,14 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 .attr('class', 'dot')
                 .attr('r', 5);
 
+            var tooltip1 = d3.select(element[0]).select('.timechart-container').append('div')
+                .attr('class', 'chart-tooltip chart-tooltip1')
+                .attr('style', 'display:none');
+
+            var tooltip2 = d3.select(element[0]).select('.timechart-container').append('div')
+                .attr('class', 'chart-tooltip chart-tooltip2')
+                .attr('style', 'display:none');
+
             var cursor2 = plot.append('circle')
                 .attr('class', 'dot2')
                 .attr('r', 5);
@@ -744,6 +752,8 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 projecty2
                     .attr('x2', width);
 
+                dot();
+
             };
 
             scope.hover = {
@@ -753,11 +763,46 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 value2: ''
             };
 
+            function tooltip(cx, cy, cy2){
+                return function(){
+                    var x;
+                    var y;
+
+                    if(cy2 === -100) {
+                        if(cy > height/2) {
+                            y = cy - 24;
+                        } else {
+                            y = cy + 24;
+                        }
+                    } else {
+                        if(cy >= cy2) {
+                            y = cy + 24;
+                        } else {
+                            y = cy - 24;
+                        }
+                    }
+
+                    if(cx < width/2){
+                        this.attr('style', 'right:' + (width-cx) + 'px;top:' + y + 'px');
+                    } else {
+                        this.attr('style', 'left:' + cx + 'px;top:' + y + 'px');
+                    }
+                }
+            }
+
             function dot(){
-                if(!scope.data) return;
+                if(!scope.data) {
+                    tooltip1.attr('style', 'display:none');
+                    tooltip2.attr('style', 'display:none');
+                    return;
+                }
                 var data = scope.data.points;
                 var point = data[scope.hover.i];
-                if(!point) return;
+                if(!point) {
+                    tooltip1.attr('style', 'display:none');
+                    tooltip2.attr('style', 'display:none');
+                    return;
+                }
                 var cx = x(new Date(point.dt * 1000));
                 var cy = y(data[scope.hover.i][field]);
 
@@ -770,17 +815,38 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                     .attr('y1', cy)
                     .attr('y2', cy);
 
+                // tooltip1.call(tooltip(cx, cy));
+
                 if(field2){
                     var cy2 = y2(data[scope.hover.i][field2]);
-                    cy = Math.min(cy, y2(data[scope.hover.i][field2]));
                     cursor2
+                        .attr('opacity', 1)
                         .attr('cx', cx)
                         .attr('cy', cy2);
 
                     projecty2
+                        .attr('opacity', 1)
                         .attr('x1', cx)
                         .attr('y1', cy2)
                         .attr('y2', cy2);
+
+                    tooltip1.call(tooltip(cx, cy, cy2+0.01));
+                    tooltip2.call(tooltip(cx, cy2, cy));
+                    tooltip2.text($filter('number')(data[scope.hover.i][field2], 2));
+
+                    cy = Math.min(cy, y2(data[scope.hover.i][field2]));
+                } else {
+                    cursor2
+                        .attr('opacity', 0)
+                        .attr('cx', 0)
+                        .attr('cy', 0);
+                    projecty2
+                        .attr('opacity', 0)
+                        .attr('x1', 0)
+                        .attr('y1', 0)
+                        .attr('y2', 0);
+                    tooltip1.call(tooltip(cx, cy, -100));
+                    tooltip2.attr('style', 'display:none');
                 }
 
                 projectx
@@ -788,6 +854,7 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                     .attr('y1', cy)
                     .attr('x2', cx);
 
+                tooltip1.text($filter('number')(data[scope.hover.i][field], 2));
 
             }
 
@@ -807,6 +874,7 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                 // console.log('hover', dx, i);
                 // var
                 if(!data[scope.hover.i]) return;
+
                 scope.$apply(function(){
 
                     scope.hover.dt = data[scope.hover.i].dt;
@@ -929,7 +997,6 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                         '<button class="btn" ng-click="reZoom()" title="Вернуть мастаб"><i class="icon-resize-full icon-2x"></i></button>' +
                         '<br/>' +
                         '{{ hover.dt | datetime:true:\'time\' }}<br>' +
-                        '{{ hover.value | number:2  }} {{ hover.value2 | number:2  }}<br>' +
                         // '<div>'+
                         //     '<label><input type="checkbox" ng-model="zoomY"> Масштаб Y</label>' +
                         // '</div>'+

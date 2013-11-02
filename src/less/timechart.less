@@ -10,6 +10,7 @@
     .timechart-container {
         position: absolute;
         top: 0; bottom: 0; left: 0; right: 0;
+        overflow: hidden;
 
 
         // .chart{
@@ -118,6 +119,29 @@
                 stroke-dasharray: 5,5;
             }
 
+        }
+
+        .chart-tooltip {
+            pointer-events:none;
+            margin-right: -10px;
+            margin-left: -10px;
+            margin-top: -5px;
+            position: absolute;
+            padding: 2px 6px 2px 6px;
+            background-color: white;
+            opacity: 0.8;
+
+            border-radius: 8px;
+            font-weight: bold;
+            // box-shadow: 1px 1px 6px rgba(0,0,0,0.3);
+        }
+        .chart-tooltip1 {
+            border: 2px solid steelblue;
+            box-shadow: 0px 0px 3px white;
+        }
+        .chart-tooltip2 {
+            border: 2px solid chocolate;
+            box-shadow: 0px 0px 3px white;
         }
     }
 
