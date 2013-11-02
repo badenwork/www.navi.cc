@@ -765,7 +765,6 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
 
             function tooltip(cx, cy, cy2){
                 return function(){
-                    var x;
                     var y;
 
                     if(cy2 === -100) {
@@ -787,7 +786,7 @@ angular.module('reports.chart', ['ngRoute', '$strap', 'resources.geogps', 'app.f
                     } else {
                         this.attr('style', 'left:' + cx + 'px;top:' + y + 'px');
                     }
-                }
+                };
             }
 
             function dot(){
