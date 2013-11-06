@@ -142,7 +142,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             var stop = Math.max(0, l - offset - 1 - ITEMS);
             if ((start === 0) && (stop === 0)) return;
             for (var i = start; i >= stop; i--) {
-                items.push($scope.track.points[i]);
+                items.push ($scope.track.points[i]);
             }
         };
 

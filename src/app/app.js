@@ -12,6 +12,7 @@ angular.module('app', [
     'logs',
     'gps',
     'reports',
+    'singleReport',
     'config',
     'admin',
     'help',
