@@ -65,8 +65,10 @@ angular.module('logs', ['ngRoute', 'resources.account', 'resources.system', 'res
         $scope.onSysSelect = function() {
             if ($scope.skey) {
                 $location.path('/logs/' + $scope.skey);
+                $location.replace();
             } else {
                 $location.path('/logs');
+                $location.replace();
             }
         };
 

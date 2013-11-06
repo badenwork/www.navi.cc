@@ -413,22 +413,22 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 };
 
                 var getSummaryRow = function (event, hasFuelSensor) {
-                    var row;
+                    var sRow;
                     var createRow = function (event, value) {
                       return {event: event, columns: [value]};  
                     };
                     switch (event) {
-                        case  'dT': row = createRow (event, summary_row_full.totalTraveledDistance); break;
-                        case  'tTT': row = createRow (event, summary_row_full.totalTraveledTime); break;
-                        case  'aS': row = createRow (event, summary_row_full.totalAverageSpeed); break;
-                        case  'tTOPAS': row = createRow (event, summary_row_full.totalStopedTime); break;
-                        case  'mS': row = createRow (event, summary_row_full.maxSpeed); break;
-                        case  'fCs': if (hasFuelSensor) row = createRow (event, summary_row_full.fuelConsumption_sensor); break;
-                        case  'fCa': row = createRow (event, summary_row_full.fuelConsumption_analytically); break;
-                        case  'tF': if (hasFuelSensor) row = createRow (event, summary_row_full.totalRefueling); break;
-                        case  'tDF': if (hasFuelSensor) row = createRow (event, summary_row_full.totalDrainFuel); break;
+                        case  'dT': sRow = createRow (event, summary_row_full.totalTraveledDistance); break;
+                        case  'tTT': sRow = createRow (event, summary_row_full.totalTraveledTime); break;
+                        case  'aS': sRow = createRow (event, summary_row_full.totalAverageSpeed); break;
+                        case  'tTOPAS': sRow = createRow (event, summary_row_full.totalStopedTime); break;
+                        case  'mS': sRow = createRow (event, summary_row_full.maxSpeed); break;
+                        case  'fCs': if (hasFuelSensor) sRow = createRow (event, summary_row_full.fuelConsumption_sensor); break;
+                        case  'fCa': sRow = createRow (event, summary_row_full.fuelConsumption_analytically); break;
+                        case  'tF': if (hasFuelSensor) sRow = createRow (event, summary_row_full.totalRefueling); break;
+                        case  'tDF': if (hasFuelSensor) sRow = createRow (event, summary_row_full.totalDrainFuel); break;
                     }
-                    return row;
+                    return sRow;
                 };
                 var summary_row_full = [];
                 summary_row_full.totalTraveledDistance = calculateTotalTraveledDistance (ranges, points) + ' км';
@@ -441,9 +441,9 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 summary_row_full.totalDrainFuel = calculateTotalDrainFuel (ranges, points) + ' л';
                 summary_row_full.totalRefueling = calculateTotalRefueling (ranges, points) + ' л';
                 for (i = 0; i < template.sE.length; i++) {
-                    var row = getSummaryRow (template.sE [i]);
-                    if (row) {
-                        sRows.push (row);
+                    var sRow_final = getSummaryRow (template.sE [i]);
+                    if (sRow_final) {
+                        sRows.push (sRow_final);
                     }
                 }
                 report.reportData.mHeaders = mHeaders;

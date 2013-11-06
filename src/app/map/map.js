@@ -51,6 +51,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
         $scope.skey = $routeParams.skey;
         $scope.day = $routeParams.day || 0;
         $scope.track = null;
+        $scope.points = 0;
 
         var dp = $('#datepicker').datepicker({
             language: i18n.shortLang(),
@@ -58,19 +59,23 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 date.setHours(-date.getTimezoneOffset() / 60);
                 var hour = (date.valueOf() / 1000 / 3600) | 0,
                     day = (hour / 24) | 0;
+                // console.log('beforeShowDay', day, hour);
                 return GeoGPS.checkDay(day) ? 'enabled' : 'disabled';
             }
         }).on('changeDate', function(ev) {
             var date = ev.date;
-            var tz = (new Date()).getTimezoneOffset() / 60;
+            // var tz = (new Date()).getTimezoneOffset() / 60;
+            var tz = (date).getTimezoneOffset() / 60;
             var hourfrom = date.valueOf() / 1000 / 3600;
             var day = (hourfrom - tz) / 24;
+            // console.log('changeDate', date, tz, hourfrom, day);
             $scope.$apply(function() { // Без этого не будет индикации процесса загрузки
                 var params = angular.copy($routeParams);
                 angular.extend(params, {
                     day: day
                 });
                 $location.search(params);
+                $location.replace();
             });
         });
 
@@ -147,27 +152,6 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             }
         };
 
-        $scope.hideTrack = false;
-        $scope.track_hide = null;
-        $scope.timeLine_hide = [];
-        $scope.revertVisibleTrack = function() {
-            if ($scope.hideTrack) {
-                $scope.track = $scope.track_hide;
-                $scope.timeline = $scope.timeLine_hide;
-                $scope.track_hide = null;
-                $scope.timeLine_hide = [];
-                $scope.hideTrack = false;
-
-            } else {
-                $scope.track_hide = $scope.track;
-                $scope.timeLine_hide = $scope.timeline;
-                $scope.track = null;
-                $scope.timeline = [];
-                $scope.hideTrack = true;
-            }
-
-        };
-
         $scope.onTimelineHover = function() {};
 
         $scope.onTimelineClick = function(d) {
@@ -180,6 +164,16 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             });
         };
 
+        $scope.onHide = function(){
+            $scope.points = 0;
+            $scope.timeline = [];
+            if($scope.track.select) delete $scope.track.select;
+            var params = angular.copy($routeParams);
+            if(params.hasOwnProperty('day')) delete params.day;
+            $location.search(params);
+            $location.replace();
+        };
+
         $scope.mapconfig = {
             autobounds: true, // Автоматическая центровка трека при загрузке
             animation: false, // Анимация направления трека
@@ -187,47 +181,9 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             centermarker: false // Не показывать маркер центра карты
         };
 
-        $scope.$watch('mapconfig.numbers', function() {
-            if ($scope.mapconfig.numbers) {
-                $('.eventmarker .track.STOP .eventmarker-nonumber').attr('style', '');
-                $('.eventmarker .track.STOP .eventmarker-number').attr('style', 'display: initial');
-            } else {
-                $('.eventmarker .track.STOP .eventmarker-nonumber').attr('style', 'display: initial');
-                $('.eventmarker .track.STOP .eventmarker-number').attr('style', 'display: none');
-            }
-        });
-
-        $scope.showconfig = false;
+        // $scope.$watch('map', function(map){
+        //     if(!map) return;
+        //     console.log('map = ', map);
+        // });
     }
-])
-
-.directive('configMapItem', function() {
-    'use strict';
-    return {
-        restrict: 'EA',
-        scope: {
-            item: '=',
-            iconOn: '@',
-            iconOff: '@'
-        },
-        replace: true,
-        transclude: true,
-        template: '<li ng-click=\'toggleValue()\'><span></span><span ng-transclude></span></li>',
-        link: function(scope, element) {
-            var icon = element[0].querySelector('span');
-            scope.toggleValue = function() {
-                scope.item = !scope.item;
-            };
-            scope.$watch('item', function(item) {
-                icon.className = 'icon-' + (item ? scope.iconOn : scope.iconOff) + ' icon-large';
-                if (item) {
-                    element.addClass('on');
-                    element.removeClass('off');
-                } else {
-                    element.addClass('off');
-                    element.removeClass('on');
-                }
-            });
-        }
-    };
-});
+]);

@@ -57,28 +57,12 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
             this.$name = name;
         };
 
-        var removeSysErrors = function(sys) {
-            if (sys.dynamic) {
-                switch (sys.dynamic.fsource) {
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 7:
-                        sys.dynamic.speed = 0;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            if (sys.car && angular.isUndefined(sys.car.hasFuelSensor))
-                sys.car.hasFuelSensor = false;
-        };
 
         // TODO: Метод не вызывает $update
         Models.prototype.$add = function(data) {
             // var model = new Model(that.name, data);
             var id = data.id;
-            removeSysErrors(data);
+            // removeSysErrors(data);              // Не удачное решение. REST - это не только System
             if (this.hasOwnProperty(id)) {
                 angular.extend(this[id], data);
             } else {
@@ -98,7 +82,7 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
 
             Connect.on(name, function(message) {
                 if (that.models.hasOwnProperty(message.id)) {
-                    removeSysErrors(message.data);
+                    // removeSysErrors(message.data);
                     if (message.data === null) { // Неизвестна степень изменений, требуется перезагрузить данные
                         that.get(message.id, true);
                     } else {

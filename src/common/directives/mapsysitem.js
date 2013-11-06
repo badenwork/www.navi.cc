@@ -12,7 +12,9 @@ angular.module('directives.main', ['newgps.services', 'services.tags'])
                 account: '=',
                 systems: '=',
                 skey: '=',
-                select: '='
+                select: '=',
+                // onFilter: '='
+                sfilter: '='
             },
             templateUrl: 'templates/map/mapsyslist.tpl.html',
             replace: true,
@@ -36,7 +38,9 @@ angular.module('directives.main', ['newgps.services', 'services.tags'])
                     };
 
                     // $scope.$watch('sfilter', function() {
-                    //     console.log('fire sfilter', $scope.sfilter);
+                    //     console.log($scope.onFilter, $scope.sfilter);
+                    //     $scope.onFilter($scope.sfilter);
+                    // //     console.log('fire sfilter', $scope.sfilter);
                     // });
 
                     // $scope.filtered = function(list) {
@@ -78,6 +82,7 @@ angular.module('directives.main', ['newgps.services', 'services.tags'])
                             skey: skey
                         });
                         $location.search(params);
+                        $location.replace();
                         $scope.select(skey);
                     };
 

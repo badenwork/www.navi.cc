@@ -1,6 +1,6 @@
 /* global angular:true */
 
-angular.module('config', ['ngRoute', 'resources.account', 'resources.system', 'ui.sortable', 'config.system.params', 'directives.lists'])
+angular.module('config', ['ngRoute', 'resources.account', 'resources.system', 'ui.sortable', 'config.system.info', 'config.system.params', 'directives.lists', 'config.system.params.fuel.an'])
 
 .config(['$routeProvider',
     function($routeProvider) {

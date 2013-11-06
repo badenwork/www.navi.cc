@@ -69,7 +69,8 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         var date;
         var hourfrom;
 
-        var tz = (new Date()).getTimezoneOffset() / 60;
+        // var tz = (new Date()).getTimezoneOffset() / 60;
+        var tz;
 
         if ((1 * day) === 0) {
             hourfrom = (new Date((new Date()).toDateString())).valueOf() / 1000 / 3600;
@@ -77,6 +78,8 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         } else if ((1 * day) === -1) {
             hourfrom = (new Date((new Date()).toDateString())).valueOf() / 1000 / 3600 - 24;
         } else {
+            hourfrom = day * 24;
+            tz = (new Date(hourfrom * 3600 * 1000)).getTimezoneOffset() / 60;   // Уточняем временную зону
             hourfrom = day * 24 + tz;
         }
         date = new Date(hourfrom * 3600 * 1000);
@@ -85,8 +88,10 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         $scope.onSysSelect = function() {
             if ($scope.skey) {
                 $location.path('/gps/' + $scope.skey);
+                $location.replace();
             } else {
                 $location.path('/gps');
+                $location.replace();
             }
         };
 
@@ -153,10 +158,13 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         }).on('changeDate', function(ev) {
             $scope.$apply(function() {
                 var date = ev.date;
+                var tz = (date).getTimezoneOffset() / 60;
                 var newday = (date.valueOf() / 1000 / 3600 - tz) / 24;
                 $location.path('/gps/' + $scope.skey + '/' + newday);
             });
         });
+
+        tz = (date).getTimezoneOffset() / 60;
 
         var dateline = dp.datepicker.DPGlobal.formatDate(new Date(date.valueOf() - tz * 3600 * 1000), 'mm-dd-yyyy', 'ru');
         dp.datepicker('update', dateline);

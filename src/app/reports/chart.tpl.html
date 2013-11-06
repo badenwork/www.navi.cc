@@ -1,0 +1,28 @@
+<h4><navtool></navtool> График</h4>
+
+<h5>{{ system.title }}</h5>
+
+<!-- <form class="form-inline"> -->
+<!-- <div class="form-group"> -->
+    <form class="form-inline" role="form">
+    <div class="form-group">
+        <datepicker date-from="dateFrom" date-to="dateTo" range="range" on-change="changeDate()" style="display:inline-block"></datepicker><span> : </span>
+        <select class="form-control" ng-model="chart" ng-options="select.title for select in charts" ng-change="onSelect()" style="width: auto">
+        </select>
+
+        <select class="form-control" ng-model="chart2" ng-options="select.title for select in charts" ng-change="onSelect()" style="width: auto">
+            <option value="">Нет</option>
+        </select>
+    </div>
+    </form>
+
+    <!-- <p>dateFrom: {{ dateFrom | date:'dd/MM/yyyy HH:mm:ssZ' }}</p> -->
+    <!-- <p>dateTo: {{ dateTo | date:'dd/MM/yyyy HH:mm:ssZ' }}</p> -->
+
+
+<!-- </div> -->
+<!-- </form> -->
+
+<!-- [{{ chart }}] -->
+
+<timechart data="data" chart="{{chart.field}}" chart2="{{chart2.field}}" min="{{chart.min}}"></timechart>

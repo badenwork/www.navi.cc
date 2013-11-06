@@ -23,6 +23,24 @@ module.exports = (grunt) ->
       less: ['src/less/main.less']  # recess:build doesn't accept ** in its file patterns
 
     ngtemplates:
+      components:
+        cwd:    'components/angular-ui-bootstrap'
+        src:    ["template/datepicker/*.html"]
+        dest:   'temp/templates-components.js'
+        options:
+          module: 'app'
+          prefix: ''
+          # url:    (url) -> return 'templates/' + url  # .replace '.tpl.html', '.html'
+          htmlmin:
+            collapseBooleanAttributes:      false
+            collapseWhitespace:             true
+            removeAttributeQuotes:          false
+            removeComments:                 true # Only if you don't use comment directives!
+            removeEmptyAttributes:          false
+            removeRedundantAttributes:      false
+            removeScriptTypeAttributes:     false
+            removeStyleLinkTypeAttributes:  false
+
       production:
         cwd:    'src/app'
         src:    ["**/*.tpl.html"]
@@ -85,6 +103,7 @@ module.exports = (grunt) ->
           "angular-translate": ""
           # "bootstrap-datepicker": ""  # Не совместим с bootstrap 3.x
           "bootstrap3-datepicker": ""   # Форк предыдущего с поддерхкой twbs3
+          "bootstrap-daterangepicker": ""
           # "angular-strap": ""       # Не совместим с bootstrap 3.x
           # "angular-virtual-scroll": ""    # Сомнительная производительность
           # ngInfiniteScroll: ""
@@ -92,7 +111,7 @@ module.exports = (grunt) ->
           "https://github.com/baden/ngInfiniteScroll.git": "1.0.1-pre1"
           # "ngInfiniteScroll": "https://github.com/baden/ngInfiniteScroll.git" # Оригинальный не поддерживает скроллинг в контейнере, только в top
           "angular-bindonce": ""
-          "components-font-awesome": ""
+          "components-font-awesome": "3.2.1"
           moment:
             select: ["moment.js", "ru.js"]
           jszip:
@@ -123,6 +142,9 @@ module.exports = (grunt) ->
       dist:
         files:
           "<%= distdir %>/css/<%= pkg.name %>.css": ["<%= src.less %>"]
+      bootstrap:
+        files:
+          "temp/components/bootstrap.css": ["temp/components/bootstrap/bootstrap.less"]
 
     copy:
       assets:
@@ -167,6 +189,18 @@ module.exports = (grunt) ->
           dest: "dist/css/"
           cwd: 'src/images'
           expand: true
+        ]
+      bootstrap:
+        files: [
+          src: ["*.less", '!variables.less']
+          cwd: "components/bootstrap/less/"
+          dest: "temp/components/bootstrap/"
+          expand: true
+        ,
+          src: ["src/less/variables.less"]
+          dest: "temp/components/bootstrap/"
+          expand: true
+          flatten: true
         ]
 
     jade:
@@ -251,6 +285,7 @@ module.exports = (grunt) ->
           'src/app/**/*.js'
           'temp/templates.js'
           'temp/templates-jade.js'
+          # 'temp/templates-components.js'    # Некрасивый :(
         ],
         dest:'<%= distdir %>/js/<%= pkg.name %>.js'
 
@@ -270,6 +305,7 @@ module.exports = (grunt) ->
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.uk.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.pl.js',
+            # 'components/bootstrap-daterangepicker/daterangepicker.js',
             'components/angular/angular.js',
             'components/angular-route/angular-route.min.js',
             'components/angular-resource/angular-resource.min.js',
@@ -277,6 +313,8 @@ module.exports = (grunt) ->
             'components/angular-translate/angular-translate.min.js',
             'components/angular-ui-sortable/src/sortable.js',
             'components/angular-ui-bootstrap/src/buttons/buttons.js',
+            'components/angular-ui-bootstrap/src/position/position.js',     # Необходим для ui-datepicker
+            'components/angular-ui-bootstrap/src/datepicker/datepicker.js',
             'components/angular-ui-select2/src/select2.js',
             'components/angular-bindonce/bindonce.js',
             'components/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
@@ -293,11 +331,13 @@ module.exports = (grunt) ->
             'components/bootstrap/dist/css/bootstrap.min.css'
             'components/bootstrap-timepicker/css/bootstrap-timepicker.css'
             'components/components-font-awesome/css/font-awesome.min.css'
+            'components/bootstrap-datepicker/css/datepicker.css'
+            # 'components/bootstrap-daterangepicker/daterangepicker-bs3.css'
           ]
           dest: '<%= distdir %>/css/components.css'
         ]
 
-      conponents_min:
+      conponents_min:             # Minified versions
         files: [
           src: [
             'components/xlsx.js/xlsx.js',
@@ -313,6 +353,7 @@ module.exports = (grunt) ->
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.uk.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.pl.js',
+            # 'components/bootstrap-daterangepicker/daterangepicker.js',
             'components/angular/angular.min.js',
             'components/angular-route/angular-route.min.js',
             'components/angular-resource/angular-resource.min.js',
@@ -320,6 +361,8 @@ module.exports = (grunt) ->
             'components/angular-translate/angular-translate.min.js',
             'components/angular-ui-sortable/src/sortable.js',
             'components/angular-ui-bootstrap/src/buttons/buttons.js',
+            'components/angular-ui-bootstrap/src/position/position.js',     # Необходим для ui-datepicker
+            'components/angular-ui-bootstrap/src/datepicker/datepicker.js',
             'components/angular-ui-select2/src/select2.js',
             'components/angular-bindonce/bindonce.js',
             'components/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
@@ -333,9 +376,13 @@ module.exports = (grunt) ->
           dest: '<%= distdir %>/js/components.js'
         ,
           src: [
-            'components/bootstrap/dist/css/bootstrap.min.css'
+            # 'components/bootstrap/dist/css/bootstrap.min.css'
             'components/bootstrap-timepicker/css/bootstrap-timepicker.min.css'
+            # 'components/bootstrap/dist/css/bootstrap.min.css'
+            'temp/components/bootstrap.css'
             'components/components-font-awesome/css/font-awesome.min.css'
+            'components/bootstrap-datepicker/css/datepicker.css'
+            # 'components/bootstrap-daterangepicker/daterangepicker-bs3.css'
           ]
           dest: '<%= distdir %>/css/components.css'
         ]
@@ -503,7 +550,12 @@ module.exports = (grunt) ->
   # Build
   grunt.registerTask "build", [
     # "clean", "jade", "less", "copy", "html2js", "index", "concat"
-    "clean", "jade", "less", "bowerful", "copy", "index", "concat"
+    "clean", "jade", "less:dist", "bowerful", "copy", "index", "concat"
+  ]
+
+  # Build components
+  grunt.registerTask "deps", [
+    "bowerful", "copy:bootstrap", "less:bootstrap"
   ]
 
   # Production
@@ -512,12 +564,15 @@ module.exports = (grunt) ->
     "clean"
     "jshint"
     "jade:production"
+    "ngtemplates:components"
     "ngtemplates:production"
     "ngtemplates:production_jade"
-    "less"
+    "less:dist"
     # "bowerful"
     "copy:assets"
     "copy:sprites"
+    "copy:bootstrap"
+    "less:bootstrap"
     "copy:conponents_min"
     "concat:conponents_min"
     # "concat:conponents"

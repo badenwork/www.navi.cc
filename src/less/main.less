@@ -1,7 +1,7 @@
 @import "variables.less";
 @import "mixins.less";
 @import "common.less";
-@import "datepicker.less";
+// @import "datepicker.less";
 @import "timeline.less";
 
 html, body {
@@ -366,7 +366,21 @@ a i[class^="icon-"] {
   text-decoration: none;
 }
 
+navtool {
+  margin-right: 6px;
+}
+
+.breadcrumb {
+  padding: 0;
+}
+
+.datepicker {
+  z-index: 10000!important;
+}
+
 @import "login.less";
 @import "map.less";
 @import "gps.less";
 @import "config.less";
+
+@import "timechart.less";
