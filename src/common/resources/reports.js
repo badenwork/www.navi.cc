@@ -293,6 +293,22 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         averageSpeed: 'Средняя скорость',               /aS
                         travelDistance: 'Пройдено'                              //dT
             */
+            var getFullMainRow = function (ranges, i, points, systemParams) {
+                var row_fullData = {};
+                row_fullData.eventTypeStr = getEventTypeStr (ranges, i, points, systemParams);
+                row_fullData.fuelChanges = calculateFuelChanges (ranges, i, points, systemParams);
+                row_fullData.duration = calculateDuration (ranges, i, points, systemParams);
+                row_fullData.fuelLevel = calculateFuelLevel (ranges, i, points, systemParams);
+                row_fullData.coordinates = getCoordinates (ranges, i, points, systemParams);
+                row_fullData.averageSpeed = calculateAverageSpeed (ranges, i, points, systemParams);
+                row_fullData.travelDistance = calculateTravelDistance (ranges, i, points, systemParams);
+                row_fullData.interval = getIntervalStr (ranges, i, points, systemParams);
+                row_fullData.range = ranges [i];
+                return row_fullData;
+            };
+            var concatMainRows = function (row1, row2) {
+                
+            };
             var getMainRow = function (row_fullData, template, systemParams) {
                 var row = {event: row_fullData.eventTypeStr, columns:[]};
                 for (var i = 0; i < template.mD.length; i++) {
@@ -383,19 +399,20 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     var ranges = track.ranges.reverse();
                     var item, i;
                     var points = track.points;
-                    var rows_fullData = []; 
+                    var rows_fullData = [];
+                    var prevMainRow;
                     for (i = 0; i < ranges.length; i++) {
-                        var row_fullData = {};
-                        row_fullData.eventTypeStr = getEventTypeStr (ranges, i, points, systemParams);
-                        row_fullData.fuelChanges = calculateFuelChanges (ranges, i, points, systemParams);
-                        row_fullData.duration = calculateDuration (ranges, i, points, systemParams);
-                        row_fullData.fuelLevel = calculateFuelLevel (ranges, i, points, systemParams);
-                        row_fullData.coordinates = getCoordinates (ranges, i, points, systemParams);
-                        row_fullData.averageSpeed = calculateAverageSpeed (ranges, i, points, systemParams);
-                        row_fullData.travelDistance = calculateTravelDistance (ranges, i, points, systemParams);
-                        row_fullData.interval = getIntervalStr (ranges, i, points, systemParams);
-                        row_fullData.range = ranges [i];
+                        var row_fullData = getFullMainRow (ranges, i, points, systemParams);
                         rows_fullData.push (row_fullData);
+                        /*if (prevMainRow && prevMainRow.eventTypeStr === 'm' &&
+                            row_fullData.eventTypeStr === 'm') {
+                            row_fullData = concatMainRows (prevMainRow, row_fullData);
+                            prevMainRow = row_fullData;
+                            continue;
+                        } else {
+                            prevMainRow = row_fullData;
+                            rows_fullData.push (row_fullData);
+                        }*/
                     }
                     
                     for (i = 0; i < rows_fullData.length; i++) {
