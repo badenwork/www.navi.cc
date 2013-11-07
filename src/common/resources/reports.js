@@ -441,7 +441,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     }
                     
                         
-        ///////////////// SUMMARY REPORT
+        ////////////////// SUMMARY REPORT
            
                     var calculateTotalTraveledDistance = function (ranges, points, systemParams) {
                         var totalDistance = 0;
