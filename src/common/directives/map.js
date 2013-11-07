@@ -171,8 +171,8 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
                 google.maps.event.addListener(path, 'click', function(event) {
                     var point = scope.findNearestPoint({
-                        lat: event.latLng.lb,
-                        lon: event.latLng.mb
+                        lat: event.latLng.lat(),    //lat: event.latLng.lb,
+                        lon: event.latLng.lng()     //lon: event.latLng.mb
                     });
                     if (point === null) return;
                     var timeStr = moment(new Date((point.dt * 1000))).format('DD/MM/YYYY : hh:mm');
