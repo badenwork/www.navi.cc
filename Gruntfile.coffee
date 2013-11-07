@@ -157,7 +157,7 @@ module.exports = (grunt) ->
       conponents:
         files: [
           dest: '<%= distdir %>/components'
-          src: ['xlsx.js/xlsx.js','jszip/*.js','jquery/jquery.js','jquery-ui/ui/jquery.ui.core.js','jquery-ui/ui/jquery.ui.widget.js','jquery-ui/ui/jquery.ui.mouse.js','jquery-ui/ui/jquery.ui.sortable.js','bootstrap/dist/js/bootstrap.js','bootstrap-datepicker/js/bootstrap-datepicker.js','bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js','angular/angular.js','angular-route/angular-route.js','angular-resource/angular-resource.js','angular-animate/angular-animate.js','angular-translate/angular-translate.js','angular-ui-sortable/src/sortable.js','angular-ui-bootstrap/src/buttons/buttons.js','angular-bindonce/bindonce.js','ngInfiniteScroll/build/ng-infinite-scroll.js','moment/moment.js','moment/lang/*.js','d3/d3.js','components-font-awesome/css/font-awesome.min.css','bootstrap/dist/css/bootstrap.min.css','components-font-awesome/font/*.*']
+          src: ['xlsx.js/xlsx.js','jszip/*.js','jquery/jquery.js','jquery-ui/ui/jquery.ui.core.js','jquery-ui/ui/jquery.ui.widget.js','jquery-ui/ui/jquery.ui.mouse.js','jquery-ui/ui/jquery.ui.sortable.js','bootstrap/dist/js/bootstrap.js','bootstrap-datepicker/js/bootstrap-datepicker.js','bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js','angular/angular.js','angular-route/angular-route.js','angular-resource/angular-resource.js','angular-animate/angular-animate.js','angular-translate/angular-translate.js','angular-ui-sortable/src/sortable.js','angular-ui-bootstrap/src/buttons/buttons.js','angular-bindonce/bindonce.js','ngInfiniteScroll/build/ng-infinite-scroll.js','moment/moment.js','moment/lang/*.js','d3/d3.js','components-font-awesome/css/font-awesome.min.css','bootstrap/dist/css/bootstrap.min.css','components-font-awesome/font/*.*','bootstrap-timepicker/js/bootstrap-timepicker.min.js','bootstrap-timepicker/css/bootstrap-timepicker.min.css']
           cwd: 'components/'
           expand: true
         ]
@@ -322,12 +322,14 @@ module.exports = (grunt) ->
             'components/moment/lang/ru.js',
             'components/moment/lang/uk.js',
             'components/moment/lang/pl.js',
+            'components/bootstrap-timepicker/js/bootstrap-timepicker.js',
             'components/d3/d3.min.js'
           ]
           dest: '<%= distdir %>/js/components.js'
         ,
           src: [
             'components/bootstrap/dist/css/bootstrap.min.css'
+            'components/bootstrap-timepicker/css/bootstrap-timepicker.css'
             'components/components-font-awesome/css/font-awesome.min.css'
             'components/bootstrap-datepicker/css/datepicker.css'
             # 'components/bootstrap-daterangepicker/daterangepicker-bs3.css'
@@ -368,11 +370,14 @@ module.exports = (grunt) ->
             'components/moment/lang/ru.js',
             'components/moment/lang/uk.js',
             'components/moment/lang/pl.js',
+            'components/bootstrap-timepicker/js/bootstrap-timepicker.min.js',
             'components/d3/d3.min.js'
           ]
           dest: '<%= distdir %>/js/components.js'
         ,
           src: [
+            # 'components/bootstrap/dist/css/bootstrap.min.css'
+            'components/bootstrap-timepicker/css/bootstrap-timepicker.min.css'
             # 'components/bootstrap/dist/css/bootstrap.min.css'
             'temp/components/bootstrap.css'
             'components/components-font-awesome/css/font-awesome.min.css'

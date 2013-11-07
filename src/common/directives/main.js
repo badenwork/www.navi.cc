@@ -280,13 +280,14 @@ angular.module('directives.lists', [])
 .directive('navtool', [
     function() {
         'use strict';
-
+//TODO: локализовать
         return {
             restrict: 'E',
             template:
-                '<div class="btn-group">' +
+                '<div style="margin-right:10px" class="btn-group">' +
                 '<a type="button" class="btn btn-info" ng-click="back()" title="Назад">&lt;</a>' +
                 '<a type="button" class="btn btn-info" href="#/map" title="Карта"><i class="icon-map-marker" style="margin:0"></i></a>' +
+                '<a type="button" class="btn btn-info" href="#/reports" title="Отчеты"><i class="icon-table" style="margin:0"></i></a>' +
                 '<a type="button" class="btn btn-info" href="#/config" title="Настройки"><i class="icon-gears" style="margin:0"></i></a>' +
                 '<a type="button" class="btn btn-info" href="#/" title="Пользователь"><i class="icon-user icon-large" style="margin:0"></i></a>' +
                 '<a type="button" class="btn btn-info" href="#/help" title="Помощь"><i class="icon-medkit" style="margin:0"></i></a>' +

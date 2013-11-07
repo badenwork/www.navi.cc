@@ -1,143 +1,242 @@
-<h4><navtool></navtool> Отчеты</h4>
+<h4><navtool></navtool><span translate>Reports</span></h4>
 <hr>
- <button class="btn btn-primary" ng-click="showReportWindow()" translate>Generate report</button>
- <!--<input type="checkbox" class="btn btn-primary" ng-model="report.reportSplittedByDays" translate>По дням</input>-->
-<br>
-<br>
-<div ng-show="report.reportGenerated">
-    <div id="reportT" ng-show="report.reportGenerated">
-      <table class="table table-hover table-bordered table-condensed" ng-hide="report.reportSplittedByDays">
-        <thead>
-        <tr>
-          <th>Событие</th>
-          <th>Координаты</th>
-          <th>Период</th>
-          <th ng-show="report.hasFuelSensor">Изменение уровня топлива</th>
-          <th>Уровень топлива</th>
-          <th>Продолжительность</th>
-          <th>Средняя скорость</th>
-          <th>Пройдено</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="item in report.reportData.rows | orderBy:-dt">
-          <td>{{item.event}}</td>
-          <td>{{item.address || item.position}}</td>
-          <td>
-           <span class="datelabel">{{item.startdt}} - {{item.finishdt}}</span>
-          </td>
-          <td ng-show="report.hasFuelSensor">{{item.fuelChange}}</td>
-          <td ng-show="report.hasFuelSensor">{{item.fuel}}</td>
-          <td>{{item.duration}}</td>
-          <td>{{item.speed}}</td>
-          <td>{{item.distance}}</td>
-        </tr>
-        </tbody>
-      </table>
-      <table class="table table-hover table-bordered table-condensed" ng-show="report.reportSplittedByDays">
-        <thead>
-        <tr>
-          <th>Событие</th>
-          <th>Координаты</th>
-          <th>Период</th>
-          <th ng-show="report.hasFuelSensor">Изменение уровня топлива</th>
-          <th ng-show="report.hasFuelSensor">Уровень топлива</th>
-          <th>Продолжительность</th>
-          <th>Средняя скорость</th>
-          <th>Пройдено</th>
-        </tr>
-        </thead>
-        <tbody ng-repeat="items in report.reportData.days | orderBy:-date.getTime()">
-        <tr >
-          <td colspan = 8 ng-show="items.events.length>0">{{items.strFormatted}}</td>
-        </tr>
-        <tr ng-repeat="item in items.events | orderBy: dt">
-          <td>{{item.event}}</td>
-          <td>{{item.address || item.position}}</td>
-          <td>
-           <span class="datelabel">{{item.startdt}} - {{item.finishdt}}</span>
-          </td>
-          <td ng-show="report.hasFuelSensor">{{item.fuelChange}}</td>
-          <td ng-show="report.hasFuelSensor">{{item.fuel}}</td>
-          <td>{{item.duration}}</td>
-          <td>{{item.speed}}</td>
-          <td>{{item.distance}}</td>
-        </tr>
-        </tbody>
-      </table>
-      <table ng-model="report.reportData.summary" class="table table-hover table-bordered table-condensed">
-        <thead>
-        <tr>
-          <th>Контролируемые параметры</th>
-          <th>Результат</th>
-        </tr>
-        </thead>
-        <tbody>
-          <tr><td>Пройденная дистанция </td><td>{{report.reportData.summary.distance}}</td></tr>
-          <tr><td>Общее время в пути </td><td>{{report.reportData.summary.moveDuration}}</td></tr>
-          <tr><td>Средняя скорость движения </td><td>{{report.reportData.summary.speed}}</td></tr>
-          <tr><td>Общее время стоянок и остановок </td><td>{{report.reportData.summary.stopDuration}}</td></tr>
-          <tr><td>Максимальная скорость </td><td>{{report.reportData.summary.maxspeed}}</td></tr>
-          <tr ng-show="report.hasFuelSensor"><td>Расход топлива</td><td>{{report.reportData.summary.fuel}}</td></tr>
-        </tbody>
-      </table>
+<style type="text/css">
+.titleInputBlock select {
+    width: 210px;
+    display:inline-block;
+}
+.titleInputBlock label {
+    display: block;
+}
+#reportSettings {
+    padding-bottom: 10px;        
+}
+.Item.active{
+    background-color: rgba(0, 255, 98, 0.45);
+}
+.Item {
+    width:100%;
+    height: 30px;
+    padding: 3px;
+    padding-right:10px;
+    padding-left: 10px;
+    position: relative;
+    border-bottom: 1px solid black;
+    background-color: rgba(49, 96, 121, 0.22);
+    cursor: pointer;
+}
+#templatesSettingsModal .well ul{
+    margin-left:0;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding:2px;
+}
+#templatesSettingsModal li {
+      list-style-type:none;   
+}
+.dataList, .eventsList {
+    width: 47%;
+    margin: 5px;
+    display: inline-block;
+}
 
+/////////
+ul.nav-tabs:before, ul.nav-tabs:after {
+    display: table;
+    line-height: 0;
+    content: "";
+}
+    
+ul.nav-tabs:after {
+        clear: both;
+}
+    
+ul.nav-tabs:before, ul.nav-tabs:after {
+        display: table;
+        line-height: 0;
+        content: "";
+}
+ul.nav-tabs {
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 0;
+        margin-left: 4px;
+        margin-right: 4px;
+        //border-bottom-color: transparent;
+        padding-left: 0;
+}
+ul.nav-tabs>li>a {
+        display: block;  
+        color: #08c;
+        text-decoration: none;
+        padding-right: 12px;
+        padding-left: 12px;
+        margin-right: 2px;
+        line-height: 14px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        line-height: 20px;
+        border: 1px solid transparent;
+        -webkit-border-radius: 4px 4px 0 0;
+        -moz-border-radius: 4px 4px 0 0;
+        border-radius: 4px 4px 0 0;
+}
+ul.nav-tabs>.active>a, ul.nav-tabs>.active>a:hover, ul.nav-tabs>.active>a:focus {
+        color: #555;
+        cursor: default;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-bottom-color: transparent;
+}
+ul.nav-tabs>.active>a:hover, ul.nav-tabs>li>a:hover {
+        background-color: #c3c3c3;
+}
+ul.nav-tabs>li {
+        line-height: 20px;
+        list-style: none;
+        margin-bottom: -1px;
+        float: left;
+        cursor: pointer;
+}
+</style>
+<!--------------------------------------------------------------------------------------------------------------------->
+<div id="reportSettings">
+    <div class="titleInputBlock">
+        <label translate>System:</label>
+        <select class="form-control" ng-model="reportSettings.systemKey" ng-options="systems[s].title for s in account.account.skeys" ng-change="onSysSelect()">
+                <option value="" ng-show="!reportSettings.systemKey" translate>Select system</option>
+        </select>
     </div>
-
-    <div id="downloadLink">
-     <a href="" ng-click="refreshLink()" download="{{report.title+'.xlsx'}}">Загрузить отчет</a>
+    <div class="titleInputBlock">
+        <label translate>Template</label>
+        <div>
+            <div style="display:inline-block">
+                <select class="form-control" ng-model="reportSettings.template" ng-options="value as value.name for (key, value) in Templates.templates"></select>              </div>
+            <div style="display:inline-block;margin-left:10px;">
+                <button class="btn btn-primary icon-gears" ng-click="showTamplatesSettings()"></button>
+            </div>   
+        </div>    
+        <div class="titleInputBlock">
+            <label translate>Date</label>
+            <datepicker date-from="reportSettings.interval.start" date-to="reportSettings.interval.stop" range="reportSettings.interval.range" on-change="changeDate()">
+        </div>
+        <!--<div class="titleInputBlock">
+        <label>Время:</label>
+        <div class="btn-group">
+            <button type="button" id="timeInterval" class="btn btn-primary ng-dirty">00 : 00</button>
+        </div>
+    </div>-->
     </div>
 </div>
-<div ng-show="report.repotSelectedIntervalNotHaveEvents">
-    <p>За выбранный интервал нет данных</p>
-</div>
-
-<div class="modal fade" id="reportSettingsModal">
+<br>
+<button class="btn btn-primary" ng-click="generateReport()" translate>Generate report</button>
+<div class="allReportsBlock" ng-hide="Reports.allReports.length == 0">
+    <h4 translate>All reports:</h4>
+    <!--<span ng-show="allReports.length == 0" translate>not generated reports</span>-->
+    <table class="table table-hover table-bordered table-condensed">
+        <thead>
+            <tr>
+                <td translate>System Name</td>
+                <td translate>Date</td>
+                <!--<td translate>Time</td>-->
+                <td translate>Open in new tab</td>
+                <td translate>Download</td>
+                <td translate>Remove</td>
+            </tr>
+        </thead>
+        <tr ng-repeat="report in Reports.allReports">
+            <td>{{ report.systemName }}</td>
+            <td>{{ Reports.getReportInterval(report).start + ' - ' +  Reports.getReportInterval(report).stop }}</td>
+            <!--<td>{{ '00:00 - 23:59' }}</td>-->
+            <td><a href="" ng-click="openInNewPage(report.url)">Ссылка</a></td>
+            <td><a href="" ng-click="Reports.downloadReport(report)">Загрузить</a></td>
+            <td><button class="btn" title="Remove" ng-click="Reports.removeReport(report)" >x</button></td>
+        </tr>
+    </table>
+</div>        
+        
+<div class="modal fade" id="templatesSettingsModal">
 	<div class="modal-dialog">
 	    <div class="modal-content">
 	        <div class="modal-header">
 	            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	            <h3>Настройки отчёта</h3>
+	            <h3 translate>Templates settings</h3>
 	        </div>
-            <div class="modal-body">
-                <div class="name-select-group">
-  			       <label>Система:</label>
-  			       <select class="form-control" ng-model="report.systemKey" ng-options="key as systems[key].title for key in  account.account.skeys"></select>
-                </div>
+	          <div class="modal-body">
 			    <div class="name-select-group">
-                    <label>Шаблон отчёта:</label>
-                    <select class="form-control" ng-model="report.templateId" ng-options="value.id as value.name for (key, value) in templates"></select>
+                    <label translate>Template<s>:</s></label>
+                    <div>
+                        <div style="display:inline-block;margin-left:10px;">
+                            <select style="width:210px;" class="form-control" ng-model="templatesSettings.currentTemplate" ng-options="value as value.name for (key, value) in Templates.templates"></select>
+                        </div>
+                        <div style="display:inline-block;margin-left:10px;">
+                            <button class="btn btn-primary" title="Add new template" ng-click="addNewTemplate()">+</button>
+                            <button class="btn btn-primary" title="Remove" ng-click="removeTemplate(templatesSettings.currentTemplate)">x</button>
+                        </div> 
+                    </div>
 			    </div>
-			    <br>
-			    <div class="btn-group">
-			        <button type="button" class="btn btn-primary" ng-model="report.interval.radio.value" btn-radio="'perDay'">За сутки</button>
-			        <button type="button" class="btn btn-primary" ng-model="report.interval.radio.value" btn-radio="'perInterval'">За интервал</button>
-			    </div>
+                <br>
+                <div class="titleInputBlock">
+                    <label translate>Template name<s>:</s></label>
+                    <div>
+                        <dd contenteditable="true" ng-model="templatesSettings.currentTemplate.name" ng-change=""></dd>
+                    </div>
+			    <br>                  
+                  <ul class="nav-tabs"><!-- ngRepeat: pane in panes -->
+                      <li ng-class="{active:(templatesSettings.reportRadio === 'main')}"><a ng-click="(templatesSettings.reportRadio = 'main')" translate>Main report</a></li>
+                      <li ng-class="{active:(templatesSettings.reportRadio === 'summary')}"><a ng-click="(templatesSettings.reportRadio = 'summary')" translate>Summary report</a></li>
+                  </ul>
 			    <div class="well">
-			      <div>
-			        <label ng-show="report.interval.radio.value == 'perInterval'">Начало:</label>
-			        <div class="control-group input-append">
-			          <input class="form-control" type="text" ng-model="report.interval.start" data-date-format="d/m/yyyy" bs-datepicker>
-
-
-
-			          <!--<button type="button" class="btn" data-toggle="report.interval.start"><i class="icon-calendar"></i></button>-->
-			        </div>
-			      </div>
-			      <div ng-show="report.interval.radio.value == 'perInterval'">
-			        <label>Конец:</label>
-			        <div class="control-group input-append">
-			          <input class="form-control" type="text" ng-model="report.interval.end" data-date-format="d/m/yyyy" bs-datepicker>
-			          <!--<button type="button" class="btn" data-toggle="report.interval.end"><i class="icon-calendar"></i></button>-->
-			        </div>
-			      </div>
-			    </div>
+                    <div ng-show="templatesSettings.reportRadio === 'main'">
+                        <div id="mainReportSettings">
+                            <label translate>Select main report data</label>
+                            <div class="eventsList">
+                                <div translate>Events</div>
+                                <ul>
+                                    <li ng-repeat="item in templatesSettings.currentTemplate.mE">
+                                        <div class="Item" ng-class="{active: item.on}" ng-click="Templates.toggleMEItem(templatesSettings.currentTemplate, item)"><span style="width:90%; float:left;" translate>{{ item.value }}</span><span style="float:right; width:5%;padding-top:5px;" class="icon-ok-sign" ng-class="{hide: !item.on}"></span></div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="dataList">
+                                <div translate>Data</div>
+                                <ul>
+                                    <li ng-repeat="item in templatesSettings.currentTemplate.mD">
+                                        <div class="Item" ng-class="{active: item.on}" ng-click="Templates.toggleMDItem(templatesSettings.currentTemplate, item)"><span style="width:90%; float:left;" translate>{{ item.value }}</span><span style="float:right; width:5%;padding-top:5px;" class="icon-ok-sign" ng-class="{hide: !item.on}"></span></div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div style="color: gray">
+                            <h5><d translate>Note</d>:</h5>
+                            <span><d translate>Data</d>:&nbsp<span style="font-size: 115%; color: black">[<d translate>cFL</d>,&nbsp<d translate>fL</d>]</span>&nbspбудут присутствовать в отчете только если установлен датчик уровня топлива.</span>
+                        </div>
+                    </div>
+                    
+                    
+                    <div ng-show="templatesSettings.reportRadio === 'summary'">
+                        <div id="summaryReportSettings">
+                            <label translate>Select summary report data</label>
+                            <div style="width:100%">
+                                <div translate>Controlled parameters</div>
+                                <ul>
+                                    <li ng-repeat="item in templatesSettings.currentTemplate.sE">
+                                        <div class="Item" ng-class="{active: item.on}" ng-click="Templates.toggleSEItem(templatesSettings.currentTemplate, item)"><span style="width:90%; float:left;" translate>{{ item.value }}</span><span style="float:right; width:5%;padding-top:5px;" class="icon-ok-sign" ng-class="{hide: !item.on}"></span></div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div style="color: gray">
+                            <h5><d translate>Note</d>:</h5>
+                            <span><d translate>Data</d>:&nbsp<span style="font-size: 115%; color: black">[<d translate>fCs</d>,&nbsp<d translate>tF</d>,&nbsp<d translate>tDF</d>]</span>&nbspбудут присутствовать в отчете только если установлен датчик уровня топлива.</span>
+                        </div>
+                    </div>
+			    </div> 
 			</div>
 	      <div class="modal-footer">
-	        <button class="btn"  data-dismiss="modal">Отмена</button>
-	        <button class="btn btn-primary" ng-click="report.generateReport()">Построить отчёт</button>
+	        <button class="btn" data-dismiss="modal">Ok</button>
 	      </div>
 	    </div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
  </div><!-- /.modal -->
-
+</div>
+<!--------------------------------------------------------------------------------------------------------------------->
