@@ -5,10 +5,10 @@ if (google && google.maps) {
     google.maps.visualRefresh = true;
 }
 
-angular.module('directives.gmap', ['services.connect', 'services.eventmarker', 'services.lastmarker' /*, 'ui'*/ ])
+angular.module('directives.gmap', ['services.connect', 'services.eventmarker', 'services.lastmarker', 'services.pointmarker'/*, 'ui'*/ ])
 
-.directive('gmap', ['Connect', 'EventMarker', 'LastMarker',
-    function(Connect, EventMarker, LastMarker) {
+.directive('gmap', ['Connect', 'EventMarker', 'LastMarker', 'PointMarker', 'GeoGPS',
+    function(Connect, EventMarker, LastMarker, PointMarker, GeoGPS) {
         'use strict';
 
         // TODO! Необходима унификация для поддержки как минимум Google Maps и Leaflet
@@ -38,6 +38,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 center: new google.maps.LatLng(prev_config.center[0], prev_config.center[1]),
                 mapTypeId: prev_config.typeId,
                 scaleControl: true,
+                draggableCursor: 'pointer',
                 zoom: prev_config.zoom
             };
             var map_element = element.find('.gmap-container');
@@ -57,6 +58,14 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             google.maps.event.addListener(map, 'idle', saveMapState);
             google.maps.event.addListener(map, 'maptypeid_changed', saveMapState);
+
+            // var findZoneBound = new google.maps.LatLngBounds(
+            //     new google.maps.LatLng(moev.latLng.lat() - size*clat, moev.latLng.lng() - size ),
+            //     new google.maps.LatLng(moev.latLng.lat() + size*clat, moev.latLng.lng() + size )
+            // );
+            google.maps.event.addListener(map, 'mousemove', function(ev){mouseMove(ev);});
+            // google.maps.event.addListener(map, 'click', function(){pointmarkers.hideInfo();});
+
 
             google.maps.event.addListener(map, 'zoom_changed', function() {
                 // console.log('zoom_changed');
@@ -110,21 +119,9 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             scope.points = [];
 
-            var updatePoints = function(points) {
-                scope.points = points;
-            };
-
-            scope.distance = function(p1, p2) {
-                var R = 6371; // km (change this constant to get miles)
-                var dLat = (p2.lat - p1.lat) * Math.PI / 180;
-                var dLon = (p2.lon - p1.lon) * Math.PI / 180;
-                var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(p1.lat * Math.PI / 180) * Math.cos(p2.lat * Math.PI / 180) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                var d = R * c;
-                return d;
-            };
+            // var updatePoints = function(points) {
+            //     scope.points = points;
+            // };
 
             scope.findNearestPoint = function(M) {
                 if (scope.points.length === 0)
@@ -134,7 +131,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 var minDistance = 1000000000;
                 //console.log(scope);
                 for (var i = 0; i < points.length; ++i) {
-                    var distance = scope.distance(points[i], M);
+                    var distance = GeoGPS.distance(points[i], M);
                     if (minDistance > distance) {
                         point = points[i];
                         minDistance = distance;
@@ -143,17 +140,70 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 return point;
             };
 
-            scope.infowindow = new google.maps.InfoWindow();
+            // scope.infowindow = new google.maps.InfoWindow();
+
+            var pointmarkers = new PointMarker(map);
+
+            var quadtree;
+            // var findZone = new google.maps.Rectangle({
+            //     // bounds: bound,
+            //     clickable: false,
+            //     map: map,
+            //     fillColor: "#00FFFF",
+            //     fillOpacity: 0.1,
+            //     strokeColor: "#00FFFF",
+            //     strokeOpacity: 1.0,
+            //     strokeWeight: 1
+            // });
+
+            var mouseMove = function(event){
+
+                var point = {lat: event.latLng.lat(), lon: event.latLng.lng()};
+                // console.log('mousemove', event);
+
+                var size = 0.0005;
+                var scale = Math.sqrt(2);
+                var nearestpoint;
+
+                for(var i=0; i<8; i++, size*=scale){
+                    nearestpoint = GeoGPS.findInQuadtree(quadtree, point, size);
+                    if(nearestpoint.length > 2) break;
+                }
+                var clat = Math.cos(event.latLng.lat() * Math.PI / 180);
+                if(clat < 0.0001) clat = 0.0001;
+
+                // var bound;
+                // if(nearestpoint.length > 0) {
+                //     bound = new google.maps.LatLngBounds(
+                //         new google.maps.LatLng(event.latLng.lat() - size*clat, event.latLng.lng() - size ),
+                //         new google.maps.LatLng(event.latLng.lat() + size*clat, event.latLng.lng() + size )
+                //     );
+                // } else {
+                //     bound = new google.maps.LatLngBounds(
+                //         new google.maps.LatLng(event.latLng.lat(), event.latLng.lng() ),
+                //         new google.maps.LatLng(event.latLng.lat(), event.latLng.lng() )
+                //     );
+                // }
+                // findZone.setBounds(bound);
+
+                pointmarkers.setData(nearestpoint);
+            };
 
             var showTrack = function(data) {
-                if (scope.infowindow !== null)
-                    scope.infowindow.close();
-                updatePoints(data.points);
+                // if (scope.infowindow !== null)
+                //     scope.infowindow.close();
+                // updatePoints(data.points);
+                pointmarkers.hideInfo();
+
+                quadtree = GeoGPS.initQuadtree(data.points);
+                // console.dir(quadtree);
+
                 path = new google.maps.Polyline({
                     path: data.track,
                     strokeColor: 'blue',
                     strokeOpacity: 0.5, //data.select ? 0.7 : 0.5,
                     strokeWeight: data.select ? 2 : 5,
+                    clickable: false,
                     // editable: true,
                     icons: [{
                         icon: {
@@ -169,12 +219,15 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     map: map
                 });
 
+                if(0){
                 google.maps.event.addListener(path, 'click', function(event) {
-                    var point = scope.findNearestPoint({
-                        lat: event.latLng.lat(),    //lat: event.latLng.lb,
-                        lon: event.latLng.lng()     //lon: event.latLng.mb
-                    });
-                    if (point === null) return;
+
+                    var point = {lat: event.latLng.lat(), lon: event.latLng.lng()};
+                    // var point = scope.findNearestPoint({
+                    //     lat: event.latLng.lat(),    //lat: event.latLng.lb,
+                    //     lon: event.latLng.lng()     //lon: event.latLng.mb
+                    // });
+                    // if (point === null) return;
                     var timeStr = moment(new Date((point.dt * 1000))).format('DD/MM/YYYY : hh:mm');
                     var lat = Math.round(point.lat * 100000) / 100000;
                     var lon = Math.round(point.lon * 100000) / 100000;
@@ -187,6 +240,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     scope.infowindow.setPosition(new google.maps.LatLng(point.lat, point.lon));
                     scope.infowindow.open(map);
                 });
+                }
 
     // console.log('data=', angular.copy(data));
                 if (data.select) {
@@ -419,7 +473,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 if(currentDirections.routes.length>1){
                     console.log('Предлагается более одного маршрута');
                 }
-                var leg = currentDirections.routes[0].legs[0];
+                // var leg = currentDirections.routes[0].legs[0]; // ??? FTF?
                 // for(var i=0, l=leg.via_waypoint.length+2-points.length; i<l; i++){
                 //     add_way_point('');
                 // }

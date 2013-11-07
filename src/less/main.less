@@ -166,6 +166,13 @@ i.cmd:hover {
     transition:@property @time @function;
 }
 
+.transition-transform (@time: 0.3s, @function: ease-in-out) {
+    -webkit-transition:-webkit-transform @time @function;
+    -moz-transition:-moz-transform @time @function;
+    -o-transition:-o-transform @time @function;
+    transition:transform @time @function;
+}
+
 
 
 
