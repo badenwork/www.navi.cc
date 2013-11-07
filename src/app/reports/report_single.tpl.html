@@ -8,7 +8,7 @@
         <span style="margin:5px 15px;font-size:110%"><span translate>Stop date:</span>&nbsp{{interval.stop}}</span>
     </div>
 </div>
-<div ng-show="report.reportData.mRows.length === 0 && report.ready">
+<div ng-show="report.ready && report.reportData.mRows.length === 0">
     <p translate>Empty data</p>
 </div>
 <div ng-hide="!report.ready || report.reportData.mRows.length === 0">
@@ -52,7 +52,7 @@
 
 <div id="loader" ng-hide="report.ready">
     <i class="icon-refresh icon-4x icon-spin"></i>
-</div>
+</div>-
 
 
 

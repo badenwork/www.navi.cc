@@ -31,9 +31,8 @@ angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.accoun
                         return Account.get();
                     }
                 ],
-                systems: ['System','$routeParams',
-                    function(System,$routeParams) {
-                        console.log('skey1 : ', $routeParams.sKey);
+                systems: ['System',
+                    function(System) {
                         return System.getall();
                     }
                 ]
@@ -103,9 +102,13 @@ angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.accoun
         }; 
         
         $scope.generateReport = function() {
+            if (!$scope.reportSettings.systemKey)
+                return;
             var hStart = Reports.dateToHours ($scope.reportSettings.interval.start);
             var hStop = Reports.dateToHours ($scope.reportSettings.interval.stop) + 23;
-            var report = Reports.getEmptySingleReport ($scope.reportSettings.systemKey, hStart, hStop, Templates.templateToReadonleTemplate($scope.reportSettings.template));
+            var report = Reports.getEmptySingleReport ($scope.reportSettings.systemKey, hStart, hStop, Templates.templateToReadonleTemplate ($scope.reportSettings.template));
+            report.system = systems [$scope.reportSettings.systemKey];
+            report.systemName = report.system.title;
             Reports.saveReport (report);
             $scope.openInNewPage (report.url);
         };
