@@ -307,7 +307,25 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 return row_fullData;
             };
             var concatMainRows = function (row1, row2) {
-                
+                var newRow = {};
+                newRow.eventTypeStr = row1.eventTypeStr;
+                newRow.fuelChanges = row1.fuelChanges + row2.fuelChanges;
+                newRow.duration = moment.duration ((row1.range.start.dt - row2.range.stop.dt) * 1000).humanize();
+                newRow.fuelLevel = '';
+                newRow.coordinates = '';
+                newRow.travelDistance = row1.travelDistance + row2.travelDistance;
+                newRow.averageSpeed = Math.floor ((newRow.travelDistance / (newRow.duration / 1000 / 60 / 60)) * 10) / 10;
+                var start = row1.range.start.dt * 1000;
+                var stop = row2.range.stop.dt * 1000;
+                newRow.interval = moment (new Date (stop)).format ('DD/MM HH:mm') + ' - ' + moment (new Date (start)).format ('DD/MM HH:mm');
+                var newRange = {};
+                newRange.start = row1.range.start;
+                newRange.stop = row2.range.stop;
+                newRange.start_index = row1.start_index;
+                newRange.stop_index = row2.stop_index;
+                newRange.type = row1.type;
+                newRow.range = newRange;
+                return newRow;
             };
             var getMainRow = function (row_fullData, template, systemParams) {
                 var row = {event: row_fullData.eventTypeStr, columns:[]};
@@ -399,33 +417,31 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     var ranges = track.ranges.reverse();
                     var item, i;
                     var points = track.points;
+                    report.reportData.points = points;
                     var rows_fullData = [];
-                    var prevMainRow;
+                    var row_fullData, prevMainRow;
                     for (i = 0; i < ranges.length; i++) {
-                        var row_fullData = getFullMainRow (ranges, i, points, systemParams);
+                        row_fullData = getFullMainRow (ranges, i, points, systemParams);
                         rows_fullData.push (row_fullData);
-                        /*if (prevMainRow && prevMainRow.eventTypeStr === 'm' &&
-                            row_fullData.eventTypeStr === 'm') {
-                            row_fullData = concatMainRows (prevMainRow, row_fullData);
-                            prevMainRow = row_fullData;
-                            continue;
-                        } else {
-                            prevMainRow = row_fullData;
-                            rows_fullData.push (row_fullData);
-                        }*/
                     }
                     
                     for (i = 0; i < rows_fullData.length; i++) {
-                        item = rows_fullData [i];
-                        if (!skipMainEvent (item.eventTypeStr, template)) {
-                            var row = getMainRow (item, template, systemParams);
-                            row.data = item.range;
-                            mRows.push (row);
+                        row_fullData = rows_fullData [i];
+                        if (!skipMainEvent (row_fullData.eventTypeStr, template)) {
+                            if (prevMainRow && prevMainRow.eventTypeStr === 'm' &&
+                                row_fullData.eventTypeStr === 'm') {
+                                row_fullData = concatMainRows (prevMainRow, row_fullData);
+                            } else if (prevMainRow) {
+                                var row = getMainRow (row_fullData, template, systemParams);
+                                row.data = row_fullData.range;
+                                mRows.push (row);
+                            }
+                            prevMainRow = row_fullData;
                         }
                     }
                     
                         
-        ///////////////// SUMMARY REPORT
+        ////////////////// SUMMARY REPORT
            
                     var calculateTotalTraveledDistance = function (ranges, points, systemParams) {
                         var totalDistance = 0;

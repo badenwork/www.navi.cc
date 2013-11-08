@@ -1,4 +1,4 @@
-angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.account', '$strap.directives', 'resources.geogps', 'resources.system', 'i18n', 'resources.reports', 'resources.templates'])
+angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.account', '$strap.directives', 'resources.geogps', 'resources.system', 'i18n', 'resources.reports', 'resources.templates', 'reports.chart'])
 
 .config(['$routeProvider',
     function($routeProvider) {
@@ -92,15 +92,15 @@ angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.accoun
             $scope.templatesSettings.currentTemplate = Templates.templates [0];
             $('#templatesSettingsModal').modal (options);
         };
-        
+
         $scope.openInNewPage = function (url) {
             var path = (url ? ('#/singleReport' + url) : '/#/error');
             var fullUrl = window.location.origin + '/' + path;
             //TODO: реализовать сохранение ссылки в буфер обмена
             //window.prompt ("Чтобы скопировать текст в буфер обмена, нажмите Ctrl+C и Enter", fullUrl);
             window.open (fullUrl, path);
-        }; 
-        
+        };
+
         $scope.generateReport = function() {
             if (!$scope.reportSettings.systemKey)
                 return;

@@ -219,28 +219,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     map: map
                 });
 
-                if(0){
-                google.maps.event.addListener(path, 'click', function(event) {
-
-                    var point = {lat: event.latLng.lat(), lon: event.latLng.lng()};
-                    // var point = scope.findNearestPoint({
-                    //     lat: event.latLng.lat(),    //lat: event.latLng.lb,
-                    //     lon: event.latLng.lng()     //lon: event.latLng.mb
-                    // });
-                    // if (point === null) return;
-                    var timeStr = moment(new Date((point.dt * 1000))).format('DD/MM/YYYY : hh:mm');
-                    var lat = Math.round(point.lat * 100000) / 100000;
-                    var lon = Math.round(point.lon * 100000) / 100000;
-                    var sats = point.sats;
-                    var speed = Math.round(point.speed * 10) / 10;
-                    var vin = Math.round(point.vin * 100) / 100;
-                    var vout = Math.round(point.vout * 100) / 100;
-                    var content = '<div class="info-header">' + timeStr + '</div><table id="tbl_info" width="100%"><tbody><tr><td>Долгота:</td><td><b>' + lat + '</b></td></tr><tr><td>Широта:</td><td><b>' + lon + '</b></td></tr><tr><td>Спутники</td><td><b>' + sats + '</b></td></tr><tr><td>Скорость</td><td><b>' + speed + 'км/ч</b></td></tr><tr><td>Основное питание</td><td><b>' + vout + 'В</b></td></tr><tr><td>Резервное питание</td><td><b>' + vin + 'В</b></td></tr></tbody></table>';
-                    scope.infowindow.setContent(content);
-                    scope.infowindow.setPosition(new google.maps.LatLng(point.lat, point.lon));
-                    scope.infowindow.open(map);
-                });
-                }
 
     // console.log('data=', angular.copy(data));
                 if (data.select) {
