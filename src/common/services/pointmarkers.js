@@ -75,7 +75,7 @@ angular.module('services.pointmarker', ['newgps.services'])
                 .attr('class', 'marker')
                 .on('click', function(point) {
                     // window.console.log('TODO', d3.select(this), d);
-                    var timeStr = moment(new Date((point.dt * 1000))).format('DD/MM/YYYY : hh:mm');
+                    var timeStr = moment(new Date((point.dt * 1000))).format('DD/MM/YYYY : HH:mm');
                     var lat = Math.round(point.lat * 100000) / 100000;
                     var lon = Math.round(point.lon * 100000) / 100000;
                     var sats = point.sats;
