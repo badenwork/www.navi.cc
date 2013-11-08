@@ -117,7 +117,7 @@ ul.nav-tabs>li {
         </div>    
         <div class="titleInputBlock">
             <label translate>Date</label>
-            <datepicker interval-picker="true" time-from="reportSettings.interval.timeStart" time-to="reportSettings.interval.timeStop"  date-from="reportSettings.interval.start" date-to="reportSettings.interval.stop" range="reportSettings.interval.range" on-change="changeDate()">
+            <datepicker interval-picker="false" time-from="reportSettings.interval.timeStart" time-to="reportSettings.interval.timeStop"  date-from="reportSettings.interval.start" date-to="reportSettings.interval.stop" range="reportSettings.interval.range" on-change="changeDate()">
         </div>
         <!--<div class="titleInputBlock">
         <label>Время:</label>
@@ -138,7 +138,7 @@ ul.nav-tabs>li {
                 <td translate>System Name</td>
                 <td translate>Date</td>
                 <!--<td translate>Time</td>-->
-                <td translate>Open in new tab</td>
+                <td translate>Open</td>
                 <td translate>Download</td>
                 <td translate>Remove</td>
             </tr>
@@ -207,7 +207,7 @@ ul.nav-tabs>li {
                             </div>
                         </div>
                         <div style="color: gray">
-                            <h5><d translate>Note</d>:</h5>
+                            <h5><d translate>Примечание</d>:</h5>
                             <span><d translate>Data</d>:&nbsp<span style="font-size: 115%; color: black">[<d translate>re</d>,<d translate>fD</d>,<d translate>cFL</d>,&nbsp<d translate>fL</d>]</span>&nbspбудут присутствовать в отчете только если установлен датчик уровня топлива.</span>
                         </div>
                     </div>
@@ -226,7 +226,7 @@ ul.nav-tabs>li {
                             </div>
                         </div>
                         <div style="color: gray">
-                            <h5><d translate>Note</d>:</h5>
+                            <h5><d translate>Примечание</d>:</h5>
                             <span><d translate>Data</d>:&nbsp<span style="font-size: 115%; color: black">[<d translate>fCs</d>,&nbsp<d translate>tF</d>,&nbsp<d translate>tDF</d>]</span>&nbspбудут присутствовать в отчете только если установлен датчик уровня топлива.</span>
                         </div>
                     </div>

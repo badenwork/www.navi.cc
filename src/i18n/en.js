@@ -67,7 +67,7 @@ angular.module('i18n.en', ['pascalprecht.translate'])
             'All reports': 'All reports',
             'System Name': 'System Name',
             'Date': 'Date',
-            'Open in new tab': 'Open in new tab',
+            'Open': 'Open',
             'Download': 'Download',
             'Remove': 'Remove',
             'Templates settings': 'Customization of reports',
