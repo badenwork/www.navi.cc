@@ -26,12 +26,12 @@
 
         <dl class="dl-horizontal">
             <dt>Выход на связь</dt><dd><datetime datetime="{{ system.dynamic.lastping }}"></datetime></dd>
-            <dt>Текущее состояние</dt><dd>{{ system.dynamic.speed | number:1 }} км/ч</dd>
-            <dt>Число спутников</dt><dd>{{ system.dynamic.sats || '?'}}</dd>
+            <dt>Текущее состояние</dt><dd>{{ system.dynamic.speed | number:1 }} км/ч <a href="#/reports/{{skey}}/chart?chart=speed&from=0&to=0"><i class="icon-bar-chart"></i></a></dd>
+            <dt>Число спутников</dt><dd>{{ system.dynamic.sats || '?'}} <a href="#/reports/{{skey}}/chart?chart=sats&from=0&to=0"><i class="icon-bar-chart"></i></a></dd>
             <dt>Уровень GSM</dt><dd>{{ system.dynamic.csq * 100 / 32 | number:0}}%</dd>
             <dt>Уровень GPS</dt><dd>{{ system.dynamic.sats * 100 / 12 | number:0}}%</dd>
-            <dt>Основное питание</dt><dd>{{ system.dynamic.vout }} В</dd>
-            <dt>Резервное питание</dt><dd>{{ system.dynamic.vin | vin }}</dd>
+            <dt>Основное питание</dt><dd>{{ system.dynamic.vout }} В <a href="#/reports/{{skey}}/chart?chart=vout&from=0&to=0"><i class="icon-bar-chart"></i></a></dd>
+            <dt>Резервное питание</dt><dd>{{ system.dynamic.vin | vin }} <a href="#/reports/{{skey}}/chart?chart=vin&from=0&to=0"><i class="icon-bar-chart"></i></a></dd>
             <dt>Координаты</dt><dd><input class="clone" value="{{ system.dynamic.latitude | number:4 }}, {{ system.dynamic.longitude | number:4}}"/></dd>
             <dt>Дата метки</dt><dd><datetime datetime="{{ system.dynamic.dt }}"></datetime></dd>
 <!--
@@ -46,7 +46,7 @@
  -->
             <dt ng-show="system.car.hasFuelSensor">
                 Уровень топлива</dt><dd ng-show="system.car.hasFuelSensor">{{ system.dynamic.fuel | number:1 }} л
-                <a href="#/config/{{skey}}/params/fuel"><i class="icon-wrench"></i></a>
+                <a href="#/config/{{skey}}/params/fuel"><i class="icon-wrench"></i> <a href="#/reports/{{skey}}/chart?chart=fuel&from=0&to=0"><i class="icon-bar-chart"></i></a></a>
             </dd>
         </dl>
 
