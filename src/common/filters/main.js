@@ -126,7 +126,7 @@ filter('fsource', function() {
         return filtered;
     };
 })
-    
+
 .filter('humanizeMiliseconds', function() {
     return function(miliseconds, format) {
         var daysStr = 'д';
@@ -147,13 +147,13 @@ filter('fsource', function() {
         } else if (humanizedStr.length > 0) {
             humanizedStr += '00' + hoursStr + separator;
         }
-        
+
         if (minutes > 0) {
             humanizedStr += minutes + minutesStr;
         } else if (humanizedStr.length > 0) {
             humanizedStr += '00' + minutesStr;
         }
-        
+
         if (seconds > 0) {
             if (humanizedStr.length > 0) {
                 humanizedStr += separator;
@@ -162,7 +162,7 @@ filter('fsource', function() {
         } else if (humanizedStr.length === 0) {
             humanizedStr += seconds + secondsStr;
         }
-        return humanizedStr; 
+        return humanizedStr;
     };
 });
 
