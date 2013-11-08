@@ -89,7 +89,7 @@ angular.module('i18n.en', ['pascalprecht.translate'])
             're': 'Refueling',
             'fD': 'Drain fuel',
             'tTT': 'Total travel time',
-            'tTOPAS': 'The total time of parking and stopping',
+            'tTOPAS': 'The total time of parking',
             'mS': 'Maximum speed',
             'fCs': 'Been spent fuel (sensor readings)',
             'fCa': 'Been spent fuel (analytically)',

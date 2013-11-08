@@ -88,7 +88,7 @@ angular.module('i18n.pl', ['pascalprecht.translate'])
             're': 'Tankowanie',
             'fD': 'Spuścić paliwo',
             'tTT': 'Całkowity czas podróży',
-            'tTOPAS': 'Całkowity czas parkowania i zatrzymywania się',
+            'tTOPAS': 'Całkowity czas parkowania',
             'mS': 'Maksymalna prędkość',
             'fCs': 'Zostały wypalone paliwo (odczyty czujników)',
             'fCa': 'Zostały wypalone paliwo (analitycznie)',

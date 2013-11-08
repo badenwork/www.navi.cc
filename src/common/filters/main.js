@@ -125,6 +125,45 @@ filter('fsource', function() {
         });
         return filtered;
     };
+})
+    
+.filter('humanizeMiliseconds', function() {
+    return function(miliseconds, format) {
+        var daysStr = 'д';
+        var hoursStr = 'ч';
+        var minutesStr = 'м';
+        var secondsStr = 'с';
+        var separator = ' ';
+        var days = Math.floor(miliseconds/86400000);
+        var hours = Math.floor(((miliseconds/86400000)%1)*24);
+        var minutes = Math.floor(((miliseconds/3600000)%1)*60);
+        var seconds = Math.round(((miliseconds/60000)%1)*60);
+        var humanizedStr = '';
+        if (days > 0) {
+            humanizedStr += days + daysStr + separator;
+        }
+        if (hours > 0) {
+            humanizedStr += hours + hoursStr + separator;
+        } else if (humanizedStr.length > 0) {
+            humanizedStr += '00' + hoursStr + separator;
+        }
+        
+        if (minutes > 0) {
+            humanizedStr += minutes + minutesStr;
+        } else if (humanizedStr.length > 0) {
+            humanizedStr += '00' + minutesStr;
+        }
+        
+        if (seconds > 0) {
+            if (humanizedStr.length > 0) {
+                humanizedStr += separator;
+            }
+            humanizedStr += seconds + secondsStr;
+        } else if (humanizedStr.length === 0) {
+            humanizedStr += seconds + secondsStr;
+        }
+        return humanizedStr; 
+    };
 });
 
 })();

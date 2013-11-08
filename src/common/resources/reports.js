@@ -3,7 +3,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
 .factory('Reports', ['$location', 'Account', '$http', 'SERVER', 'GeoGPS', 'System', '$rootScope', '$filter',
     function($location, Account, $http, SERVER, GeoGPS, System, $rootScope, $filter) {
        'use strict';
-        
+        var humanizeMiliseconds = $filter ('humanizeMiliseconds');
         var Reports = {
           allReports: []
         };
@@ -197,14 +197,14 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                             var item = report.reportData.mRows [index].columns [coordinatesIndex] = address;
                             setTimeout(function() {
                                 formatPosition(report, index + 1, coordinatesIndex);
-                            }, 200);
+                            }, 1100);
     
                         } else {
                             console.log ('formatPosition --> MARK_6');
                             //повторно запросить
                             setTimeout(function() {
                                 formatPosition(report, index, coordinatesIndex);
-                            }, 1000);
+                            }, 2000);
                         }
                     });
             };
@@ -253,7 +253,8 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 return ;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             };
             var calculateDuration = function (ranges, rangeIndex, points, systemParams) {
-                return moment.duration (getRangeDuration (ranges [rangeIndex])).humanize (); 
+                return humanizeMiliseconds (getRangeDuration (ranges [rangeIndex]));
+                //return moment.duration (getRangeDuration (ranges [rangeIndex])).humanize (); 
             };
             var calculateAverageSpeed = function (ranges, rangeIndex, points, systemParams) {
                 var rangeDuration = getRangeDuration (ranges [rangeIndex]);
@@ -271,7 +272,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     p2 = points [i + 1];
                     travelDistance += pointToPointDistance (p1, p2);
                 }
-                return Math.floor (travelDistance * 10) / 10;
+                return Math.floor (travelDistance * 100) / 100;
             };
             var getEventTypeStr = function (ranges, rangeIndex, points, systemParams) {
                 var range = ranges [rangeIndex];
@@ -357,10 +358,10 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 newRow.eventTypeStr = row1.eventTypeStr;
                 newRow.fuelChanges = row1.fuelChanges + row2.fuelChanges;
                 var duration_milisec = (row1.range.stop.dt - row2.range.start.dt) * 1000;
-                newRow.duration = moment.duration (duration_milisec).humanize ();
+                newRow.duration = humanizeMiliseconds (duration_milisec);  //moment.duration (duration_milisec).humanize ();
                 newRow.fuelLevel = '';
                 newRow.coordinates = '';
-                newRow.travelDistance = Math.floor ((row2.travelDistance + row1.travelDistance) * 10) / 10;
+                newRow.travelDistance = Math.floor ((row2.travelDistance + row1.travelDistance) * 100) / 100;
                 newRow.averageSpeed = Math.floor ((newRow.travelDistance / (duration_milisec / 1000 / 60 / 60)) * 10) / 10;
                 var start = row1.range.stop.dt * 1000;
                 var stop = row2.range.start.dt * 1000;
@@ -485,7 +486,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     
                     for (i = 0; i < rows_fullData.length; i++) {
                         row_fullData = rows_fullData [i];
-                        needAddLastRow = false;
+                        needAddLastRow = true;
                         if (!skipMainRow (row_fullData, template)) {
                             /*var row = getMainRow (row_fullData, template, systemParams);
                                 row.data = row_fullData.range;
@@ -503,9 +504,10 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     }
                     
                     if (needAddLastRow) {
-                        var row = getMainRow (prevMainRow, template, systemParams);
-                        mRows.push (row);
-                        console.log ('needAddLastRow == true');
+                        if (!skipMainRow (prevMainRow, template)) {
+                            var row = getMainRow (prevMainRow, template, systemParams);
+                            mRows.push (row);
+                        }
                     }
                         
         ////////////////// SUMMARY REPORT
@@ -525,7 +527,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         var eventStr;
                         for (var i = 0; i < ranges.length; i++) {
                             eventStr = getEventTypeStr (ranges, i, points, systemParams);
-                            if (eventStr === 'm')
+                            if (eventStr === 'm' || eventStr === 'ss')
                                 totalTime += getRangeDuration (ranges [i]);
                         }
                         return totalTime;
@@ -535,16 +537,29 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         var eventStr;
                         for (var i = 0; i < ranges.length; i++) {
                             eventStr = getEventTypeStr (ranges, i, points, systemParams);
-                            if (eventStr !== 'm')
+                            if (eventStr === 's')
                                 totalTime += getRangeDuration (ranges [i]);
                         }
-                        return moment.duration(totalTime).humanize();
+                        return totalTime;
                     };
                     var calculateMaxSpeed = function (ranges, points, systemParams) {
-                        return getMaxSpeedFromIntervalPoints (points, 0, points.length - 1);
+                        var maxSpeed = 0, tmp = 0;
+                        var eventStr;
+                        for (var i = 0; i < ranges.length; i++) {
+                            eventStr = getEventTypeStr (ranges, i, points, systemParams);
+                            if (eventStr === 'm') {
+                                tmp = getMaxSpeedFromIntervalPoints (points, ranges [i].start_index, ranges [i].stop_index);
+                                if (tmp > maxSpeed) {
+                                    maxSpeed = tmp;   
+                                }
+                            }
+                        }
+                        return maxSpeed;
                     };
                     var calculateTotalAverageSpeed = function (ranges, points) {
                         var totalTime = calculateTotalTraveledTime (ranges, points, systemParams);
+                        if (totalTime === 0)
+                            return 0;
                         var totalDistance = calculateTotalTraveledDistance (ranges, points, systemParams);
                         var totalAverageSpeed = totalDistance / (totalTime / 1000 / 60 / 60);
                         return Math.floor(totalAverageSpeed * 10) / 10;
@@ -571,7 +586,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                             }
                         }
                         fuelConsumption += systemParams.fuelan.stop * (totalSSTime / 1000 / 60 / 60);
-                        return Math.floor(fuelConsumption * 10) / 10;
+                        return Math.floor (fuelConsumption * 10) / 10;
                     };
                     var calculateTotalDrainFuel = function (ranges, points, systemParams) {
                         return ;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -600,8 +615,8 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     };
                     var summary_row_full = [];
                     summary_row_full.totalTraveledDistance = calculateTotalTraveledDistance (ranges, points, systemParams) + ' км';
-                    summary_row_full.totalTraveledTime = moment.duration(calculateTotalTraveledTime (ranges, points, systemParams)).humanize();
-                    summary_row_full.totalStopedTime = calculateTotalStopedTime (ranges, points, systemParams);
+                    summary_row_full.totalTraveledTime = humanizeMiliseconds (calculateTotalTraveledTime (ranges, points, systemParams));
+                    summary_row_full.totalStopedTime = humanizeMiliseconds (calculateTotalStopedTime (ranges, points, systemParams));
                     summary_row_full.maxSpeed = calculateMaxSpeed (ranges, points, systemParams) + ' км/ч';
                     summary_row_full.totalAverageSpeed = calculateTotalAverageSpeed (ranges, points, systemParams) + ' км/ч';
                     summary_row_full.fuelConsumption_sensor = calculateFuelConsumption_sensor (ranges, points, systemParams) + ' л';
@@ -620,7 +635,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     report.reportData.sRows = sRows;                
                     
                     convertCoordinatesToAdresses (report);
-                    report.ready = true;//'ready'; // странный баг!! если поставить булевское значение true то не всегда работает биндинг в html
+                    report.ready = true;
                 });
             });
         };
