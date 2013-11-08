@@ -495,8 +495,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                                 row_fullData = concatMainRows (prevMainRow, row_fullData);
                                 needAddLastRow = true;
                             } else if (prevMainRow) {
-                                var row = getMainRow (prevMainRow, template, systemParams);
-                                mRows.push (row);
+                                mRows.push (getMainRow (prevMainRow, template, systemParams));
                                 needAddLastRow = false;
                             }
                             prevMainRow = row_fullData;

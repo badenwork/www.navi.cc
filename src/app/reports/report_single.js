@@ -35,9 +35,9 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
         $scope.Reports = Reports;
         var updateUI = function (miliseconds) {
             setTimeout (function () {
-                $scope.$apply(function() { return; })
+                $scope.$apply();
                 updateUI ();
             }, miliseconds);
-        }     
+        };    
         updateUI (500); // Не самое элегантное решение но пока незнаю как заставить оюновлять таблицу при изменении её значений
     }]);
