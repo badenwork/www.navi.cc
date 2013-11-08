@@ -129,10 +129,10 @@ filter('fsource', function() {
 
 .filter('humanizeMiliseconds', function() {
     return function(miliseconds, format) {
-        var daysStr = 'д';
-        var hoursStr = 'ч';
-        var minutesStr = 'м';
-        var secondsStr = 'с';
+        var daysStr = ' дн.';
+        var hoursStr = ' час';
+        var minutesStr = ' мин';
+        var secondsStr = ' сек';
         var separator = ' ';
         var days = Math.floor(miliseconds/86400000);
         var hours = Math.floor(((miliseconds/86400000)%1)*24);
