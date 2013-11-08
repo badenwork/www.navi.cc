@@ -175,6 +175,51 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             if (report.ready)
                 return;
             
+            var geocoder = new google.maps.Geocoder();
+            var formatPosition = function (report, index, coordinatesIndex) {
+                if (index === report.reportData.mRows.length || report.reportData.mRows.length === 0)
+                    return;
+                var eventType = report.reportData.mRows [index].event;
+                if (eventType === 'm') {
+                    formatPosition (report, index + 1, coordinatesIndex);
+                    return;
+                }
+                geocoder.geocode({
+                        'latLng': new google.maps.LatLng (report.reportData.mRows [index].data.start.lat, report.reportData.mRows [index].data.start.lon)
+                    },
+                    function(results, status) {
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            var address = '';
+                            var parts = results [0].address_components;
+                            for (var i = parts.length - 1; i >= 0; --i) {
+                                address += parts [i].long_name + ((i === 0) ? '' : ', ');
+                            }
+                            var item = report.reportData.mRows [index].columns [coordinatesIndex] = address;
+                            setTimeout(function() {
+                                formatPosition(report, index + 1, coordinatesIndex);
+                            }, 200);
+    
+                        } else {
+                            console.log ('formatPosition --> MARK_6');
+                            //повторно запросить
+                            setTimeout(function() {
+                                formatPosition(report, index, coordinatesIndex);
+                            }, 1000);
+                        }
+                    });
+            };
+            var convertCoordinatesToAdresses = function (report) {
+                var coordinatesIndex = -1;
+                for (var i = 0; i < report.template.mE.length; i++) {
+                    if (report.template.mD [i] === 'c') {
+                        coordinatesIndex = i;
+                        break;
+                    }
+                }
+                if (coordinatesIndex >= 0) {
+                    formatPosition   (report, 0, coordinatesIndex);
+                }
+            };
             var pointToPointDistance = function(p1, p2) {
                 var R = 6371; // km (change this constant to get miles)
                 var dLat = (p2.lat - p1.lat) * Math.PI / 180;
@@ -208,7 +253,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 return ;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             };
             var calculateDuration = function (ranges, rangeIndex, points, systemParams) {
-                return moment.duration (getRangeDuration (ranges [rangeIndex])).humanize(); 
+                return moment.duration (getRangeDuration (ranges [rangeIndex])).humanize (); 
             };
             var calculateAverageSpeed = function (ranges, rangeIndex, points, systemParams) {
                 var rangeDuration = getRangeDuration (ranges [rangeIndex]);
@@ -262,8 +307,9 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 var stop = ranges [rangeIndex].stop.dt * 1000;
                 return  moment (new Date (start)).format ('DD/MM HH:mm') + ' - ' + moment (new Date (stop)).format ('DD/MM HH:mm');
             };
-            var skipMainEvent = function (eventTypeStr, template) {
+            var skipMainRow = function (row, template) {
                 var skip = true;
+                var eventTypeStr = row.eventTypeStr;
                 for (var i = 0; i < template.mE.length; i++) {
                     if (eventTypeStr === template.mE [i]) {
                         skip = false;
@@ -310,25 +356,36 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 var newRow = {};
                 newRow.eventTypeStr = row1.eventTypeStr;
                 newRow.fuelChanges = row1.fuelChanges + row2.fuelChanges;
-                newRow.duration = moment.duration ((row1.range.start.dt - row2.range.stop.dt) * 1000).humanize();
+                var duration_milisec = (row1.range.stop.dt - row2.range.start.dt) * 1000;
+                newRow.duration = moment.duration (duration_milisec).humanize ();
                 newRow.fuelLevel = '';
                 newRow.coordinates = '';
-                newRow.travelDistance = row1.travelDistance + row2.travelDistance;
-                newRow.averageSpeed = Math.floor ((newRow.travelDistance / (newRow.duration / 1000 / 60 / 60)) * 10) / 10;
-                var start = row1.range.start.dt * 1000;
-                var stop = row2.range.stop.dt * 1000;
+                newRow.travelDistance = Math.floor ((row2.travelDistance + row1.travelDistance) * 10) / 10;
+                newRow.averageSpeed = Math.floor ((newRow.travelDistance / (duration_milisec / 1000 / 60 / 60)) * 10) / 10;
+                var start = row1.range.stop.dt * 1000;
+                var stop = row2.range.start.dt * 1000;
                 newRow.interval = moment (new Date (stop)).format ('DD/MM HH:mm') + ' - ' + moment (new Date (start)).format ('DD/MM HH:mm');
                 var newRange = {};
-                newRange.start = row1.range.start;
-                newRange.stop = row2.range.stop;
-                newRange.start_index = row1.start_index;
-                newRange.stop_index = row2.stop_index;
+                newRange.start = row2.range.start;
+                newRange.stop = row1.range.stop;
+                newRange.start_index = row2.range.start_index;
+                newRange.stop_index = row1.range.stop_index;
                 newRange.type = row1.type;
                 newRow.range = newRange;
                 return newRow;
             };
+            var adaptDataToEvent = function (fullRow) {
+                var eventType = fullRow.eventTypeStr;
+                if (eventType === 'm') {
+                    fullRow.coordinates = '';
+                } else {
+                    fullRow.averageSpeed = '';
+                    fullRow.travelDistance = '';
+                }
+            };
             var getMainRow = function (row_fullData, template, systemParams) {
-                var row = {event: row_fullData.eventTypeStr, columns:[]};
+                adaptDataToEvent (row_fullData);
+                var row = {event: row_fullData.eventTypeStr, columns:[], data: row_fullData.range};
                 for (var i = 0; i < template.mD.length; i++) {
                     switch (template.mD [i]) {
                         case 'c': row.columns.push (row_fullData.coordinates); break;
@@ -420,6 +477,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     report.reportData.points = points;
                     var rows_fullData = [];
                     var row_fullData, prevMainRow;
+                    var needAddLastRow = false;
                     for (i = 0; i < ranges.length; i++) {
                         row_fullData = getFullMainRow (ranges, i, points, systemParams);
                         rows_fullData.push (row_fullData);
@@ -427,19 +485,28 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     
                     for (i = 0; i < rows_fullData.length; i++) {
                         row_fullData = rows_fullData [i];
-                        if (!skipMainEvent (row_fullData.eventTypeStr, template)) {
+                        needAddLastRow = false;
+                        if (!skipMainRow (row_fullData, template)) {
+                            /*var row = getMainRow (row_fullData, template, systemParams);
+                                row.data = row_fullData.range;
+                                mRows.push (row);*/
                             if (prevMainRow && prevMainRow.eventTypeStr === 'm' &&
                                 row_fullData.eventTypeStr === 'm') {
                                 row_fullData = concatMainRows (prevMainRow, row_fullData);
+                                needAddLastRow = true;
                             } else if (prevMainRow) {
-                                var row = getMainRow (row_fullData, template, systemParams);
-                                row.data = row_fullData.range;
-                                mRows.push (row);
+                                mRows.push (getMainRow (prevMainRow, template, systemParams));
+                                needAddLastRow = false;
                             }
                             prevMainRow = row_fullData;
                         }
                     }
                     
+                    if (needAddLastRow) {
+                        var row = getMainRow (prevMainRow, template, systemParams);
+                        mRows.push (row);
+                        console.log ('needAddLastRow == true');
+                    }
                         
         ////////////////// SUMMARY REPORT
            
@@ -451,7 +518,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                             if (eventStr === 'm') 
                                 totalDistance += calculateTravelDistance (ranges, i, points, systemParams);
                         }
-                        return Math.floor(totalDistance * 10) / 10;
+                        return Math.floor (totalDistance * 10) / 10;
                     };
                     var calculateTotalTraveledTime = function (ranges, points, systemParams) {
                         var totalTime = 0;
@@ -550,8 +617,10 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     report.reportData.mHeaders = mHeaders;
                     report.reportData.mRows = mRows;
                     report.reportData.sHeaders = sHeaders;
-                    report.reportData.sRows = sRows;
-                    report.ready = 'ready'; // странный баг!! если поставить булевское значение true то не всегда работает биндинг в html
+                    report.reportData.sRows = sRows;                
+                    
+                    convertCoordinatesToAdresses (report);
+                    report.ready = true;//'ready'; // странный баг!! если поставить булевское значение true то не всегда работает биндинг в html
                 });
             });
         };
