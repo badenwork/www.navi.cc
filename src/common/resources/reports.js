@@ -94,7 +94,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             }
             if (!report) {
                 report = Reports.getEmptySingleReport (skey, hStart, hStop, template);
-                Reports.completeSingleReport (report);
+                
             }
             return report;
         };
@@ -177,8 +177,10 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             
             var geocoder = new google.maps.Geocoder();
             var formatPosition = function (report, index, coordinatesIndex) {
-                if (index === report.reportData.mRows.length || report.reportData.mRows.length === 0)
+                if (index === report.reportData.mRows.length || report.reportData.mRows.length === 0) {
+                    report.reportData.addressesIsReady = true;
                     return;
+                }
                 var eventType = report.reportData.mRows [index].event;
                 if (eventType === 'm') {
                     formatPosition (report, index + 1, coordinatesIndex);
@@ -633,9 +635,10 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     report.reportData.mRows = mRows;
                     report.reportData.sHeaders = sHeaders;
                     report.reportData.sRows = sRows;                
-                    
+                    report.reportData.addressesIsReady = false;
                     convertCoordinatesToAdresses (report);
                     report.ready = true;
+                    return report;
                 });
             });
         };

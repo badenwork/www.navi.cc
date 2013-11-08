@@ -23,7 +23,7 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
                     }
                 ]
             },
-            reloadOnSearch: true
+            reloadOnSearch: false
         });
     }
 ])
@@ -33,11 +33,17 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
         $scope.interval = Reports.getReportInterval (report);
         $scope.report = report;
         $scope.Reports = Reports;
+        if (!report.ready) {
+            Reports.completeSingleReport (report);
+        }
         //TODO: оптимизировать
         var updateUI = function (miliseconds) {
             setTimeout (function () {
-                $scope.$apply();
-                updateUI ();
+                $scope.$apply (function () {
+                    if ($scope.report.reportData.addressesIsReady)
+                        return;
+                    updateUI (miliseconds);
+                });
             }, miliseconds);
         };    
         updateUI (1000); // Не самое элегантное решение но пока не знаю как заставить оюновлять таблицу при изменении её значений
