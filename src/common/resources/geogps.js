@@ -1,4 +1,4 @@
-/* global angular:true, window:true, $:true, google:true */
+/* global angular:true, window:true, $:true, google:true, d3:true */
 
 (function() {
 
@@ -426,6 +426,78 @@ angular.module('resources.geogps', [])
         //         path = null;
         //     }
         // };
+
+        GeoGPS.distance = function(p1, p2) {
+            var R = 6371; // km (change this constant to get miles)
+            var dLat = (p2.lat - p1.lat) * Math.PI / 180;
+            var dLon = (p2.lon - p1.lon) * Math.PI / 180;
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(p1.lat * Math.PI / 180) * Math.cos(p2.lat * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var d = R * c;
+            return d;
+        };
+
+        // Инициирует данные для бинарного поиска
+        GeoGPS.initQuadtree = function(points){
+            // console.log('initQuadtree points=', points, this);
+
+            var quadtree = d3.geom.quadtree()
+                .x(function(d){return d.lat;})
+                .y(function(d){return d.lon;});
+                // .data(points);
+
+            // var quadtree = d3.geom.quadtree()
+            //     .extent([[-1, -1], [width + 1, height + 1]])
+            //     (data);
+
+            return quadtree(points);
+        };
+
+        GeoGPS.findInQuadtree = function(quadtree, point, size) {
+            // var size = 0.006 * Math.pow(2,13 - mapzoom);    // Что за хрень?
+            // var size = 0.005;
+            if(size < 0.0001) size = 0.0001;
+            var clat = Math.cos(point.lat * Math.PI / 180);
+            if(clat < 0.0001) clat = 0.0001;
+
+
+            // var bound = new google.maps.LatLngBounds(
+            //     new google.maps.LatLng(point.lat - size*clat, point.lon - size ),
+            //     new google.maps.LatLng(point.lat + size*clat, point.lon + size )
+            // );
+
+            // console.log('bound = ', bound); // x0, y0, x3, y3
+            var x0 = point.lat - size * clat,
+                y0 = point.lon - size,
+                x3 = point.lat + size * clat,
+                y3 = point.lon + size;
+
+
+            var nearestpoints = [];
+            var visits = 0;
+
+            quadtree.visit(function(node, x1, y1, x2, y2){
+                visits++;
+                var p = node.point;
+                if (p) {
+                    if((p.lat >= x0) && (p.lat < x3) && (p.lon >= y0) && (p.lon < y3)) {
+                        // console.log(node, x1, y1, x2, y2, p);
+                        nearestpoints.push(p);
+                    }
+                }
+                return x1 >= x3 || y1 >= y3 || x2 < x0 || y2 < y0;
+            });
+            // console.log('visits=', visits, nearestpoints.length);
+            // Если не нашли точек, то необходимо расширить зону поиска
+
+            return nearestpoints;
+
+        };
+
+
+
 
         return GeoGPS;
     }
