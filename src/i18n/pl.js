@@ -66,7 +66,7 @@ angular.module('i18n.pl', ['pascalprecht.translate'])
             'All reports': 'Wszystkie raporty',
             'System Name': 'Nazwa systemu',
             'Date': 'Data',
-            'Open in new tab': 'Otwórz w nowej karcie',
+            'Open': 'Otwórz',
             'Download': 'Pobierz raport',
             'Remove': 'Usunąć',
             'Templates settings': 'Dostosowywanie raportów',

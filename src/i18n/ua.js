@@ -67,7 +67,7 @@ angular.module('i18n.ua', ['pascalprecht.translate'])
             'All reports': 'Усі звіти',
             'System Name': "Ім'я системи",
             'Date': 'Дата',
-            'Open in new tab': 'Відкрити у новій вкладці',
+            'Open': 'Відкрити',
             'Download': 'Завантажити звіт',
             'Remove': 'Видалити',
             'Templates settings': 'Налаштування звітів',

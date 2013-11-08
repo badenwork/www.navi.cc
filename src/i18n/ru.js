@@ -68,7 +68,7 @@ angular.module('i18n.ru', ['pascalprecht.translate'])
             'All reports': 'Все отчеты',
             'System Name': "Имя системы",
             'Date': 'Дата',
-            'Open in new tab': 'Открыть в новой вкладке',
+            'Open': 'Открыть',
             'Download': 'Загрузить отчет',
             'Remove': 'Удалить',
             'Templates settings': 'Персонализация отчетов',
