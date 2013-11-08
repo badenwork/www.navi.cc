@@ -428,6 +428,9 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     for (i = 0; i < rows_fullData.length; i++) {
                         row_fullData = rows_fullData [i];
                         if (!skipMainEvent (row_fullData.eventTypeStr, template)) {
+                            /*var row = getMainRow (row_fullData, template, systemParams);
+                                row.data = row_fullData.range;
+                                mRows.push (row);*/
                             if (prevMainRow && prevMainRow.eventTypeStr === 'm' &&
                                 row_fullData.eventTypeStr === 'm') {
                                 row_fullData = concatMainRows (prevMainRow, row_fullData);
@@ -451,7 +454,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                             if (eventStr === 'm') 
                                 totalDistance += calculateTravelDistance (ranges, i, points, systemParams);
                         }
-                        return Math.floor(totalDistance * 10) / 10;
+                        return Math.floor (totalDistance * 10) / 10;
                     };
                     var calculateTotalTraveledTime = function (ranges, points, systemParams) {
                         var totalTime = 0;
