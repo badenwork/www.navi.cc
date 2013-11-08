@@ -417,8 +417,10 @@
 ///////////////////////////////////////////////////////////// разобраться
     updateFromElementVal: function() {
         console.log('Warning!! Нерабочая функция : updateFromElementVal');
-        this.incrementStart();
-        this.incrementStop();
+        this.setStart (1);
+        this.setStop (5);
+        //this.incrementStart();
+        //this.incrementStop();
         return;
       /*var val = this.$element.val();
 

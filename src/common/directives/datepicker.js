@@ -7,7 +7,12 @@ angular.module('directives.datepicker', ['i18n'])
 
         var link = function(scope, element){
             // console.log('datepicker scope=', scope);
-
+            
+            var intervalpicker = element.find('#intervalpicker');
+            intervalpicker.intervalpicker({
+                defaultStart: scope.timeFrom,
+                defaultStop: scope.timeTo
+            });
             var datepicker = element.find('.inputDate');
             var dp = datepicker.datepicker({
                 todayBtn: 'linked',
@@ -113,7 +118,10 @@ angular.module('directives.datepicker', ['i18n'])
             scope: {
                 dateFrom: '=',
                 dateTo: '=',
-                range: '='
+                range: '=',
+                timeFrom: '=',
+                timeTo: '=',
+                intervalPicker: '='
                 // onChange: '&'
             },
             // template: '<svg width='500px' height='250px' class='chart'></svg>',
@@ -123,6 +131,7 @@ angular.module('directives.datepicker', ['i18n'])
                         '<button class="btn btn-primary" ng-click="prevDay()">&lt;</button>'+
                         '<input  class="btn btn-primary inputDate" />'+
                         '<button class="btn btn-primary" ng-click="nextDay()">&gt;</button>'+
+                        '<button id="intervalpicker" ng-show="intervalPicker" class="btn btn-primary">{{timeFrom + " - " + timeTo}}</button>'+
                         '<button class="btn btn-primary" ng-click="toggleRange()">&hellip;</button>'+
                     '</div>'+
 
