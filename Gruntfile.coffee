@@ -126,8 +126,9 @@ module.exports = (grunt) ->
           # "ngInfiniteScroll": "https://github.com/baden/ngInfiniteScroll.git" # Оригинальный не поддерживает скроллинг в контейнере, только в top
           "angular-bindonce": ""
           "components-font-awesome": "3.2.1"
-          moment:
-            select: ["moment.js", "ru.js"]
+          "moment": "2.4.0"
+          # moment:
+          #   select: ["moment.js", "ru.js"]
           jszip:
             select: [ 'jszip.js', 'jszip-deflate.js' ]
           "https://github.com/stephen-hardy/xlsx.js.git": ""

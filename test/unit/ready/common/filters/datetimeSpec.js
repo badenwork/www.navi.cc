@@ -16,7 +16,6 @@ describe('filters', function() {
 
         var a = moment(new Date(0));
         var expected = a.format("DD/MM/YYYY HH:mm:ss");
-        console.log('expected', expected);
 
         expect(datetime(0)).toEqual(expected);
       });

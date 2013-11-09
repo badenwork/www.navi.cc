@@ -1,6 +1,6 @@
 /* global angular:true, $:true */
 
-angular.module('directives.lists', [])
+angular.module('directives.lists', ['app.services.imeicheck'])
 
 .directive('mylist', function() {
     'use strict';
@@ -151,7 +151,7 @@ angular.module('directives.lists', [])
     };
 })
 
-.directive('addtracker', function() {
+.directive('addtracker', ['imeicheck', function(imeicheck) {
     'use strict';
 
     return {
@@ -191,6 +191,14 @@ angular.module('directives.lists', [])
                 };
 
                 $scope.onAdd = function(imei) {
+                    if(!imeicheck(imei)){
+                        if (!window.confirm(
+                            'IMEI введен с ошибкой.\n' +
+                            'IMEI должен состоять из 15-ти цифр.\n' +
+                            'Если задан защитный код, то его необходимо указывать после IMEI ререз разделитель "-".\n' +
+                            '\nВсе равно попробовать добавить трекер с таким IMEI?'
+                        )) return;
+                    }
                     add([imei]);
                     $scope.addform = false;
                 };
@@ -207,7 +215,7 @@ angular.module('directives.lists', [])
             }
         ]
     };
-})
+}])
 
 .directive('clone', function() {
     'use strict';
