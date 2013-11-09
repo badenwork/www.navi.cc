@@ -102,10 +102,10 @@ module.exports = (grunt) ->
           d3: ""
           # angular: ""
           # "angular-unstable": "~1.2.0-rc2"
-          angular: "v1.2.0-rc.2"
-          "angular-route": "v1.2.0-rc.2"
-          "angular-resource": "v1.2.0-rc.2"
-          "angular-animate": "v1.2.0-rc.2"
+          angular: "v1.2.0"
+          "angular-route": "v1.2.0"
+          "angular-resource": "v1.2.0"
+          "angular-animate": "v1.2.0"
           "angular-ui-sortable": ""
           "angular-ui-bootstrap": ""  # Search for 3.0 tag/branch
           "angular-ui-select2": ""
@@ -536,6 +536,10 @@ module.exports = (grunt) ->
           configFile: 'test/karma.conf.js'
       unit:
         options: karmaConfig 'test/karma.conf.js'
+      continuous:
+        options: karmaConfig( "test/karma.conf.js",
+          singleRun: true
+        )
       watch:
         options: karmaConfig( "test/karma.conf.js",
           singleRun: false
@@ -630,7 +634,7 @@ module.exports = (grunt) ->
     #'watch'
   ]
 
+  grunt.registerTask "test", ["karma:continuous"]
   grunt.registerTask "test-watch", ["karma:watch"]
-
-  grunt.registerTask "default", ["pruduction"]
+  grunt.registerTask "default", ["production", "karma:unit"]
 

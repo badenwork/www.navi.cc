@@ -19,7 +19,8 @@ module.exports = function(config){
       // 'app/lib/angular/*.min.js'
     ],
 
-    autoWatch : true,
+    autoWatch : false,
+    singleRun : true,
 
     frameworks: ['jasmine'],
 
@@ -30,13 +31,14 @@ module.exports = function(config){
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers : ['PhantomJS', 'Chrome'],
+    // browsers : ['PhantomJS', 'Chrome', 'Firefox'],
+    browsers : ['PhantomJS'],
 
 
     plugins : [
             'karma-junit-reporter',
             'karma-chrome-launcher',
-            // 'karma-firefox-launcher',
+            'karma-firefox-launcher',
             'karma-phantomjs-launcher',
             'karma-jasmine'
             ],
