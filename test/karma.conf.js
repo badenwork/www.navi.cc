@@ -23,7 +23,13 @@ module.exports = function(config){
 
     frameworks: ['jasmine'],
 
-    // browsers : ['Chrome'],
+    // - Chrome
+    // - ChromeCanary
+    // - Firefox
+    // - Opera
+    // - Safari (only Mac)
+    // - PhantomJS
+    // - IE (only Windows)
     browsers : ['PhantomJS', 'Chrome'],
 
 
