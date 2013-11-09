@@ -37,6 +37,7 @@ angular.module('i18n.ua', ['pascalprecht.translate'])
             'Config': 'Налаштування',
             'Help': 'Допомога',
             'User': 'Користувач',
+            'Admin': 'Адміністрування',
 
             // Map
             'Display Settings': 'Налаштування відображення',

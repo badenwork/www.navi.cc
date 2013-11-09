@@ -36,6 +36,7 @@ angular.module('i18n.pl', ['pascalprecht.translate'])
             'Config': 'Ustawienia',
             'Help': 'Pomoc',
             'User': 'Użytkownik',
+            'Admin': 'Administracja',
 
             // Map
             'Display Settings': 'Ustawienia ekranu',

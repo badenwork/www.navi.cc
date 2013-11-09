@@ -37,5 +37,9 @@ angular.module('login', ['ngRoute', 'resources.account', 'resources.system', 'ap
             });
             $scope.user = {};
         };
+
+        $scope.isAdmin = function(){
+            return $.inArray('admin', account.account.groups) >= 0;
+        }
     }
 ]);
