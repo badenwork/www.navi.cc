@@ -3,17 +3,19 @@ www.navi.cc [![Build Status](https://secure.travis-ci.org/baden/www.navi.cc.png)
 
 WEB-клиент для проекта navi.cc
 
-## Installation
+## Установка
 
-### Platform & tools
+### Инструменты
 
-You need to install Node.js and then the development tools. Node.js comes with a package manager called [npm](http://npmjs.org) for installing NodeJS applications and libraries.
-* [Install node.js](http://nodejs.org/download/) (requires node.js version >= 0.8.4)
-* Install Grunt and Testacular as global npm modules:
+Вам нужно установить Node.js а затем инструменты разработчика.
+Node.js поставляется с пакет-менеджером [npm](http://npmjs.org) для установки NodeJS приложений и библиотек.
+* [Установить node.js](http://nodejs.org/download/) (требуется node.js версии> = 0.8.4)
+* Установите grunt-cli и модули:
 
     ```
     sudo npm install -g grunt-cli
     npm install
+    grunt deps
     ```
 
 ### Client App

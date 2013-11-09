@@ -1,4 +1,4 @@
-/* global angular:true */
+/* global angular:true, $:true */
 
 angular.module('login', ['ngRoute', 'resources.account', 'resources.system', 'app.filters', '$strap.directives', /*'directives.modal',*/ 'i18n', 'directives.language'])
 
@@ -40,6 +40,6 @@ angular.module('login', ['ngRoute', 'resources.account', 'resources.system', 'ap
 
         $scope.isAdmin = function(){
             return $.inArray('admin', account.account.groups) >= 0;
-        }
+        };
     }
 ]);
