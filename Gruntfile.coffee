@@ -615,7 +615,7 @@ module.exports = (grunt) ->
 
   # Build components
   grunt.registerTask "deps", [
-    "bowerful", "copy:bootstrap", "less:bootstrap"
+    "bowerful", "copy:bootstrap", "replace:bootstrap", "less:bootstrap"
   ]
 
   # Production
