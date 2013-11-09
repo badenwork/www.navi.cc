@@ -156,6 +156,16 @@ module.exports = (grunt) ->
         files:
           "test/spec/*.js": ["test/spec/coffee/**/*.coffee"]
 
+
+    replace:
+      bootstrap:
+        src: ["components/bootstrap/less/variables.less"] # source files array (supports minimatch)
+        dest: "temp/components/bootstrap/" # destination directory or file
+        replacements: [
+          from: "1200px;"
+          to: "1001px;"
+        ]
+
     less:
       dist:
         files:
@@ -209,6 +219,13 @@ module.exports = (grunt) ->
           expand: true
         ]
       bootstrap:
+        files: [
+          src: ["*.less", '!variables.less']
+          cwd: "components/bootstrap/less/"
+          dest: "temp/components/bootstrap/"
+          expand: true
+        ]
+      bootstrap3:
         files: [
           src: ["*.less", '!variables.less']
           cwd: "components/bootstrap/less/"
@@ -569,6 +586,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-manifest"
   grunt.loadNpmTasks "grunt-contrib-jshint"
   grunt.loadNpmTasks "grunt-karma"
+  grunt.loadNpmTasks "grunt-text-replace"
 
 
 
@@ -614,6 +632,7 @@ module.exports = (grunt) ->
     "copy:assets"
     "copy:sprites"
     "copy:bootstrap"
+    "replace:bootstrap"
     "less:bootstrap"
     "copy:conponents_min"
     "concat:conponents_min"
