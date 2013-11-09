@@ -1,4 +1,4 @@
-www.navi.cc
+www.navi.cc [![Build Status](https://secure.travis-ci.org/baden/www.navi.cc.png)](http://travis-ci.org/baden/www.navi.cc)
 ===========
 
 WEB-клиент для проекта navi.cc
