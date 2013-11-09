@@ -34,6 +34,7 @@ module.exports = function(config){
     // browsers : ['PhantomJS', 'Chrome', 'Firefox'],
     browsers : ['PhantomJS'],
 
+    reporters : ['dots'],
 
     plugins : [
             'karma-junit-reporter',

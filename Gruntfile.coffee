@@ -11,7 +11,8 @@ module.exports = (grunt) ->
   karmaConfig = (configFile, customOptions) ->
     options =
       configFile: configFile
-      keepalive: true
+      # keepalive: true
+      singleRun: true
 
     travisOptions = process.env.TRAVIS and
       browsers: ["Firefox", "PhantomJS"]
