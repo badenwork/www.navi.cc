@@ -223,7 +223,8 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 }
             };
             var pointToPointDistance = function(p1, p2) {
-                var R = 6371; // km (change this constant to get miles)
+                return GeoGPS.distance (p1, p2);
+                /*var R = 6371; // km (change this constant to get miles)
                 var dLat = (p2.lat - p1.lat) * Math.PI / 180;
                 var dLon = (p2.lon - p1.lon) * Math.PI / 180;
                 var a = Math.sin (dLat / 2) * Math.sin (dLat / 2) +
@@ -231,7 +232,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     Math.sin (dLon / 2) * Math.sin (dLon / 2);
                 var c = 2 * Math.atan2 (Math.sqrt (a), Math.sqrt (1 - a));
                 var d = R * c;
-                return d;
+                return d;*/
             };
             
             var getRangeDuration = function (range) {

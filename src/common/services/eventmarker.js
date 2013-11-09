@@ -13,6 +13,10 @@
     5. Тревожные события.
     ...
 */
+    angular.module('services.eventmarker', ['app.filters'])
+    .factory('EventMarker', ['$filter',
+        function($filter) {
+            var humanizeMiliseconds = $filter('humanizeMiliseconds');
 
     function EventMarker(map) {
         this.map = map;
@@ -63,6 +67,7 @@
     };
 
     EventMarker.prototype.draw = function() {
+        var that = this;
         var overlayProjection = this.getProjection();
         if (!overlayProjection) return;
 
@@ -99,6 +104,42 @@
         // })
         .on('click', function(d) {
             window.console.log('TODO', d3.select(this), d);
+            var point = d.point;
+            // window.console.log('TODO', d3.select(this), d);
+            // var timeStr = moment(new Date(point.dt * 1000)).format('DD/MM/YYYY HH:mm:ss');
+            var start = moment(new Date(point.dt * 1000)).format('DD/MM/YYYY HH:mm:ss');
+            var duration, stop;
+
+            var lat = Math.round(point.lat * 100000) / 100000;
+            var lon = Math.round(point.lon * 100000) / 100000;
+            if(d.end) {
+                duration = ' ' + humanizeMiliseconds((d.end.dt - d.point.dt) * 1000);
+                stop = moment(new Date(d.end.dt * 1000)).format('DD/MM/YYYY HH:mm:ss');
+            }
+            // var sats = point.sats;
+            // var speed = Math.round(point.speed * 10) / 10;
+            // var vin = Math.round(point.vin * 100) / 100;
+            // var vout = Math.round(point.vout * 100) / 100;
+            var title;
+            switch(d.type){
+                case 'HOLD': title = 'Остановка'; break;
+                case 'STOP': title = 'Стоянка'; break;
+                case 'START': title = 'Начало трека'; break;
+                case 'FINISH': title = 'Конец трека'; break;
+            }
+            var content =
+                '<h4 class="event-info-window">' + title + (duration?duration:'') + '</h4>' +
+                '<table class="point-info-window" width="100%"><tbody>' +
+                    '<tr><td>' + (stop?'Начало':'Время') + ':</td><td>' + start + '</td></tr>' +
+                    (stop?('<tr><td>Конец:</td><td>' + stop + '</td></tr>'):'') +
+                    // (duration?('<tr><td>Продолжительность</td><td>' + duration + '</td></tr>'):'') +
+                    '<tr><td>Долгота:</td><td>' + lat + '</td></tr>' +
+                    '<tr><td>Широта:</td><td>' + lon + '</td></tr>' +
+                '</tbody></table>';
+            that.map.customInfoWindow.setContent(content);
+            that.map.customInfoWindow.setPosition(new google.maps.LatLng(point.lat, point.lon));
+            that.map.customInfoWindow.open(that.map);
+
         });
         div.append('span').attr('class', 'eventmarker-number').text(function(d) {
             return d.title;
@@ -142,10 +183,7 @@
         // div.style.top = divpx.y - 32 + 'px';
     };
 
-    angular.module('services.eventmarker', [])
 
-    .factory('EventMarker', [
-        function() {
             // console.log(':: EventMarker', $rootScope, EventMarker);
             return EventMarker;
         }

@@ -236,6 +236,10 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             // scope.gmap(map);
             scope.map = map;
 
+            // Не самое элегантное решение
+            map.customInfoWindow = new google.maps.InfoWindow({
+                clickable: false    // Кажется это не работает
+            });
 
             map.mapTypes.set('Apple', new google.maps.ImageMapType({
                 getTileUrl: function(coord, zoom) {

@@ -6,6 +6,19 @@ config:
   locales: ["ru", "en", "ua", "pl"]
 
 module.exports = (grunt) ->
+
+
+  karmaConfig = (configFile, customOptions) ->
+    options =
+      configFile: configFile
+      keepalive: true
+
+    travisOptions = process.env.TRAVIS and
+      browsers: ["Firefox", "PhantomJS"]
+      reporters: "dots"
+
+    grunt.util._.extend options, customOptions, travisOptions
+
   # Project configuration.
   grunt.initConfig
     meta: grunt.file.readJSON('package.json')
@@ -122,6 +135,9 @@ module.exports = (grunt) ->
           # Для поддержки старых браузеров. Проверить это вообще помогает?
           "angular-ui-utils": ""
           "es5-shim": ""
+
+          # Средства тестирования
+          "angular-mocks": ""
           json3: ""
         store: 'components'
         # dest: 'public'
@@ -514,6 +530,19 @@ module.exports = (grunt) ->
         tasks: ['livereload']
 
 
+    karma:
+      start:
+        start:
+          configFile: 'test/karma.conf.js'
+      unit:
+        options: karmaConfig 'test/karma.conf.js'
+      watch:
+        options: karmaConfig( "test/karma.conf.js",
+          singleRun: false
+          autoWatch: true
+        )
+
+
   grunt.loadNpmTasks "grunt-contrib-coffee"
   grunt.loadNpmTasks "grunt-contrib-copy"
   grunt.loadNpmTasks "grunt-contrib-concat"
@@ -533,9 +562,16 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-contrib-uglify"
   grunt.loadNpmTasks "grunt-manifest"
   grunt.loadNpmTasks "grunt-contrib-jshint"
+  grunt.loadNpmTasks "grunt-karma"
+
+
 
   # grunt-contrib-watch now not work with livereload :(
   #grunt.loadNpmTasks "grunt-contrib-watch"
+
+  # Print a timestamp (useful for when watching)
+  grunt.registerTask "timestamp", () ->
+    grunt.log.subhead Date()
 
   # HTML stuff
   grunt.registerTask 'index', 'Process index.html', ->
@@ -594,5 +630,7 @@ module.exports = (grunt) ->
     #'watch'
   ]
 
+  grunt.registerTask "test-watch", ["karma:watch"]
 
   grunt.registerTask "default", ["pruduction"]
+

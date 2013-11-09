@@ -15,9 +15,9 @@ angular.module('services.pointmarker', ['newgps.services'])
             this.div = null;
             this.data = [];
             this.setMap(map);
-            this.infowindow = new google.maps.InfoWindow({
-                clickable: false
-            });
+            // this.infowindow = new google.maps.InfoWindow({
+            //     clickable: false
+            // });
         }
 
         PointMarker.prototype = new google.maps.OverlayView();
@@ -44,15 +44,15 @@ angular.module('services.pointmarker', ['newgps.services'])
         };
 
         PointMarker.prototype.onRemove = function() {
-            if (this.infowindow !== null)
-                this.infowindow.close();
+            if (this.map.customInfoWindow !== null)
+                this.map.customInfoWindow.close();
             this.div.parentNode.removeChild(this.div);
             this.div = null;
         };
 
         PointMarker.prototype.hideInfo = function() {
-            if (this.infowindow !== null)
-                this.infowindow.close();
+            if (this.map.customInfoWindow !== null)
+                this.map.customInfoWindow.close();
         };
 
         PointMarker.prototype.draw = function() {
@@ -71,21 +71,30 @@ angular.module('services.pointmarker', ['newgps.services'])
             // Создание. Тут можно особо не заполнять данными, лишь бы структуру создать, ниже все равно будет обновление.
             ///////////////////////
 
-            /*var div =*/ points.enter().append('div')
+            points.enter().append('div')
                 .attr('class', 'marker')
                 .on('click', function(point) {
                     // window.console.log('TODO', d3.select(this), d);
-                    var timeStr = moment(new Date((point.dt * 1000))).format('DD/MM/YYYY : HH:mm');
+                    var timeStr = moment(new Date(point.dt * 1000)).format('DD/MM/YYYY HH:mm:ss');
                     var lat = Math.round(point.lat * 100000) / 100000;
                     var lon = Math.round(point.lon * 100000) / 100000;
                     var sats = point.sats;
                     var speed = Math.round(point.speed * 10) / 10;
                     var vin = Math.round(point.vin * 100) / 100;
                     var vout = Math.round(point.vout * 100) / 100;
-                    var content = '<div class="info-header">' + timeStr + '</div><table id="tbl_info" width="100%"><tbody><tr><td>Долгота:</td><td><b>' + lat + '</b></td></tr><tr><td>Широта:</td><td><b>' + lon + '</b></td></tr><tr><td>Спутники</td><td><b>' + sats + '</b></td></tr><tr><td>Скорость</td><td><b>' + speed + 'км/ч</b></td></tr><tr><td>Основное питание</td><td><b>' + vout + 'В</b></td></tr><tr><td>Резервное питание</td><td><b>' + vin + 'В</b></td></tr></tbody></table>';
-                    that.infowindow.setContent(content);
-                    that.infowindow.setPosition(new google.maps.LatLng(point.lat, point.lon));
-                    that.infowindow.open(that.map);
+                    var content =
+                        '<h4>' + timeStr + '</h4>' +
+                        '<table class="point-info-window" width="100%"><tbody>' +
+                            '<tr><td>Долгота:</td><td>' + lat + '</td></tr>' +
+                            '<tr><td>Широта:</td><td>' + lon + '</td></tr>' +
+                            '<tr><td>Спутники</td><td>' + sats + '</td></tr>' +
+                            '<tr><td>Скорость</td><td>' + speed + 'км/ч</td></tr>' +
+                            '<tr><td>Основное питание</td><td>' + vout + 'В</td></tr>' +
+                            '<tr><td>Резервное питание</td><td>' + vin + 'В</td></tr>' +
+                        '</tbody></table>';
+                    that.map.customInfoWindow.setContent(content);
+                    that.map.customInfoWindow.setPosition(new google.maps.LatLng(point.lat, point.lon));
+                    that.map.customInfoWindow.open(that.map);
 
                 // })
                 // .on('mouseenter', function(point) {
