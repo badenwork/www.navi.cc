@@ -202,7 +202,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                             }, 1100);
     
                         } else {
-                            console.log ('formatPosition --> MARK_6');
+                            //console.log ('formatPosition --> MARK_6');
                             //повторно запросить
                             setTimeout(function() {
                                 formatPosition(report, index, coordinatesIndex);
@@ -472,7 +472,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                                 mRows.push (row);*/
                             if (prevMainRow && prevMainRow.eventTypeStr === 'm' &&
                                 row_fullData.eventTypeStr === 'm') {
-                                console.log ('full main row concatted!! prevMainRow : ', prevMainRow, ' currentMainRow : ', row_fullData);
+                                //console.log ('full main row concatted!! prevMainRow : ', prevMainRow, ' currentMainRow : ', row_fullData);
                                 row_fullData = concatMainRows (prevMainRow, row_fullData);
                             } else if (prevMainRow) {
                                 mRows.push (getMainRow (prevMainRow, template, systemParams));
