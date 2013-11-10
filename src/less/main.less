@@ -1,4 +1,4 @@
-@import "variables.less";
+// @import "variables.less";
 @import "mixins.less";
 @import "common.less";
 // @import "datepicker.less";
@@ -164,6 +164,13 @@ i.cmd:hover {
     -moz-transition:@property @time @function;
     -o-transition:@property @time @function;
     transition:@property @time @function;
+}
+
+.transition-transform (@time: 0.3s, @function: ease-in-out) {
+    -webkit-transition:-webkit-transform @time @function;
+    -moz-transition:-moz-transform @time @function;
+    -o-transition:-o-transform @time @function;
+    transition:transform @time @function;
 }
 
 
@@ -370,6 +377,10 @@ navtool {
   margin-right: 6px;
 }
 
+.breadcrumb {
+  padding: 0;
+}
+
 .datepicker {
   z-index: 10000!important;
 }
@@ -378,3 +389,5 @@ navtool {
 @import "map.less";
 @import "gps.less";
 @import "config.less";
+
+@import "timechart.less";

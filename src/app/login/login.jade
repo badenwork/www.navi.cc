@@ -66,3 +66,7 @@ div.container
     button.btn.btn-warning(ng-click="onLogout();")
         i.icon-off
         | Выйти из учетной записи
+    | &nbsp;
+    a.btn.btn-primary(href="#/admin", ng-if="isAdmin()")
+        i.icon-medkit
+        span(translate) Admin

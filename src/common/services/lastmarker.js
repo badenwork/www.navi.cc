@@ -54,7 +54,7 @@ angular.module('services.lastmarker', ['newgps.services'])
 
         var sysTime = function(sys) {
             if (sys && sys.dynamic) {
-                return moment((new Date((sys.dynamic.dt * 1000)))).format('DD/MM/YYYY : hh:mm');
+                return moment((new Date((sys.dynamic.dt * 1000)))).format('DD/MM/YYYY : HH:mm');
             } else {
                 return '-';
             }

@@ -69,7 +69,8 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         var date;
         var hourfrom;
 
-        var tz = (new Date()).getTimezoneOffset() / 60;
+        // var tz = (new Date()).getTimezoneOffset() / 60;
+        var tz;
 
         if ((1 * day) === 0) {
             hourfrom = (new Date((new Date()).toDateString())).valueOf() / 1000 / 3600;
@@ -77,6 +78,8 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         } else if ((1 * day) === -1) {
             hourfrom = (new Date((new Date()).toDateString())).valueOf() / 1000 / 3600 - 24;
         } else {
+            hourfrom = day * 24;
+            tz = (new Date(hourfrom * 3600 * 1000)).getTimezoneOffset() / 60;   // Уточняем временную зону
             hourfrom = day * 24 + tz;
         }
         date = new Date(hourfrom * 3600 * 1000);
@@ -85,8 +88,10 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         $scope.onSysSelect = function() {
             if ($scope.skey) {
                 $location.path('/gps/' + $scope.skey);
+                $location.replace();
             } else {
                 $location.path('/gps');
+                $location.replace();
             }
         };
 
@@ -142,7 +147,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             var stop = Math.max(0, l - offset - 1 - ITEMS);
             if ((start === 0) && (stop === 0)) return;
             for (var i = start; i >= stop; i--) {
-                items.push($scope.track.points[i]);
+                items.push ($scope.track.points[i]);
             }
         };
 
@@ -158,6 +163,8 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
                 $location.path('/gps/' + $scope.skey + '/' + newday);
             });
         });
+
+        tz = (date).getTimezoneOffset() / 60;
 
         var dateline = dp.datepicker.DPGlobal.formatDate(new Date(date.valueOf() - tz * 3600 * 1000), 'mm-dd-yyyy', 'ru');
         dp.datepicker('update', dateline);

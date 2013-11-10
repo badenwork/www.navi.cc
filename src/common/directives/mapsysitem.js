@@ -25,10 +25,11 @@ angular.module('directives.main', ['newgps.services', 'services.tags'])
                     Tags.reload();
                     $scope.filters = Tags.filters;
 
-                    $scope.zoomlist = 1;
+                    $scope.zoomlist = (localStorage.getItem('maplist.zoomlist') || '1') | 0;
                     $scope.doZoomList = function() {
                         $scope.zoomlist += 1;
                         if ($scope.zoomlist >= 3) $scope.zoomlist = 0;
+                        localStorage.setItem('maplist.zoomlist', $scope.zoomlist);
                     };
 
                     $scope.popup = function() {};
@@ -37,7 +38,9 @@ angular.module('directives.main', ['newgps.services', 'services.tags'])
                         $scope.select(skey);
                     };
 
-                    // $scope.$watch('sfilter', function() {
+                    // $scope.$watch('sfilter', function(filter) {
+                    //     console.log('change filter', filter);
+                    // });
                     //     console.log($scope.onFilter, $scope.sfilter);
                     //     $scope.onFilter($scope.sfilter);
                     // //     console.log('fire sfilter', $scope.sfilter);
@@ -82,6 +85,7 @@ angular.module('directives.main', ['newgps.services', 'services.tags'])
                             skey: skey
                         });
                         $location.search(params);
+                        $location.replace();
                         $scope.select(skey);
                     };
 

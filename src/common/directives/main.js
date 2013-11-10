@@ -1,6 +1,6 @@
 /* global angular:true, $:true */
 
-angular.module('directives.lists', [])
+angular.module('directives.lists', ['app.services.imeicheck'])
 
 .directive('mylist', function() {
     'use strict';
@@ -151,7 +151,7 @@ angular.module('directives.lists', [])
     };
 })
 
-.directive('addtracker', function() {
+.directive('addtracker', ['imeicheck', function(imeicheck) {
     'use strict';
 
     return {
@@ -191,6 +191,14 @@ angular.module('directives.lists', [])
                 };
 
                 $scope.onAdd = function(imei) {
+                    if(!imeicheck(imei)){
+                        if (!window.confirm(
+                            'IMEI введен с ошибкой.\n' +
+                            'IMEI должен состоять из 15-ти цифр.\n' +
+                            'Если задан защитный код, то его необходимо указывать после IMEI ререз разделитель "-".\n' +
+                            '\nВсе равно попробовать добавить трекер с таким IMEI?'
+                        )) return;
+                    }
                     add([imei]);
                     $scope.addform = false;
                 };
@@ -207,7 +215,7 @@ angular.module('directives.lists', [])
             }
         ]
     };
-})
+}])
 
 .directive('clone', function() {
     'use strict';
@@ -280,13 +288,14 @@ angular.module('directives.lists', [])
 .directive('navtool', [
     function() {
         'use strict';
-
+//TODO: локализовать
         return {
             restrict: 'E',
             template:
-                '<div class="btn-group">' +
+                '<div style="margin-right:10px" class="btn-group">' +
                 '<a type="button" class="btn btn-info" ng-click="back()" title="Назад">&lt;</a>' +
                 '<a type="button" class="btn btn-info" href="#/map" title="Карта"><i class="icon-map-marker" style="margin:0"></i></a>' +
+                '<a type="button" class="btn btn-info" href="#/reports" title="Отчеты"><i class="icon-table" style="margin:0"></i></a>' +
                 '<a type="button" class="btn btn-info" href="#/config" title="Настройки"><i class="icon-gears" style="margin:0"></i></a>' +
                 '<a type="button" class="btn btn-info" href="#/" title="Пользователь"><i class="icon-user icon-large" style="margin:0"></i></a>' +
                 '<a type="button" class="btn btn-info" href="#/help" title="Помощь"><i class="icon-medkit" style="margin:0"></i></a>' +

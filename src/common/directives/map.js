@@ -1,15 +1,176 @@
-/* global angular:true, window:true, google:true, moment:true, $:true, console:true */
+/* global angular:true, window:true, google:true, $:true, console:true */
+
+;(function(){
+
+    'use strict';
+
+    function atanh(x) {
+        return 0.5*Math.log((1+x)/(1-x));
+    }
+
+    var MERCATOR_RANGE = 256;
+    // function degreesToRadians(deg) {
+    //     return deg * (Math.PI / 180);
+    // }
+
+    // function radiansToDegrees(rad) {
+    //     return rad / (Math.PI / 180);
+    // }
+    // function bound(value, opt_min, opt_max) {
+    //     if (opt_min !== null) value = Math.max(value, opt_min);
+    //     if (opt_max !== null) value = Math.min(value, opt_max);
+    //     return value;
+    // }
+
+    function YandexProjection() {
+        this.pixelOrigin_ = new google.maps.Point(128,128);
+        this.pixelsPerLonDegree_ = MERCATOR_RANGE / 360;
+        this.pixelsPerLonRadian_ = MERCATOR_RANGE / (2 * Math.PI);
+    }
+
+    YandexProjection.prototype.fromLatLngToPoint = function(latLng) {
+        var me = this;
+        var point = new google.maps.Point(0, 0);
+        var origin = me.pixelOrigin_;
+        // var siny = bound(Math.sin(degreesToRadians(latLng.lat())), -0.9999, 0.9999);
+        point.x = origin.x + latLng.lng() *me.pixelsPerLonDegree_;
+        var exct = 0.0818197;
+        var z = Math.sin(latLng.lat()/180*Math.PI);
+        point.y = Math.abs(origin.y - me.pixelsPerLonRadian_*(atanh(z)-exct*atanh(exct*z)));
+        return point;
+     };
+
+    YandexProjection.prototype.fromPointToLatLng = function(point) {
+        var me = this;
+        var origin = me.pixelOrigin_;
+        var lng = (point.x - origin.x) / me.pixelsPerLonDegree_;
+        var latRadians = (point.y - origin.y) / -me.pixelsPerLonRadian_;
+        var lat = Math.abs((2*Math.atan(Math.exp(latRadians))-Math.PI/2)*180/Math.PI);
+        var Zu = lat/(180/Math.PI);
+        var Zum1 = Zu+1;
+        var exct = 0.0818197;
+        var yy = -Math.abs(((point.y)-128));
+        while (Math.abs(Zum1-Zu)>0.0000001){
+            Zum1 = Zu;
+            Zu = Math.asin(1-((1+Math.sin(Zum1))*Math.pow(1-exct*Math.sin(Zum1),exct)) /
+                (Math.exp((2*yy)/-(256/(2*Math.PI)))*Math.pow(1+exct*Math.sin(Zum1),exct)));
+        }
+        if (point.y>256/2) {lat=-Zu*180/Math.PI;}
+        else {lat=Zu*180/Math.PI;}
+        return new google.maps.LatLng(lat, lng);
+     };
+
+    /*
+
+    Тайлы с яндекса:
+
+    http://vec01.maps.yandex.net/tiles?l=map&v=2.26.0&x=33&y=23&z=6&lang=ru-RU
+    http://sat02.maps.yandex.net/tiles?l=sat&v=1.33.0&x=9774&y=5675&z=14&lang=ru-RU
+    http://02.pvec.maps.yandex.net/?l=pmap&x=306&y=177&z=9&lang=ru-RU&v=1331236800
+
+    */
+
+
+    var yandexMapType = new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+            //return "http://vec0"+((coord.x+coord.y)%5)+".maps.yandex.net/tiles?l=map&v=2.16.0&x=" + coord.x + "&y=" + coord.y + "&z=" + zoom + "";
+            return 'http://vec0'+((coord.x+coord.y)%5)+'.maps.yandex.net/tiles?l=map&v=2.26.0&x=' + coord.x + '&y=' + coord.y + '&z=' + zoom + '&lang=ru-RU';
+            //return "http://sat0'+((coord.x+coord.y)%5)+'.maps.yandex.net/tiles?l=sat&v=1.33.0&x=' + coord.x + '&y=' + coord.y + '&z=' + zoom + '&lang=ru-RU';
+        },
+        tileSize: new google.maps.Size(256, 256),
+        isPng: true,
+        alt: 'Яндекс карта',
+        name: 'Яндекс',
+        maxZoom: 17,
+        minZoom:0
+        //, opacity:0.9
+    });
+    yandexMapType.projection = new YandexProjection();
+
+    var yandexSatType = new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+            //return 'http://vec0'+((coord.x+coord.y)%5)+'.maps.yandex.net/tiles?l=map&v=2.16.0&x=' + coord.x + '&y=' + coord.y + '&z=' + zoom + '';
+            //return 'http://vec0'+((coord.x+coord.y)%5)+'.maps.yandex.net/tiles?l=map&v=2.26.0&x=' + coord.x + '&y=' + coord.y + '&z=' + zoom + '&lang=ru-RU';
+            return 'http://sat0'+((coord.x+coord.y)%5)+'.maps.yandex.net/tiles?l=sat&v=1.33.0&x=' + coord.x + '&y=' + coord.y + '&z=' + zoom + '&lang=ru-RU';
+        },
+        tileSize: new google.maps.Size(256, 256),
+        isPng: true,
+        alt: 'Яндекс спутник',
+        name: 'Яспутник',
+        maxZoom: 17,
+        minZoom:0
+        //, opacity:0.9
+    });
+    yandexSatType.projection = new YandexProjection();
+
+    var yandexPipType = new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+            return 'http://0'+((coord.x+coord.y)%5)+'.pvec.maps.yandex.net/?l=pmap&x=' + coord.x + '&y=' + coord.y + '&z=' + zoom + '&lang=ru-RU';
+        },
+        tileSize: new google.maps.Size(256, 256),
+        isPng: true,
+        alt: 'Яндекс народная',
+        name: 'Янарод',
+        maxZoom: 17,
+        minZoom:0
+        //, opacity:0.9
+    });
+    yandexPipType.projection = new YandexProjection();
+
+    var gis2Type = new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+            return 'http://tile'+((coord.x+coord.y)%5)+'.maps.2gis.ru/tiles?x=' + coord.x + '&y=' + coord.y + '&z=' + zoom;
+        },
+        tileSize: new google.maps.Size(256, 256),
+        isPng: true,
+        alt: '2Gis',
+        name: '2Gis',
+        maxZoom: 13,
+        minZoom:0
+        //, opacity:0.5
+    });
+    //gis2Type.projection = new YandexProjection();
+
+    var WikimapiaType = new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+            return 'http://i'+ ((coord.x%4) + (coord.y%4) * 4) +'.wikimapia.org/?x=' + coord.x + '&y='+ coord.y +'&zoom='+ zoom +'&r=0&type=&lng=0';
+        },
+        tileSize: new google.maps.Size(256, 256),
+        isPng: true,
+        alt: 'Wikimapia',
+        name: 'Wikimapia',
+        maxZoom: 17,        // (22) TODO: Временная борьба с тормозами на большом зуме
+        minZoom:0
+        //, opacity:0.5
+    });
+    //gis2Type.projection = new YandexProjection();
+
+    var VisicomType = new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+            var y = Math.pow(2, zoom) - 1 - coord.y;
+            return 'http://tms'+ ((coord.x+coord.y)%4) +'.visicom.ua/1.0.3/world_ru/'+ zoom +'/'+ coord.x +'/'+ y +'.png';
+        },
+        tileSize: new google.maps.Size(256, 256),
+        isPng: true,
+        alt: 'Visicom',
+        name: 'Visicom',
+        maxZoom: 17,        // (18) TODO: Временная борьба с тормозами на большом зуме
+        minZoom:0
+        //, opacity:0.5
+    });
+    //VisicomType.projection = new YandexProjection();
+
 
 // Enable the visual refresh
 if (google && google.maps) {
     google.maps.visualRefresh = true;
 }
 
-angular.module('directives.gmap', ['services.connect', 'services.eventmarker', 'services.lastmarker' /*, 'ui'*/ ])
+angular.module('directives.gmap', ['services.connect', 'services.eventmarker', 'services.lastmarker', 'services.pointmarker'/*, 'ui'*/ ])
 
-.directive('gmap', ['Connect', 'EventMarker', 'LastMarker',
-    function(Connect, EventMarker, LastMarker) {
-        'use strict';
+.directive('gmap', ['Connect', 'EventMarker', 'LastMarker', 'PointMarker', 'GeoGPS',
+    function(Connect, EventMarker, LastMarker, PointMarker, GeoGPS) {
+        // 'use strict';
 
         // TODO! Необходима унификация для поддержки как минимум Google Maps и Leaflet
 
@@ -33,19 +194,114 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 };
             }
 
+            var mapTypeIds = [];
+            for(var type in google.maps.MapTypeId) {
+                //if(google.maps.MapTypeId[type].maxZoom > 17) {
+                //  google.maps.MapTypeId[type].maxZoom = 17;
+                //}
+                mapTypeIds.push(google.maps.MapTypeId[type]);
+            }
+            mapTypeIds.push('Apple');
+            mapTypeIds.push('OSM');
+            mapTypeIds.push('YMAP');
+            mapTypeIds.push('YSAT');
+            mapTypeIds.push('YPIP');
+    //      mapTypeIds.push('GISMO');
+            mapTypeIds.push('OVIMAP');
+            mapTypeIds.push('OVISAT');
+            mapTypeIds.push('2GIS');
+            mapTypeIds.push('Wikimapia');
+            mapTypeIds.push('Visicom');
+            //mapTypeIds.push('Google');
+            // mapTypeIds.push('Quest');
+
             // var latlng = new google.maps.LatLng(48.397, 34.644);
             var myOptions = {
                 center: new google.maps.LatLng(prev_config.center[0], prev_config.center[1]),
                 mapTypeId: prev_config.typeId,
+                mapTypeControlOptions: {
+                    mapTypeIds: mapTypeIds,
+                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+                },
                 scaleControl: true,
+                draggableCursor: 'pointer',
                 zoom: prev_config.zoom
             };
+
+
             var map_element = element.find('.gmap-container');
             // console.log('map_element=', map_element);
             var map = new google.maps.Map(map_element[0], myOptions);
             // console.log('scope=', scope);
             // scope.gmap(map);
             scope.map = map;
+
+            // Не самое элегантное решение
+            map.customInfoWindow = new google.maps.InfoWindow({
+                clickable: false    // Кажется это не работает
+            });
+
+            map.mapTypes.set('Apple', new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    //return 'http://gsp2.apple.com/tile?api=1&style=slideshow&layers=default&lang=de_DE&z=' + zoom + '&x=' + coord.x + '&y=' + coord.y + '&v=9';
+                    return 'http://gsp2.apple.com/tile?api=1&style=slideshow&layers=default&lang=en_EN&z=' + zoom + '&x=' + coord.x + '&y=' + coord.y + '&v=9';
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: 'Apple',
+                minZoom: 3,
+                maxZoom: 14
+            }));
+
+            map.mapTypes.set('OSM', new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return 'http://tile.openstreetmap.org/' + zoom + '/' + coord.x + '/' + coord.y + '.png';
+                    // ((coord.x+coord.y)%5)
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: 'OpenStreetMap',
+                maxZoom: 17     // (18) TODO: Временная борьба с тормозами на большом зуме
+            }));
+
+            map.mapTypes.set('OVIMAP', new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    //return 'http://tile.openstreetmap.org/' + zoom + '/' + coord.x + '/' + coord.y + '.png';
+                    return 'http://c.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.day/' + zoom + '/' + coord.x + '/' + coord.y + '/256/png8';
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: 'Ovi карта',
+                maxZoom: 17     // (17) TODO: Временная борьба с тормозами на большом зуме
+            }));
+
+            map.mapTypes.set('OVISAT', new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    //return 'http://tile.openstreetmap.org/' + zoom + '/' + coord.x + '/' + coord.y + '.png';
+                    return 'http://b.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/satellite.day/' + zoom + '/' + coord.x + '/' + coord.y + '/256/png8';
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: 'Ovi спутник',
+                maxZoom: 17 // (18) TODO: Временная борьба с тормозами на большом зуме
+            }));
+
+            map.mapTypes.set('Google', new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    //return 'http://mt.google.com/vt/hl=en&src=app&x=' + coord.x + '&y=' + coord.y + '&z=' + zoom;
+                    return 'http://mt.google.com/vt/hl=ru&src=app&x=' + coord.x + '&y=' + coord.y + '&z=' + zoom;
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: 'Google',
+                maxZoom: 19     // (17) TODO: Временная борьба с тормозами на большом зуме
+            }));
+
+            map.mapTypes.set('YMAP', yandexMapType);
+            map.mapTypes.set('YSAT', yandexSatType);
+            map.mapTypes.set('YPIP', yandexPipType);
+            map.mapTypes.set('2GIS', gis2Type);
+            map.mapTypes.set('Wikimapia', WikimapiaType);
+            map.mapTypes.set('Visicom', VisicomType);
+            // map.mapTypes.set('Quest', QuestType);
+            //map.mapTypes.set('GISMO', GisMapType);
+
+
 
             var saveMapState = function() {
                 window.localStorage.setItem('map.config', JSON.stringify({
@@ -57,6 +313,14 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             google.maps.event.addListener(map, 'idle', saveMapState);
             google.maps.event.addListener(map, 'maptypeid_changed', saveMapState);
+
+            // var findZoneBound = new google.maps.LatLngBounds(
+            //     new google.maps.LatLng(moev.latLng.lat() - size*clat, moev.latLng.lng() - size ),
+            //     new google.maps.LatLng(moev.latLng.lat() + size*clat, moev.latLng.lng() + size )
+            // );
+            google.maps.event.addListener(map, 'mousemove', function(ev){mouseMove(ev);});
+            // google.maps.event.addListener(map, 'click', function(){pointmarkers.hideInfo();});
+
 
             google.maps.event.addListener(map, 'zoom_changed', function() {
                 // console.log('zoom_changed');
@@ -110,21 +374,9 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             scope.points = [];
 
-            var updatePoints = function(points) {
-                scope.points = points;
-            };
-
-            scope.distance = function(p1, p2) {
-                var R = 6371; // km (change this constant to get miles)
-                var dLat = (p2.lat - p1.lat) * Math.PI / 180;
-                var dLon = (p2.lon - p1.lon) * Math.PI / 180;
-                var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(p1.lat * Math.PI / 180) * Math.cos(p2.lat * Math.PI / 180) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                var d = R * c;
-                return d;
-            };
+            // var updatePoints = function(points) {
+            //     scope.points = points;
+            // };
 
             scope.findNearestPoint = function(M) {
                 if (scope.points.length === 0)
@@ -134,7 +386,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 var minDistance = 1000000000;
                 //console.log(scope);
                 for (var i = 0; i < points.length; ++i) {
-                    var distance = scope.distance(points[i], M);
+                    var distance = GeoGPS.distance(points[i], M);
                     if (minDistance > distance) {
                         point = points[i];
                         minDistance = distance;
@@ -143,17 +395,72 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 return point;
             };
 
-            scope.infowindow = new google.maps.InfoWindow();
+            // scope.infowindow = new google.maps.InfoWindow();
+
+            var pointmarkers = new PointMarker(map);
+
+            var quadtree;
+            // var findZone = new google.maps.Rectangle({
+            //     // bounds: bound,
+            //     clickable: false,
+            //     map: map,
+            //     fillColor: '#00FFFF',
+            //     fillOpacity: 0.1,
+            //     strokeColor: '#00FFFF',
+            //     strokeOpacity: 1.0,
+            //     strokeWeight: 1
+            // });
+
+            var mouseMove = function(event){
+
+                if ((scope.track === null) || (scope.track.points.length === 0)) return null;
+
+                var point = {lat: event.latLng.lat(), lon: event.latLng.lng()};
+                // console.log('mousemove', event);
+
+                var size = 0.0005;
+                var scale = Math.sqrt(2);
+                var nearestpoint;
+
+                for(var i=0; i<8; i++, size*=scale){
+                    nearestpoint = GeoGPS.findInQuadtree(quadtree, point, size);
+                    if(nearestpoint.length > 2) break;
+                }
+                var clat = Math.cos(event.latLng.lat() * Math.PI / 180);
+                if(clat < 0.0001) clat = 0.0001;
+
+                // var bound;
+                // if(nearestpoint.length > 0) {
+                //     bound = new google.maps.LatLngBounds(
+                //         new google.maps.LatLng(event.latLng.lat() - size*clat, event.latLng.lng() - size ),
+                //         new google.maps.LatLng(event.latLng.lat() + size*clat, event.latLng.lng() + size )
+                //     );
+                // } else {
+                //     bound = new google.maps.LatLngBounds(
+                //         new google.maps.LatLng(event.latLng.lat(), event.latLng.lng() ),
+                //         new google.maps.LatLng(event.latLng.lat(), event.latLng.lng() )
+                //     );
+                // }
+                // findZone.setBounds(bound);
+
+                pointmarkers.setData(nearestpoint);
+            };
 
             var showTrack = function(data) {
-                if (scope.infowindow !== null)
-                    scope.infowindow.close();
-                updatePoints(data.points);
+                // if (scope.infowindow !== null)
+                //     scope.infowindow.close();
+                // updatePoints(data.points);
+                pointmarkers.hideInfo();
+
+                quadtree = GeoGPS.initQuadtree(data.points);
+                // console.dir(quadtree);
+
                 path = new google.maps.Polyline({
                     path: data.track,
                     strokeColor: 'blue',
                     strokeOpacity: 0.5, //data.select ? 0.7 : 0.5,
                     strokeWeight: data.select ? 2 : 5,
+                    clickable: false,
                     // editable: true,
                     icons: [{
                         icon: {
@@ -169,24 +476,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     map: map
                 });
 
-                google.maps.event.addListener(path, 'click', function(event) {
-                    var point = scope.findNearestPoint({
-                        lat: event.latLng.lat(),
-                        lon: event.latLng.lng()
-                    });
-                    if (point === null) return;
-                    var timeStr = moment(new Date((point.dt * 1000))).format('DD/MM/YYYY : hh:mm');
-                    var lat = Math.round(point.lat * 100000) / 100000;
-                    var lon = Math.round(point.lon * 100000) / 100000;
-                    var sats = point.sats;
-                    var speed = Math.round(point.speed * 10) / 10;
-                    var vin = Math.round(point.vin * 100) / 100;
-                    var vout = Math.round(point.vout * 100) / 100;
-                    var content = '<div class="info-header">' + timeStr + '</div><table id="tbl_info" width="100%"><tbody><tr><td>Долгота:</td><td><b>' + lat + '</b></td></tr><tr><td>Широта:</td><td><b>' + lon + '</b></td></tr><tr><td>Спутники</td><td><b>' + sats + '</b></td></tr><tr><td>Скорость</td><td><b>' + speed + 'км/ч</b></td></tr><tr><td>Основное питание</td><td><b>' + vout + 'В</b></td></tr><tr><td>Резервное питание</td><td><b>' + vin + 'В</b></td></tr></tbody></table>';
-                    scope.infowindow.setContent(content);
-                    scope.infowindow.setPosition(new google.maps.LatLng(point.lat, point.lon));
-                    scope.infowindow.open(map);
-                });
+
 
     // console.log('data=', angular.copy(data));
                 if (data.select) {
@@ -296,10 +586,10 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             };
 
 
-            // '<div class="map-search">'
-            //     '<div class="input-group">'
-            //         '<span class="input-group-addon"><i class="icon-search icon-large"></i></span>'
-            //         '<input type="text" class="form-control" google-maps-search="bounds">'
+            // '<div class='map-search'>'
+            //     '<div class='input-group'>'
+            //         '<span class='input-group-addon'><i class='icon-search icon-large'></i></span>'
+            //         '<input type='text' class='form-control' google-maps-search='bounds'>'
             //     '</div>'
             // '</div>'
 
@@ -331,7 +621,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
 .directive('gmapToolBar', [
     function() {
-        'use strict';
+        // 'use strict';
 
         var link = function(scope) {
             // console.log('gmapToolBar:link', scope);
@@ -371,7 +661,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
 .directive('gmapSearch', [
     function() {
-        'use strict';
+        // 'use strict';
 
         var link = function(scope, element) {
             // console.log('gmapSearch:link', scope, element);
@@ -419,7 +709,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 if(currentDirections.routes.length>1){
                     console.log('Предлагается более одного маршрута');
                 }
-                var leg = currentDirections.routes[0].legs[0];
+                // var leg = currentDirections.routes[0].legs[0]; // ??? FTF?
                 // for(var i=0, l=leg.via_waypoint.length+2-points.length; i<l; i++){
                 //     add_way_point('');
                 // }
@@ -604,7 +894,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 ])
 
 .directive('configMapItem', function() {
-    'use strict';
+    // 'use strict';
     return {
         restrict: 'EA',
         scope: {
@@ -633,3 +923,5 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
         }
     };
 });
+
+})();

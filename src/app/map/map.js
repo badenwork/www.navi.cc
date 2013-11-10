@@ -75,6 +75,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                     day: day
                 });
                 $location.search(params);
+                $location.replace();
             });
         });
 
@@ -170,6 +171,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             var params = angular.copy($routeParams);
             if(params.hasOwnProperty('day')) delete params.day;
             $location.search(params);
+            $location.replace();
         };
 
         $scope.mapconfig = {

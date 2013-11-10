@@ -1,0 +1,172 @@
+.timechart {
+    // width: 100%;
+    // height: 100%;
+    // padding-bottom: 60%;
+    // border: 1px solid black;
+    background-color: white;
+    position: absolute;
+    top: 180px; bottom: 0; left: 0; right: 0;
+
+    .timechart-container {
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+        overflow: hidden;
+
+
+        // .chart{
+        //     /*border: 1px solid blue;*/
+        //     box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+        //     width: 650px;
+        //     height: 350px;
+        //     border-radius: 10px;
+        //     padding: 0;
+        //     margin: 0;
+
+        // }
+        svg {
+            .axis path, .axis line {
+                fill: none;
+
+            }
+            .x.axis line {
+                stroke: #000;
+                shape-rendering: crispEdges;
+            }
+            .y.axis line {
+                // stroke: #ddd;
+                stroke: url(#line-gradient);
+            }
+
+            .y2.axis line {
+                // stroke: #ddd;
+                stroke: url(#line-gradient2);
+            }
+
+            .axisx {
+                cursor: ew-resize;
+                rect.helper{
+                    // fill: #eee;
+                    fill: none;
+                    pointer-events: all;
+                }
+            }
+
+            .axisy {
+                cursor: ns-resize;
+                rect.helper{
+                    // fill: #eee;
+                    fill: none;
+                    pointer-events: all;
+                }
+            }
+
+
+            .plot {
+                cursor: move;
+                rect.helper{
+                    // fill: #eee;
+                    fill: none;
+                    pointer-events: all;
+                }
+            }
+
+            path.line {
+                fill: none;
+                stroke: steelblue;
+                stroke-width: 5px;
+                stroke-linejoin: round;
+                stroke-linecap: round;
+            }
+
+            path.line2 {
+                fill: none;
+                stroke: chocolate;
+                stroke-width: 5px;
+                stroke-linejoin: round;
+                stroke-linecap: round;
+            }
+
+            /*    .chart svg .x.axis path {
+                display: none;
+            }
+            */
+
+            circle.dot {
+                fill: white;
+                stroke: steelblue;
+                stroke-width: 3px;
+            }
+
+            circle.dot2 {
+                fill: white;
+                stroke: chocolate;
+                stroke-width: 3px;
+            }
+
+            line.project {
+                fill: none;
+                stroke: #aaa;
+                shape-rendering: crispEdges;
+                stroke-width: 1px;
+                stroke-dasharray: 5,5;
+            }
+
+            line.project2 {
+                fill: none;
+                stroke: #aaa;
+                shape-rendering: crispEdges;
+                stroke-width: 1px;
+                stroke-dasharray: 5,5;
+            }
+
+        }
+
+        .chart-tooltip {
+            pointer-events:none;
+            margin-right: -10px;
+            margin-left: -10px;
+            margin-top: -5px;
+            position: absolute;
+            padding: 2px 6px 2px 6px;
+            background-color: white;
+            opacity: 0.8;
+
+            border-radius: 8px;
+            font-weight: bold;
+            // box-shadow: 1px 1px 6px rgba(0,0,0,0.3);
+        }
+        .chart-tooltip1 {
+            border: 2px solid steelblue;
+            box-shadow: 0px 0px 3px white;
+        }
+        .chart-tooltip2 {
+            border: 2px solid chocolate;
+            box-shadow: 0px 0px 3px white;
+        }
+    }
+
+    .timechart-control {
+        position: absolute;
+        right: 60px;
+        bottom: 60px;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 8px 8px 3px 8px;
+        // box-shadow: 0px 0px 5px rgba(255,255,255,1.0);
+        box-shadow: 0px 0px 5px #F09624;
+        border-radius: 10px;
+        text-align: center;
+
+        button {
+            padding: 8px 12px 8px 12px;
+            margin-bottom: 4px;
+            opacity: 0.8;
+            i {
+                margin: 0;
+            }
+            &:hover{
+                background-color: #ccf;
+                opacity: 1.0;
+            }
+        }
+    }
+}

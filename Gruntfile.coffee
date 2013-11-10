@@ -6,6 +6,20 @@ config:
   locales: ["ru", "en", "ua", "pl"]
 
 module.exports = (grunt) ->
+
+
+  karmaConfig = (configFile, customOptions) ->
+    options =
+      configFile: configFile
+      # keepalive: true
+      singleRun: true
+
+    travisOptions = process.env.TRAVIS and
+      browsers: ["Firefox", "PhantomJS"]
+      reporters: "dots"
+
+    grunt.util._.extend options, customOptions, travisOptions
+
   # Project configuration.
   grunt.initConfig
     meta: grunt.file.readJSON('package.json')
@@ -89,10 +103,10 @@ module.exports = (grunt) ->
           d3: ""
           # angular: ""
           # "angular-unstable": "~1.2.0-rc2"
-          angular: "v1.2.0-rc.2"
-          "angular-route": "v1.2.0-rc.2"
-          "angular-resource": "v1.2.0-rc.2"
-          "angular-animate": "v1.2.0-rc.2"
+          angular: "v1.2.0"
+          "angular-route": "v1.2.0"
+          "angular-resource": "v1.2.0"
+          "angular-animate": "v1.2.0"
           "angular-ui-sortable": ""
           "angular-ui-bootstrap": ""  # Search for 3.0 tag/branch
           "angular-ui-select2": ""
@@ -103,6 +117,7 @@ module.exports = (grunt) ->
           "angular-translate": ""
           # "bootstrap-datepicker": ""  # Не совместим с bootstrap 3.x
           "bootstrap3-datepicker": ""   # Форк предыдущего с поддерхкой twbs3
+          "bootstrap-daterangepicker": ""
           # "angular-strap": ""       # Не совместим с bootstrap 3.x
           # "angular-virtual-scroll": ""    # Сомнительная производительность
           # ngInfiniteScroll: ""
@@ -111,8 +126,9 @@ module.exports = (grunt) ->
           # "ngInfiniteScroll": "https://github.com/baden/ngInfiniteScroll.git" # Оригинальный не поддерживает скроллинг в контейнере, только в top
           "angular-bindonce": ""
           "components-font-awesome": "3.2.1"
-          moment:
-            select: ["moment.js", "ru.js"]
+          "moment": "2.4.0"
+          # moment:
+          #   select: ["moment.js", "ru.js"]
           jszip:
             select: [ 'jszip.js', 'jszip-deflate.js' ]
           "https://github.com/stephen-hardy/xlsx.js.git": ""
@@ -121,6 +137,9 @@ module.exports = (grunt) ->
           # Для поддержки старых браузеров. Проверить это вообще помогает?
           "angular-ui-utils": ""
           "es5-shim": ""
+
+          # Средства тестирования
+          "angular-mocks": ""
           json3: ""
         store: 'components'
         # dest: 'public'
@@ -136,6 +155,16 @@ module.exports = (grunt) ->
       test:
         files:
           "test/spec/*.js": ["test/spec/coffee/**/*.coffee"]
+
+
+    replace:
+      bootstrap:
+        src: ["components/bootstrap/less/variables.less"] # source files array (supports minimatch)
+        dest: "temp/components/bootstrap/" # destination directory or file
+        replacements: [
+          from: "1200px;"
+          to: "1001px;"
+        ]
 
     less:
       dist:
@@ -156,7 +185,7 @@ module.exports = (grunt) ->
       conponents:
         files: [
           dest: '<%= distdir %>/components'
-          src: ['xlsx.js/xlsx.js','jszip/*.js','jquery/jquery.js','jquery-ui/ui/jquery.ui.core.js','jquery-ui/ui/jquery.ui.widget.js','jquery-ui/ui/jquery.ui.mouse.js','jquery-ui/ui/jquery.ui.sortable.js','bootstrap/dist/js/bootstrap.js','bootstrap-datepicker/js/bootstrap-datepicker.js','bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js','angular/angular.js','angular-route/angular-route.js','angular-resource/angular-resource.js','angular-animate/angular-animate.js','angular-translate/angular-translate.js','angular-ui-sortable/src/sortable.js','angular-ui-bootstrap/src/buttons/buttons.js','angular-bindonce/bindonce.js','ngInfiniteScroll/build/ng-infinite-scroll.js','moment/moment.js','moment/lang/*.js','d3/d3.js','components-font-awesome/css/font-awesome.min.css','bootstrap/dist/css/bootstrap.min.css','components-font-awesome/font/*.*']
+          src: ['xlsx.js/xlsx.js','jszip/*.js','jquery/jquery.js','jquery-ui/ui/jquery.ui.core.js','jquery-ui/ui/jquery.ui.widget.js','jquery-ui/ui/jquery.ui.mouse.js','jquery-ui/ui/jquery.ui.sortable.js','bootstrap/dist/js/bootstrap.js','bootstrap-datepicker/js/bootstrap-datepicker.js','bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js','angular/angular.js','angular-route/angular-route.js','angular-resource/angular-resource.js','angular-animate/angular-animate.js','angular-translate/angular-translate.js','angular-ui-sortable/src/sortable.js','angular-ui-bootstrap/src/buttons/buttons.js','angular-bindonce/bindonce.js','ngInfiniteScroll/build/ng-infinite-scroll.js','moment/moment.js','moment/lang/*.js','d3/d3.js','components-font-awesome/css/font-awesome.min.css','bootstrap/dist/css/bootstrap.min.css','components-font-awesome/font/*.*','bootstrap-timepicker/js/bootstrap-timepicker.min.js','bootstrap-timepicker/css/bootstrap-timepicker.min.css']
           cwd: 'components/'
           expand: true
         ]
@@ -190,6 +219,13 @@ module.exports = (grunt) ->
           expand: true
         ]
       bootstrap:
+        files: [
+          src: ["*.less", '!variables.less']
+          cwd: "components/bootstrap/less/"
+          dest: "temp/components/bootstrap/"
+          expand: true
+        ]
+      bootstrap3:
         files: [
           src: ["*.less", '!variables.less']
           cwd: "components/bootstrap/less/"
@@ -304,6 +340,7 @@ module.exports = (grunt) ->
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.uk.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.pl.js',
+            # 'components/bootstrap-daterangepicker/daterangepicker.js',
             'components/angular/angular.js',
             'components/angular-route/angular-route.min.js',
             'components/angular-resource/angular-resource.min.js',
@@ -320,14 +357,17 @@ module.exports = (grunt) ->
             'components/moment/lang/ru.js',
             'components/moment/lang/uk.js',
             'components/moment/lang/pl.js',
+            'components/bootstrap-timepicker/js/bootstrap-timepicker.js',
             'components/d3/d3.min.js'
           ]
           dest: '<%= distdir %>/js/components.js'
         ,
           src: [
             'components/bootstrap/dist/css/bootstrap.min.css'
+            'components/bootstrap-timepicker/css/bootstrap-timepicker.css'
             'components/components-font-awesome/css/font-awesome.min.css'
             'components/bootstrap-datepicker/css/datepicker.css'
+            # 'components/bootstrap-daterangepicker/daterangepicker-bs3.css'
           ]
           dest: '<%= distdir %>/css/components.css'
         ]
@@ -348,6 +388,7 @@ module.exports = (grunt) ->
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.uk.js',
             'components/bootstrap-datepicker/js/locales/bootstrap-datepicker.pl.js',
+            # 'components/bootstrap-daterangepicker/daterangepicker.js',
             'components/angular/angular.min.js',
             'components/angular-route/angular-route.min.js',
             'components/angular-resource/angular-resource.min.js',
@@ -364,15 +405,19 @@ module.exports = (grunt) ->
             'components/moment/lang/ru.js',
             'components/moment/lang/uk.js',
             'components/moment/lang/pl.js',
+            'components/bootstrap-timepicker/js/bootstrap-timepicker.min.js',
             'components/d3/d3.min.js'
           ]
           dest: '<%= distdir %>/js/components.js'
         ,
           src: [
             # 'components/bootstrap/dist/css/bootstrap.min.css'
+            'components/bootstrap-timepicker/css/bootstrap-timepicker.min.css'
+            # 'components/bootstrap/dist/css/bootstrap.min.css'
             'temp/components/bootstrap.css'
             'components/components-font-awesome/css/font-awesome.min.css'
             'components/bootstrap-datepicker/css/datepicker.css'
+            # 'components/bootstrap-daterangepicker/daterangepicker-bs3.css'
           ]
           dest: '<%= distdir %>/css/components.css'
         ]
@@ -504,6 +549,24 @@ module.exports = (grunt) ->
         tasks: ['livereload']
 
 
+    karma:
+      start:
+        start:
+          configFile: 'test/karma.conf.js'
+      unit:
+        options: karmaConfig 'test/karma.conf.js'
+
+      continuous:
+        options: karmaConfig( "test/karma.conf.js",
+          singleRun: true
+        )
+      watch:
+        options: karmaConfig( "test/karma.conf.js",
+          singleRun: false
+          autoWatch: true
+        )
+
+
   grunt.loadNpmTasks "grunt-contrib-coffee"
   grunt.loadNpmTasks "grunt-contrib-copy"
   grunt.loadNpmTasks "grunt-contrib-concat"
@@ -523,9 +586,19 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-contrib-uglify"
   grunt.loadNpmTasks "grunt-manifest"
   grunt.loadNpmTasks "grunt-contrib-jshint"
+  grunt.loadNpmTasks "grunt-karma"
+
+  grunt.loadNpmTasks "grunt-text-replace"
+
+
+
 
   # grunt-contrib-watch now not work with livereload :(
   #grunt.loadNpmTasks "grunt-contrib-watch"
+
+  # Print a timestamp (useful for when watching)
+  grunt.registerTask "timestamp", () ->
+    grunt.log.subhead Date()
 
   # HTML stuff
   grunt.registerTask 'index', 'Process index.html', ->
@@ -545,7 +618,7 @@ module.exports = (grunt) ->
 
   # Build components
   grunt.registerTask "deps", [
-    "bowerful", "copy:bootstrap", "less:bootstrap"
+    "bowerful", "copy:bootstrap", "replace:bootstrap", "less:bootstrap"
   ]
 
   # Production
@@ -562,6 +635,7 @@ module.exports = (grunt) ->
     "copy:assets"
     "copy:sprites"
     "copy:bootstrap"
+    "replace:bootstrap"
     "less:bootstrap"
     "copy:conponents_min"
     "concat:conponents_min"
@@ -584,5 +658,7 @@ module.exports = (grunt) ->
     #'watch'
   ]
 
+  grunt.registerTask "test", ["karma:continuous"]
+  grunt.registerTask "test-watch", ["karma:watch"]
+  grunt.registerTask "default", ["production", "karma:unit"]
 
-  grunt.registerTask "default", ["pruduction"]

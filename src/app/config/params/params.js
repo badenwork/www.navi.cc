@@ -400,6 +400,12 @@
             $scope.params = params;
             $scope.filtered = true;
 
+            $scope.system.postproc = $scope.system.postproc || {
+                min_move: 1,
+                min_move_ext: 5,
+                min_move_len: 100
+            };
+
             $scope.tooltip = {
                 'title': '<hr>Показать все параметры<hr>Внимание! Изменение некоторых параметров может привести к выходу трекера из строя.',
                 'checked': false
