@@ -157,6 +157,10 @@ angular.module('resources.geogps', [])
             return $.inArray(fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
         };
         GeoGPS.isStop = isStop;
+        
+        //если нужно убрать получение данных на correctFromHours часов назад то установить cleared в true а correctFromHours в 0
+        var correctFromHours = 72;
+        var cleared = false; 
 
         var bingpsparse = function(array) {
             // console.log('parse');
@@ -171,6 +175,12 @@ angular.module('resources.geogps', [])
             var range_start;
             var stop_start = null; // Точка начала стоянки/остановки
             var move_start = null; // Точка начала движения
+            
+            
+            var firstHour = null;
+            var cleared = false;
+            var lastStopgPoint = null;
+            var prevPointIsStop = false;
 
             var index = 0;
 
@@ -183,6 +193,29 @@ angular.module('resources.geogps', [])
                 }
                 if (point) {
                     var gpoint = new google.maps.LatLng(point.lat, point.lon);
+                    var hour = ~~ (point.dt / 3600);
+                    {// этот блок находит координату последней стоянки и позаоляет перенести координаты стоянки на следующие сутки (подразумевается что запрос бинарных данных был сделан с учетом предыдущих correctFromHours часов)
+                        if (firstHour === null)
+                            firstHour = hour;
+                        if (!cleared && hour > firstHour + correctFromHours) {
+                            console.log ('clear pev ' + correctFromHours + ' hours');
+                            cleared = true;
+                            if (prevPointIsStop) {
+                                gpoint = gpoint = lastStopgPoint; 
+                            }
+                        } else if (!cleared) {
+                            if (isStop (point.fsource)) {
+                                 if (!prevPointIsStop) {
+                                     prevPointIsStop = true;
+                                     lastStopgPoint = gpoint;
+                                 }
+                            } else {
+                                prevPointIsStop = false;
+                            }
+                            continue;
+                        }
+                    }
+                    
                     points.push(point);
                     if (bounds === null) {
                         bounds = new google.maps.LatLngBounds(gpoint, gpoint);
@@ -190,7 +223,7 @@ angular.module('resources.geogps', [])
                         bounds.extend(gpoint);
                     }
 
-                    var hour = ~~ (point.dt / 3600);
+                    
                     if (hour < min_hour) min_hour = hour;
                     if (hour > max_hour) max_hour = hour;
                     hours[hour] = (hours[hour] || 0) + 1;
@@ -377,6 +410,7 @@ angular.module('resources.geogps', [])
         };
 
         GeoGPS.getTrack = function(hourfrom, hourto) {
+            hourfrom -= correctFromHours; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
             var defer = $q.defer();
             // console.log('getTrack', skey, hourfrom, hourto);
 
@@ -413,7 +447,7 @@ angular.module('resources.geogps', [])
                 // var parsed = bingpsparse(uInt8Array);
                 // console.log('parsed=', parsed);
                 // parsed.constants = parsed.constants || {skey: skey};
-                defer.resolve(bingpsparse(uInt8Array));
+                defer.resolve(bingpsparse(uInt8Array, hourfrom, hourto));
             }).error(function(data, status) {
                 window.console.error('GeoGPS.getTrack.error', data, status);
             });

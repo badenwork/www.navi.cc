@@ -278,7 +278,8 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             };
             var getEventTypeStr = function (ranges, rangeIndex, points, systemParams) {
                 var range = ranges [rangeIndex];
-                var typeStr = (range.type === 'MOVE') ? 'm' : 's';
+                var typeStr = (GeoGPS.isStop (range.start.fsource)) ? 's' : 'm';
+                //var typeStr = (range.type === 'MOVE') ? 'm' : 's';
                 var duration = 0;
                 if (typeStr == 's') {
                     duration = getRangeDuration (range); 
