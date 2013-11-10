@@ -2,8 +2,23 @@
 <!-- <div class="scrollable"> -->
 <!--div class="span4"-->
 
-<div class="container">
-    <h4>Программирование параметров системы {{ system.title }}</h4>
+    <h3>{{ system.title }}</h3>
+
+<!--     <h4>Параметры построения треков</h4>
+
+    <div class="input-group">
+        <span class="btn input-group-addon">Игнорировать поездки менее, минут:</span>
+        <input class="form-control" type="number" min="0" max="15" ng-model="system.postproc.min_move" ng-change="system.$patch('postproc')" />
+    </div>
+    <div class="input-group">
+        <span class="btn input-group-addon">Игнорировать поездки менее, минут:</span>
+        <input class="form-control" type="number" min="0" max="15" ng-model="system.postproc.min_move_ext" ng-change="system.$patch('postproc')" />
+        <span class="btn input-group-addon">если начальная и конечная точка отстоят на</span>
+        <input class="form-control" type="number" min="0" max="3000" ng-model="system.postproc.min_move_len" ng-change="system.$patch('postproc')" />
+        <span class="btn input-group-addon">метров</span>
+    </div>
+ -->
+    <h4>Программирование параметров трекера </h4>
     <!-- a href="/#/config/{{skey}}/params/master" class="btn btn-primary"><i class="icon-magic icon-large"></i> Мастер настройки</a-->
 
     <div ng-hide="params.$isEmpty(params.data)">
