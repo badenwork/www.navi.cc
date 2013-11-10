@@ -16,9 +16,8 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             d.setHours (0);
             d.setMinutes (0);
             d.setSeconds (0);
-            //var tz = (new Date ()).getTimezoneOffset () / 60;
-            var hours = d.valueOf() / 1000 / 3600;//+ tz; 
-            return Math.floor (hours);
+            var hours = d.valueOf() / 1000 / 3600;
+            return hours;
         };
         Reports.hoursToDate = function (hours) {
             //var tz = (new Date ()).getTimezoneOffset () / 60;
