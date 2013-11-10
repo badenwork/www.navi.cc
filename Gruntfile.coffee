@@ -11,7 +11,8 @@ module.exports = (grunt) ->
   karmaConfig = (configFile, customOptions) ->
     options =
       configFile: configFile
-      keepalive: true
+      # keepalive: true
+      singleRun: true
 
     travisOptions = process.env.TRAVIS and
       browsers: ["Firefox", "PhantomJS"]
@@ -102,10 +103,10 @@ module.exports = (grunt) ->
           d3: ""
           # angular: ""
           # "angular-unstable": "~1.2.0-rc2"
-          angular: "v1.2.0-rc.2"
-          "angular-route": "v1.2.0-rc.2"
-          "angular-resource": "v1.2.0-rc.2"
-          "angular-animate": "v1.2.0-rc.2"
+          angular: "v1.2.0"
+          "angular-route": "v1.2.0"
+          "angular-resource": "v1.2.0"
+          "angular-animate": "v1.2.0"
           "angular-ui-sortable": ""
           "angular-ui-bootstrap": ""  # Search for 3.0 tag/branch
           "angular-ui-select2": ""
@@ -125,8 +126,9 @@ module.exports = (grunt) ->
           # "ngInfiniteScroll": "https://github.com/baden/ngInfiniteScroll.git" # Оригинальный не поддерживает скроллинг в контейнере, только в top
           "angular-bindonce": ""
           "components-font-awesome": "3.2.1"
-          moment:
-            select: ["moment.js", "ru.js"]
+          "moment": "2.4.0"
+          # moment:
+          #   select: ["moment.js", "ru.js"]
           jszip:
             select: [ 'jszip.js', 'jszip-deflate.js' ]
           "https://github.com/stephen-hardy/xlsx.js.git": ""
@@ -153,6 +155,16 @@ module.exports = (grunt) ->
       test:
         files:
           "test/spec/*.js": ["test/spec/coffee/**/*.coffee"]
+
+
+    replace:
+      bootstrap:
+        src: ["components/bootstrap/less/variables.less"] # source files array (supports minimatch)
+        dest: "temp/components/bootstrap/" # destination directory or file
+        replacements: [
+          from: "1200px;"
+          to: "1001px;"
+        ]
 
     less:
       dist:
@@ -207,6 +219,13 @@ module.exports = (grunt) ->
           expand: true
         ]
       bootstrap:
+        files: [
+          src: ["*.less", '!variables.less']
+          cwd: "components/bootstrap/less/"
+          dest: "temp/components/bootstrap/"
+          expand: true
+        ]
+      bootstrap3:
         files: [
           src: ["*.less", '!variables.less']
           cwd: "components/bootstrap/less/"
@@ -536,6 +555,11 @@ module.exports = (grunt) ->
           configFile: 'test/karma.conf.js'
       unit:
         options: karmaConfig 'test/karma.conf.js'
+
+      continuous:
+        options: karmaConfig( "test/karma.conf.js",
+          singleRun: true
+        )
       watch:
         options: karmaConfig( "test/karma.conf.js",
           singleRun: false
@@ -564,6 +588,9 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-contrib-jshint"
   grunt.loadNpmTasks "grunt-karma"
 
+  grunt.loadNpmTasks "grunt-text-replace"
+
+
 
 
   # grunt-contrib-watch now not work with livereload :(
@@ -591,7 +618,7 @@ module.exports = (grunt) ->
 
   # Build components
   grunt.registerTask "deps", [
-    "bowerful", "copy:bootstrap", "less:bootstrap"
+    "bowerful", "copy:bootstrap", "replace:bootstrap", "less:bootstrap"
   ]
 
   # Production
@@ -608,6 +635,7 @@ module.exports = (grunt) ->
     "copy:assets"
     "copy:sprites"
     "copy:bootstrap"
+    "replace:bootstrap"
     "less:bootstrap"
     "copy:conponents_min"
     "concat:conponents_min"
@@ -630,7 +658,7 @@ module.exports = (grunt) ->
     #'watch'
   ]
 
+  grunt.registerTask "test", ["karma:continuous"]
   grunt.registerTask "test-watch", ["karma:watch"]
-
-  grunt.registerTask "default", ["pruduction"]
+  grunt.registerTask "default", ["production", "karma:unit"]
 

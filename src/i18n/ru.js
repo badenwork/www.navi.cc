@@ -37,6 +37,7 @@ angular.module('i18n.ru', ['pascalprecht.translate'])
             'Config': 'Настройки',
             'Help': 'Помощь',
             'User': 'Пользователь',
+            'Admin': 'Администрирование',
 
             // Карта
             'Display Settings': 'Настройки отображения',

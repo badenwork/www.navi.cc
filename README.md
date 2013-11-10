@@ -1,39 +1,75 @@
-www.navi.cc
+www.navi.cc [![Build Status](https://secure.travis-ci.org/baden/www.navi.cc.png)](http://travis-ci.org/baden/www.navi.cc)
 ===========
 
 WEB-клиент для проекта navi.cc
 
-## Installation
+## Установка
 
-### Platform & tools
+### Инструменты
 
-You need to install Node.js and then the development tools. Node.js comes with a package manager called [npm](http://npmjs.org) for installing NodeJS applications and libraries.
-* [Install node.js](http://nodejs.org/download/) (requires node.js version >= 0.8.4)
-* Install Grunt and Testacular as global npm modules:
+Вам нужно установить Node.js а затем инструменты разработчика.
+Node.js поставляется с пакет-менеджером [npm](http://npmjs.org) для установки NodeJS приложений и библиотек.
+* [Установить node.js](http://nodejs.org/download/) (требуется node.js версии> = 0.8.4)
+* Установите grunt-cli и модули:
 
     ```
     sudo npm install -g grunt-cli
+    ```
+
+### Библиотеки и зависимости
+
+* Установка зависимостей:
+
+    ```
     npm install
+    grunt deps
     ```
 
-### Client App
-
-Our client application is a straight HTML/Javascript application but our development process uses a Node.js build tool
-[Grunt.js](gruntjs.com). Grunt relies upon some 3rd party libraries that we need to install as local dependencies using npm.
-
-* Install local dependencies:
-
-    ```
-    cd client
-    npm install
-    cd ..
-    ```
-
-## Building
+## Сборка
 
 _*If you are using Windows then you must run `grunt` as `grunt.cmd`.  Throughout the rest of this README we will just write `grunt`.*_
 
-### Build the client app
+### Сборка приложения
+
+    ```
+    npm install
+    grunt production
+    ```
+
+## Разработка
+
+### Структура каталога
+
+* `build` содержит задачи для Grunt (не актуально)
+* `dist` содержит результат сборки. Готово для загрузки на сервер.
+* `src` содержит исходные коды проекта
+* `test` содержит данные для тестировани, файлы конфигурации и тесты.
+* `components` сюда будут загружены библиотеки сторонних разработчиков
+
+### Локальная отладка
+
+    ```
+    grunt server
+    ```
+
+### Запуск тестов
+
+Однократный прогон тестов. Подходит также для TravisCI
+
+    ```
+    grunt test
+    ```
+
+Запуск непрерывного тестирования со слежением за изменениями.
+
+    ```
+    grunt test-watch
+    ```
+
+
+
+_____________________________
+
 The app made up of a number of javascript, css and html files that need to be merged into a final distribution for running.  We use the Grunt build tool to do this.
 * Build client application: `grunt build`
 

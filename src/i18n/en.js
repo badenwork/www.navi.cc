@@ -37,6 +37,7 @@ angular.module('i18n.en', ['pascalprecht.translate'])
             'Config': 'Config',
             'Help': 'Help',
             'User': 'User',
+            'Admin': 'Admin panel',
 
             // Map
             'Display Settings': 'Display Settings',
