@@ -179,6 +179,7 @@ angular.module('resources.geogps', [])
             
             var firstHour = null;
             var cleared = false;
+            var lastStopPoint = null;
             var lastStopgPoint = null;
             var prevPointIsStop = false;
 
@@ -201,13 +202,17 @@ angular.module('resources.geogps', [])
                             console.log ('clear pev ' + correctFromHours + ' hours');
                             cleared = true;
                             if (prevPointIsStop) {
-                                gpoint = gpoint = lastStopgPoint; 
+                                gpoint = lastStopgPoint;
+                                point.lat = lastStopPoint.lat;
+                                point.lon = lastStopPoint.lon;
+                                //i -= 32;
                             }
                         } else if (!cleared) {
                             if (isStop (point.fsource)) {
                                  if (!prevPointIsStop) {
                                      prevPointIsStop = true;
                                      lastStopgPoint = gpoint;
+                                     lastStopPoint = point;
                                  }
                             } else {
                                 prevPointIsStop = false;
@@ -410,7 +415,10 @@ angular.module('resources.geogps', [])
         };
 
         GeoGPS.getTrack = function(hourfrom, hourto) {
-            hourfrom -= correctFromHours; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
+            //TODO: исправить очень опасно так как это работает только зимой после перехода на зимнее время
+            // 1 час это смеещение изза перехода на зимнее время
+            
+            hourfrom -= correctFromHours + 1; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
             var defer = $q.defer();
             // console.log('getTrack', skey, hourfrom, hourto);
 

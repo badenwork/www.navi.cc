@@ -17,7 +17,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             d.setMinutes (0);
             d.setSeconds (0);
             var hours = d.valueOf() / 1000 / 3600;
-            return hours;
+            return Math.floor(hours);// TODO: опасно!!!!!!!! дробные даты
         };
         Reports.hoursToDate = function (hours) {
             //var tz = (new Date ()).getTimezoneOffset () / 60;
