@@ -16,13 +16,13 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             d.setHours (0);
             d.setMinutes (0);
             d.setSeconds (0);
-            var tz = (new Date ()).getTimezoneOffset () / 60;
-            var hours = d.valueOf() / 1000 / 3600 + tz; 
+            //var tz = (new Date ()).getTimezoneOffset () / 60;
+            var hours = d.valueOf() / 1000 / 3600;//+ tz; 
             return Math.floor (hours);
         };
         Reports.hoursToDate = function (hours) {
-            var tz = (new Date ()).getTimezoneOffset () / 60;
-            var d = new Date ((hours - tz) * 60 * 60 * 1000);
+            //var tz = (new Date ()).getTimezoneOffset () / 60;
+            var d = new Date ((hours) * 60 * 60 * 1000);
             return d;
         };
         Reports.createUrl = function (skey, hoursStart, hoursStop, template) {

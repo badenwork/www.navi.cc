@@ -106,8 +106,8 @@ angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.accoun
         $scope.generateReport = function() {
             if (!$scope.reportSettings.systemKey)
                 return;
-            var hStart = Reports.dateToHours ($scope.reportSettings.interval.start) + 1;
-            var hStop = Reports.dateToHours ($scope.reportSettings.interval.stop) + 24;
+            var hStart = Reports.dateToHours ($scope.reportSettings.interval.start);
+            var hStop = Reports.dateToHours ($scope.reportSettings.interval.stop) + 23;
             var report = Reports.getEmptySingleReport ($scope.reportSettings.systemKey, hStart, hStop, Templates.templateToReadonleTemplate ($scope.reportSettings.template));
             report.system = systems [$scope.reportSettings.systemKey];
             report.systemName = report.system.title;
