@@ -198,7 +198,7 @@ angular.module('resources.geogps', [])
                 if (point) {
                     var gpoint = new google.maps.LatLng(point.lat, point.lon);
                     var hour = ~~ (point.dt / 3600);
-                    {// этот блок находит координату последней стоянки и позаоляет перенести координаты стоянки на следующие сутки (подразумевается что запрос бинарных данных был сделан с учетом предыдущих correctFromHours часов)
+                    if(0){// этот блок находит координату последней стоянки и позаоляет перенести координаты стоянки на следующие сутки (подразумевается что запрос бинарных данных был сделан с учетом предыдущих correctFromHours часов)
                         if (firstHour === null)
                             firstHour = hour;
                         if (!cleared && hour > firstHour + correctFromHours) {
@@ -424,7 +424,7 @@ angular.module('resources.geogps', [])
             //TODO: исправить очень опасно так как это работает только зимой после перехода на зимнее время
             // 1 час это смеещение изза перехода на зимнее время
 
-            hourfrom -= correctFromHours + 1; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
+            // hourfrom -= correctFromHours + 1; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
             var defer = $q.defer();
             // console.log('getTrack', skey, hourfrom, hourto);
 
