@@ -33,14 +33,12 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
         $scope.interval = Reports.getReportInterval (report);
         $scope.report = report;
         $scope.Reports = Reports;
-        if (!report.ready) {
-            Reports.completeSingleReport (report);
-        }
+        Reports.completeSingleReport ($scope.report);
         //TODO: оптимизировать
         var updateUI = function (miliseconds) {
             setTimeout (function () {
                 $scope.$apply (function () {
-                    if ($scope.report.reportData.addressesIsReady)
+                    if (report.reportData.addressesIsReady)
                         return;
                     updateUI (miliseconds);
                 });
