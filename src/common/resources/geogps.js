@@ -159,11 +159,12 @@ angular.module('resources.geogps', [])
         GeoGPS.isStop = isStop;
 
         //если нужно убрать получение данных на correctFromHours часов назад то установить cleared в true а correctFromHours в 0
-        var correctFromHours = 72;
+        // var correctFromHours = 72;
+        var correctFromHours = 0;
         // var cleared = false;
 
         var bingpsparse = function(array) {
-            // console.log('parse');
+            // console.log('parse', array);
             var track = [];
             var points = [];
             var events = []; // События на треке: Старт, стоп, стоянки (момент), остановки (момент), заправки и т.д.
@@ -178,7 +179,8 @@ angular.module('resources.geogps', [])
 
 
             var firstHour = null;
-            var cleared = false;
+            // var cleared = false;
+            var cleared = true;
             var lastStopPoint = null;
             var lastStopgPoint = null;
             var prevPointIsStop = false;
@@ -189,6 +191,7 @@ angular.module('resources.geogps', [])
 
             for (var i = 0; i < array.length; i += 32) {
                 var point = parse_onebin(array.subarray(i, i + 32));
+                // console.log('point', point);
                 if(point !== null && point.fuel) {
                     point.fuel = fuelscale(point.fuel);
                 }
