@@ -492,6 +492,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                         bounds.extend(point);
                     });
                     map.fitBounds(bounds);
+                    map.setZoom(16);
 
                     if (select) {
                         select.setPath(fragment);
