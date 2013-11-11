@@ -159,10 +159,10 @@ angular.module('resources.geogps', [])
         GeoGPS.isStop = isStop;
         
         //если нужно убрать получение данных на correctFromHours часов назад то установить cleared в true а correctFromHours в 0
-        var correctFromHours = 72;
+        var correctFromHours = 120;
         var cleared = false; 
 
-        var bingpsparse = function(array) {
+        var bingpsparse = function(array, hoursFrom, offset) {
             // console.log('parse');
             var track = [];
             var points = [];
@@ -177,7 +177,7 @@ angular.module('resources.geogps', [])
             var move_start = null; // Точка начала движения
             
             
-            var firstHour = null;
+            var firstHour = hoursFrom;
             var cleared = false;
             var lastStopPoint = null;
             var lastStopgPoint = null;
@@ -198,7 +198,7 @@ angular.module('resources.geogps', [])
                     {// этот блок находит координату последней стоянки и позаоляет перенести координаты стоянки на следующие сутки (подразумевается что запрос бинарных данных был сделан с учетом предыдущих correctFromHours часов)
                         if (firstHour === null)
                             firstHour = hour;
-                        if (!cleared && hour > firstHour + correctFromHours) {
+                        if (!cleared && hour > firstHour + offset) {
                             console.log ('clear pev ' + correctFromHours + ' hours');
                             cleared = true;
                             if (prevPointIsStop) {
@@ -455,7 +455,7 @@ angular.module('resources.geogps', [])
                 // var parsed = bingpsparse(uInt8Array);
                 // console.log('parsed=', parsed);
                 // parsed.constants = parsed.constants || {skey: skey};
-                defer.resolve(bingpsparse(uInt8Array, hourfrom, hourto));
+                defer.resolve(bingpsparse(uInt8Array, hourfrom, correctFromHours));
             }).error(function(data, status) {
                 window.console.error('GeoGPS.getTrack.error', data, status);
             });

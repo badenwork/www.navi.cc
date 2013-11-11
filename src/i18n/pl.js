@@ -102,7 +102,9 @@ angular.module('i18n.pl', ['pascalprecht.translate'])
             'Download report': 'Pobierz raport',
             'Controlled parameters': 'Kontrolowane parametry',
             'Report options': 'Zgłoś Opcje',
-            'Full template': 'Pełny szablon'
+            'Full template': 'Pełny szablon',
+            'Note': 'Uwaga',
+            'cFLa': 'Zostały wypalone paliwo (analitycznie)'
         });
     }
 ]);

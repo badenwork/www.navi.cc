@@ -197,14 +197,14 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                             }
                             var item = report.reportData.mRows [index].columns [coordinatesIndex] = address;
                             setTimeout(function() {
-                                formatPosition(report, index + 1, coordinatesIndex);
+                                formatPosition (report, index + 1, coordinatesIndex);
                             }, 1100);
     
                         } else {
                             //console.log ('formatPosition --> MARK_6');
                             //повторно запросить
                             setTimeout(function() {
-                                formatPosition(report, index, coordinatesIndex);
+                                formatPosition (report, index, coordinatesIndex);
                             }, 2000);
                         }
                     });
@@ -249,10 +249,24 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             };
 
             var calculateFuelChanges = function (ranges, rangeIndex, points, systemParams) {
-                return ;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                return 0;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            };
+            var calculateFuelChanges_analytically = function (ranges, rangeIndex, points, systemParams) {
+                var eventType, fuelConsumption = 0;
+                eventType = getEventTypeStr (ranges, rangeIndex, points, systemParams);
+                if (eventType === 'm') {
+                    var speed = calculateAverageSpeed (ranges, rangeIndex, points, systemParams);
+                    var distance = calculateTravelDistance (ranges, rangeIndex, points, systemParams);
+                    var coef = systemParams.fuelan.getCoef (speed);
+                    fuelConsumption += (distance / 100) * systemParams.fuelan.middle * coef;
+                } else if (eventType === 'ss') {
+                    var ssTime = getRangeDuration (ranges [rangeIndex]);
+                    fuelConsumption = systemParams.fuelan.stop * (ssTime / 1000 / 60 / 60);
+                }
+                return fuelConsumption;
             };
             var calculateFuelLevel = function (ranges, rangeIndex, points, systemParams) {
-                return ;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                return 0;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             };
             var calculateDuration = function (ranges, rangeIndex, points, systemParams) {
                 return humanizeMiliseconds (getRangeDuration (ranges [rangeIndex]));
@@ -324,6 +338,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             var getFullMainRow = function (ranges, i, points, systemParams) {
                 var row_fullData = {};
                 row_fullData.eventTypeStr = getEventTypeStr (ranges, i, points, systemParams);
+                row_fullData.fuelChanges_analytically = calculateFuelChanges_analytically (ranges, i, points, systemParams);
                 row_fullData.fuelChanges = calculateFuelChanges (ranges, i, points, systemParams);
                 row_fullData.duration = calculateDuration (ranges, i, points, systemParams);
                 row_fullData.fuelLevel = calculateFuelLevel (ranges, i, points, systemParams);
@@ -337,6 +352,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             var concatMainRows = function (row2, row1) {
                 var newRow = {};
                 newRow.eventTypeStr = row1.eventTypeStr;
+                newRow.fuelChanges_analytically = row1.fuelChanges_analytically + row2.fuelChanges_analytically;
                 newRow.fuelChanges = row1.fuelChanges + row2.fuelChanges;
                 var duration_milisec = (row1.range.stop.dt - row2.range.start.dt) * 1000;
                 newRow.duration = humanizeMiliseconds (duration_milisec);  //moment.duration (duration_milisec).humanize ();
@@ -372,8 +388,9 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     switch (template.mD [i]) {
                         case 'c': row.columns.push (row_fullData.coordinates); break;
                         case 'i': row.columns.push (row_fullData.interval); break;
-                        case 'cFL': if (systemParams.hasFuelSensor) row.columns.push (Math.floor (row_fullData.fuelChanges * 10) / 10); break;
-                        case 'fL': if (systemParams.hasFuelSensor) row.columns.push (Math.floor (row_fullData.fuelLevel * 10) / 10); break;
+                        case 'cFLa': row.columns.push (Math.round (row_fullData.fuelChanges_analytically * 10) / 10); break;
+                        case 'cFL': if (systemParams.hasFuelSensor) row.columns.push (Math.round (row_fullData.fuelChanges * 10) / 10); break;
+                        case 'fL': if (systemParams.hasFuelSensor) row.columns.push (Math.round (row_fullData.fuelLevel * 10) / 10); break;
                         case 'd': row.columns.push (row_fullData.duration); break;
                         case 'aS': row.columns.push (Math.round (row_fullData.averageSpeed * 10) / 10); break;
                         case 'dT': row.columns.push (Math.round (row_fullData.travelDistance * 100) / 100); break;
@@ -541,34 +558,20 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         return Math.round (totalAverageSpeed * 10) / 10;
                     };
                     var calculateFuelConsumption_sensor = function (ranges, points, systemParams) {
-                        return ;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        return 0;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     };
                     var calculateFuelConsumption_analytically = function (ranges, points, systemParams) {
-                        var eventType, 
-                            totalSSTime = 0, 
-                            fuelConsumption = 0,
-                            distance,
-                            speed,
-                            coef;
+                        var fuelConsumption = 0;
                         for (var i = 0; i < ranges.length; i++) {
-                            eventType = getEventTypeStr (ranges, i, points, systemParams);
-                            if (eventType === 'm') {
-                                speed = calculateAverageSpeed (ranges, i, points, systemParams);
-                                distance = calculateTravelDistance (ranges, i, points, systemParams);
-                                coef = systemParams.fuelan.getCoef (speed);
-                                fuelConsumption += (distance / 100) * systemParams.fuelan.middle * coef;
-                            } else if (eventType === 'ss') {
-                                totalSSTime += getRangeDuration (ranges [i]);
-                            }
+                            fuelConsumption += calculateFuelChanges_analytically (ranges, i, points, systemParams);
                         }
-                        fuelConsumption += systemParams.fuelan.stop * (totalSSTime / 1000 / 60 / 60);
-                        return Math.round (fuelConsumption * 10) / 10;
+                        return Math.floor (fuelConsumption * 10) / 10;
                     };
                     var calculateTotalDrainFuel = function (ranges, points, systemParams) {
-                        return ;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        return 0;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     };
                     var calculateTotalRefueling = function (ranges, points, systemParams) {
-                        return ;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        return 0;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     };
     
                     var getSummaryRow = function (event, systemParams) {

@@ -8,7 +8,7 @@ angular.module('resources.templates', ['resources.account', 'resources.system'])
     Templates.createFullSingleTemplate = function () {
         var fullTemplate = {
             mE: ['s','m','re','fD'],
-            mD: ['c','i','cFL','fL','d','aS','dT'],
+            mD: ['c','i','cFLa','cFL','fL','d','aS','dT'],
             sE: ['dT','tTT','aS','tTOPAS','mS','fCs','fCa','tF','tDF'],
             sD: ['v']
         };

@@ -103,7 +103,9 @@ angular.module('i18n.en', ['pascalprecht.translate'])
             'Download report': 'Download',
             'Controlled parameters': 'Controlled parameters',
             'Report options': 'Report Options',
-            'Full template': 'Full template'
+            'Full template': 'Full template',
+            'Note': 'Note',
+            'cFLa': 'Been spent fuel (analytically)'
         });
     }
 ]);
