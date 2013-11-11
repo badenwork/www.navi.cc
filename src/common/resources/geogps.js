@@ -159,11 +159,12 @@ angular.module('resources.geogps', [])
         GeoGPS.isStop = isStop;
 
         //если нужно убрать получение данных на correctFromHours часов назад то установить cleared в true а correctFromHours в 0
-        var correctFromHours = 72;
+        // var correctFromHours = 72;
+        var correctFromHours = 0;
         // var cleared = false;
 
         var bingpsparse = function(array) {
-            // console.log('parse');
+            // console.log('parse', array);
             var track = [];
             var points = [];
             var events = []; // События на треке: Старт, стоп, стоянки (момент), остановки (момент), заправки и т.д.
@@ -178,7 +179,8 @@ angular.module('resources.geogps', [])
 
 
             var firstHour = null;
-            var cleared = false;
+            // var cleared = false;
+            var cleared = true;
             var lastStopPoint = null;
             var lastStopgPoint = null;
             var prevPointIsStop = false;
@@ -189,13 +191,14 @@ angular.module('resources.geogps', [])
 
             for (var i = 0; i < array.length; i += 32) {
                 var point = parse_onebin(array.subarray(i, i + 32));
+                // console.log('point', point);
                 if(point !== null && point.fuel) {
                     point.fuel = fuelscale(point.fuel);
                 }
                 if (point) {
                     var gpoint = new google.maps.LatLng(point.lat, point.lon);
                     var hour = ~~ (point.dt / 3600);
-                    {// этот блок находит координату последней стоянки и позаоляет перенести координаты стоянки на следующие сутки (подразумевается что запрос бинарных данных был сделан с учетом предыдущих correctFromHours часов)
+                    if(0){// этот блок находит координату последней стоянки и позаоляет перенести координаты стоянки на следующие сутки (подразумевается что запрос бинарных данных был сделан с учетом предыдущих correctFromHours часов)
                         if (firstHour === null)
                             firstHour = hour;
                         if (!cleared && hour > firstHour + correctFromHours) {
@@ -421,7 +424,7 @@ angular.module('resources.geogps', [])
             //TODO: исправить очень опасно так как это работает только зимой после перехода на зимнее время
             // 1 час это смеещение изза перехода на зимнее время
 
-            hourfrom -= correctFromHours + 1; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
+            // hourfrom -= correctFromHours + 1; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
             var defer = $q.defer();
             // console.log('getTrack', skey, hourfrom, hourto);
 

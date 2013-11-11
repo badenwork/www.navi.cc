@@ -24,6 +24,11 @@ describe('app.services.imeicheck', function() {
         expect( imeicheck("013226000198214") ).toEqual(true);
         expect( imeicheck("013226002436422") ).toEqual(true);
         expect( imeicheck("353358016975901") ).toEqual(true);
+        // IMEI, которые дали ошибку
+        expect( imeicheck("013227006581171") ).toEqual(true);
+        expect( imeicheck("013227006585198") ).toEqual(true);
+        expect( imeicheck("013227006587749") ).toEqual(true);
+        expect( imeicheck("013227006587087") ).toEqual(true);
     });
 
     it('Заведомо неправильный IMEI', function() {
