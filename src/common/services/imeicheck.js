@@ -41,8 +41,7 @@ angular.module('app.services.imeicheck', [])
             if((iterResult === 0) || (iterResult % 10 === 0)) {
                 controlNum = 0;
             } else {
-                var maybeNum = Math.round(iterResult / 10) * 10;
-                controlNum = maybeNum - iterResult;
+                controlNum = 10 - (iterResult % 10);
             }
             return crc === controlNum;
         };
