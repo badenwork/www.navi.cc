@@ -129,7 +129,6 @@ filter('fsource', function() {
 
 .filter('humanizeMiliseconds', function() {
     return function(miliseconds, format) {
-        console.log ('humanizeMiliseconds : ', miliseconds);
         var daysStr = ' дн.';
         var hoursStr = ' час';
         var minutesStr = ' мин';
