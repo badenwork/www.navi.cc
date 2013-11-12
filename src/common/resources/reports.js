@@ -221,7 +221,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     formatPosition   (report, 0, coordinatesIndex);
                 }
             };
-            var pointToPointDistance = function(p1, p2) {
+            var pointToPointDistance = function (p1, p2) {
                 return GeoGPS.distance (p1, p2);
                 /*var R = 6371; // km (change this constant to get miles)
                 var dLat = (p2.lat - p1.lat) * Math.PI / 180;
@@ -232,6 +232,12 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 var c = 2 * Math.atan2 (Math.sqrt (a), Math.sqrt (1 - a));
                 var d = R * c;
                 return d;*/
+            };
+            
+            var getPointsInterval = function (p1, p2, report) {
+                var includeDate = (report.interval.hStop - report.interval.hStart > 23);
+                var format = (includeDate) ? 'DD/MM HH:mm' : 'HH:mm';
+                return moment (new Date (p1.dt * 1000)).format (format) + ' - ' + moment (new Date (p2.dt * 1000)).format (format);
             };
             
             var getRangeDuration = function (range) {
@@ -307,10 +313,8 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 var item = ranges [rangeIndex].start;
                 return Math.floor (item.lat * 1000000) / 1000000 + ',' + Math.floor(item.lon * 1000000) / 1000000;
             };
-            var getIntervalStr = function (ranges, rangeIndex, points) {
-                var start = ranges [rangeIndex].start.dt * 1000;
-                var stop = ranges [rangeIndex].stop.dt * 1000;
-                return  moment (new Date (start)).format ('DD/MM HH:mm') + ' - ' + moment (new Date (stop)).format ('DD/MM HH:mm');
+            var getIntervalStr = function (ranges, rangeIndex, points, systemParams, report) {
+                return getPointsInterval (ranges [rangeIndex].start, ranges [rangeIndex].stop, report);
             };
             var skipMainRow = function (row, template) {
                 var skip = true;
@@ -335,23 +339,23 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 return headers;
             };
             
-            var getFullMainRow = function (ranges, i, points, systemParams) {
+            var getFullMainRow = function (ranges, rangeIndex, points, systemParams, report) {
                 var row_fullData = {};
-                row_fullData.eventTypeStr = getEventTypeStr (ranges, i, points, systemParams);
-                row_fullData.fuelChanges_analytically = calculateFuelChanges_analytically (ranges, i, points, systemParams);
-                row_fullData.fuelChanges = calculateFuelChanges (ranges, i, points, systemParams);
-                row_fullData.duration = calculateDuration (ranges, i, points, systemParams);
-                row_fullData.fuelLevel = calculateFuelLevel (ranges, i, points, systemParams);
-                row_fullData.coordinates = getCoordinates (ranges, i, points, systemParams);
-                row_fullData.averageSpeed = calculateAverageSpeed (ranges, i, points, systemParams);
-                row_fullData.travelDistance = calculateTravelDistance (ranges, i, points, systemParams);
-                row_fullData.interval = getIntervalStr (ranges, i, points, systemParams);
-                row_fullData.range = ranges [i];
+                row_fullData.eventTypeStr = getEventTypeStr (ranges, rangeIndex, points, systemParams);
+                row_fullData.fuelChanges_analytically = calculateFuelChanges_analytically (ranges, rangeIndex, points, systemParams);
+                row_fullData.fuelChanges = calculateFuelChanges (ranges, rangeIndex, points, systemParams);
+                row_fullData.duration = calculateDuration (ranges, rangeIndex, points, systemParams);
+                row_fullData.fuelLevel = calculateFuelLevel (ranges, rangeIndex, points, systemParams);
+                row_fullData.coordinates = getCoordinates (ranges, rangeIndex, points, systemParams);
+                row_fullData.averageSpeed = calculateAverageSpeed (ranges, rangeIndex, points, systemParams);
+                row_fullData.travelDistance = calculateTravelDistance (ranges, rangeIndex, points, systemParams);
+                row_fullData.interval = getIntervalStr (ranges, rangeIndex, points, systemParams, report);
+                row_fullData.range = ranges [rangeIndex];
                 return row_fullData;
             };
-            var concatMainRows = function (row2, row1) {
+            var concatMainRows = function (row2, row1, report) {
                 var newRow = {};
-                newRow.eventTypeStr = row1.eventTypeStr;
+                newRow.eventTypeStr = row2.eventTypeStr;
                 newRow.fuelChanges_analytically = row1.fuelChanges_analytically + row2.fuelChanges_analytically;
                 newRow.fuelChanges = row1.fuelChanges + row2.fuelChanges;
                 var duration_milisec = (row1.range.stop.dt - row2.range.start.dt) * 1000;
@@ -360,9 +364,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 newRow.coordinates = '';
                 newRow.travelDistance = (row2.travelDistance + row1.travelDistance);
                 newRow.averageSpeed = newRow.travelDistance / (duration_milisec / 1000 / 60 / 60);
-                var start = row1.range.stop.dt * 1000;
-                var stop = row2.range.start.dt * 1000;
-                newRow.interval = moment (new Date (stop)).format ('DD/MM HH:mm') + ' - ' + moment (new Date (start)).format ('DD/MM HH:mm');
+                newRow.interval = getPointsInterval (row1.range.stop, row2.range.start, report);
                 var newRange = {};
                 newRange.start = row2.range.start;
                 newRange.stop = row1.range.stop;
@@ -372,28 +374,32 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 newRow.range = newRange;
                 return newRow;
             };
-            var adaptDataToEvent = function (fullRow) {
+            var adaptMainDataToEvent = function (fullRow, systemParams) {
                 var eventType = fullRow.eventTypeStr;
                 if (eventType === 'm') {
                     fullRow.coordinates = '';
+                    fullRow.fuelChanges_analytically = Math.round (fullRow.fuelChanges_analytically * 100) / 100;
+                    fullRow.averageSpeed = Math.round (fullRow.averageSpeed * 10) / 10;
+                    fullRow.travelDistance = Math.round (fullRow.travelDistance * 100) / 100;
                 } else {
                     fullRow.averageSpeed = '';
                     fullRow.travelDistance = '';
+                    fullRow.fuelChanges_analytically = '';
                 }
             };
             var getMainRow = function (row_fullData, template, systemParams) {
-                adaptDataToEvent (row_fullData);
+                adaptMainDataToEvent (row_fullData, systemParams);
                 var row = {event: row_fullData.eventTypeStr, columns:[], data: row_fullData.range};
                 for (var i = 0; i < template.mD.length; i++) {
                     switch (template.mD [i]) {
                         case 'c': row.columns.push (row_fullData.coordinates); break;
                         case 'i': row.columns.push (row_fullData.interval); break;
-                        case 'cFLa': row.columns.push (Math.round (row_fullData.fuelChanges_analytically * 10) / 10); break;
-                        case 'cFL': if (systemParams.hasFuelSensor) row.columns.push (Math.round (row_fullData.fuelChanges * 10) / 10); break;
-                        case 'fL': if (systemParams.hasFuelSensor) row.columns.push (Math.round (row_fullData.fuelLevel * 10) / 10); break;
+                        case 'cFLa': row.columns.push (row_fullData.fuelChanges_analytically); break;
+                        case 'cFL': if (systemParams.hasFuelSensor) row.columns.push (row_fullData.fuelChanges); break;
+                        case 'fL': if (systemParams.hasFuelSensor) row.columns.push (row_fullData.fuelLevel); break;
                         case 'd': row.columns.push (row_fullData.duration); break;
-                        case 'aS': row.columns.push (Math.round (row_fullData.averageSpeed * 10) / 10); break;
-                        case 'dT': row.columns.push (Math.round (row_fullData.travelDistance * 100) / 100); break;
+                        case 'aS': row.columns.push (row_fullData.averageSpeed); break;
+                        case 'dT': row.columns.push (row_fullData.travelDistance); break;
                         default: continue;
                     }
                 }
@@ -477,20 +483,20 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     var rows_fullData = [];
                     var row_fullData, prevMainRow;
                     for (i = 0; i < ranges.length; i++) {
-                        row_fullData = getFullMainRow (ranges, i, points, systemParams);
+                        row_fullData = getFullMainRow (ranges, i, points, systemParams, report);
                         rows_fullData.push (row_fullData);
                     }
                     
                     for (i = 0; i < rows_fullData.length; i++) {
                         row_fullData = rows_fullData [i];
-                        if (!skipMainRow (row_fullData, template)) {
+                        if ((row_fullData.eventTypeStr === 'ss') || !skipMainRow (row_fullData, template)) {
                             /*var row = getMainRow (row_fullData, template, systemParams);
                                 row.data = row_fullData.range;
                                 mRows.push (row);*/
                             if (prevMainRow && prevMainRow.eventTypeStr === 'm' &&
-                                row_fullData.eventTypeStr === 'm') {
+                                row_fullData.eventTypeStr === 'm' || row_fullData.eventTypeStr === 'ss') {
                                 //console.log ('full main row concatted!! prevMainRow : ', prevMainRow, ' currentMainRow : ', row_fullData);
-                                row_fullData = concatMainRows (prevMainRow, row_fullData);
+                                row_fullData = concatMainRows (prevMainRow, row_fullData, report);
                             } else if (prevMainRow) {
                                 mRows.push (getMainRow (prevMainRow, template, systemParams));
                             }
@@ -530,8 +536,9 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         var eventStr;
                         for (var i = 0; i < ranges.length; i++) {
                             eventStr = getEventTypeStr (ranges, i, points, systemParams);
-                            if (eventStr === 's')
+                            if (eventStr === 's') {
                                 totalTime += getRangeDuration (ranges [i]);
+                            }
                         }
                         return totalTime;
                     };
@@ -565,7 +572,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         for (var i = 0; i < ranges.length; i++) {
                             fuelConsumption += calculateFuelChanges_analytically (ranges, i, points, systemParams);
                         }
-                        return Math.floor (fuelConsumption * 10) / 10;
+                        return Math.round (fuelConsumption * 10) / 10;
                     };
                     var calculateTotalDrainFuel = function (ranges, points, systemParams) {
                         return 0;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

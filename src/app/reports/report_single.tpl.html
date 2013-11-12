@@ -1,3 +1,12 @@
+<style type="text/css">
+table td.td_i {
+    white-space: nowrap;
+}
+.td_cFLa, .td_cFL, .td_fL, .td_aS, .td_dT {
+    text-align: center;
+}
+</style>
+
 <h4><navtool></navtool><span translate>Reports</span></h4>
 <hr>
 <h4 translate>Report options</h4>
@@ -22,9 +31,9 @@
         </thead>
         <tbody>
             <tr ng-repeat="row in report.reportData.mRows">
-                <td translate>{{ row.event }}</td>
+                <td class="td_event" translate>{{ row.event }}</td>
                 <!-- разобраться с сепараторами -->
-                <td ng-repeat="item in row.columns track by $index">{{ item }}</td>
+                <td class="{{'td_' + report.reportData.mHeaders [$index]}}" ng-repeat="item in row.columns track by $index">{{ item }}</td>
             </tr>
         </tbody>
     </table>
@@ -39,7 +48,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="row in report.reportData.sRows">
-                <td translate translate>{{ row.event }}</td>
+                <td translate>{{ row.event }}</td>
                 <td ng-repeat="item in row.columns track by $index">{{ item }}</td>
             </tr>
         </tbody>
