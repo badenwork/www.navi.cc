@@ -134,10 +134,15 @@ filter('fsource', function() {
         var minutesStr = ' мин';
         var secondsStr = ' сек';
         var separator = ' ';
-        var days = Math.floor(miliseconds/86400000);
-        var hours = Math.floor(((miliseconds/86400000)%1)*24);
-        var minutes = Math.floor(((miliseconds/3600000)%1)*60);
-        var seconds = Math.round(((miliseconds/60000)%1)*60);
+        //var days = Math.floor(miliseconds/86400000);
+        //var hours = Math.floor(((miliseconds/86400000)%1)*24);
+        //var minutes = Math.floor(((miliseconds/3600000)%1)*60);
+        //var seconds = Math.round(((miliseconds/60000)%1)*60);
+        
+        var days = Math.floor(miliseconds / 86400000);
+        var hours = Math.floor((miliseconds % 86400000) / 3600000);
+        var minutes = Math.floor((miliseconds % 3600000) / 60000);
+        var seconds = Math.round((miliseconds % 60000) / 1000);
         var humanizedStr = '';
         if (days > 0) {
             humanizedStr += days + daysStr + separator;

@@ -97,6 +97,14 @@
 
         var div = points.enter().append('div')
             .attr('class', 'track')
+            .attr('title', function(d) {
+                switch(d.type){
+                    case 'HOLD': return 'Остановка: ' + eventDuration(d);
+                    case 'STOP': return 'Стоянка: ' + eventDuration(d);
+                    case 'START': return 'Начало трека';
+                    case 'FINISH': return 'Конец трека';
+                }
+            })
         // .attr('style', function(d){
         //     var px = overlayProjection.fromLatLngToDivPixel(d.pos);
         //     // console.log('d=', d, 'px=', px);
@@ -145,24 +153,24 @@
             return d.title;
         });
         div.append('div').attr('class', 'eventmarker-nonumber').text('P');
-        var label = div.append('span').attr('class', 'title');
+        // var label = div.append('span').attr('class', 'title');
 
-        /*var label = div.append('div').attr('class', 'lastmarker-label').text(function(d) {
-                return d.title;
-            });*/
-        var control = label.append('div').attr('class', 'lastmarker-control');
-        var table = control.append('table').attr('id', function(d) {
-            return 'eventMarkerID_' + d.point.course + d.point.dt;
-        });
-        var tbody = table.append('tbody');
-        //tbody = table.append('tbody');
-        var timeLine = tbody.append('tr');
-        timeLine.append('td').text(function(d) {
-            return d.type == 'HOLD' ? 'Остановка:' : 'Стоянка:';
-        });
-        timeLine.append('td').text(function(d) {
-            return eventDuration(d);
-        });
+        // /*var label = div.append('div').attr('class', 'lastmarker-label').text(function(d) {
+        //         return d.title;
+        //     });*/
+        // var control = label.append('div').attr('class', 'lastmarker-control');
+        // var table = control.append('table').attr('id', function(d) {
+        //     return 'eventMarkerID_' + d.point.course + d.point.dt;
+        // });
+        // var tbody = table.append('tbody');
+        // //tbody = table.append('tbody');
+        // var timeLine = tbody.append('tr');
+        // timeLine.append('td').text(function(d) {
+        //     return d.type == 'HOLD' ? 'Остановка:' : 'Стоянка:';
+        // });
+        // timeLine.append('td').text(function(d) {
+        //     return eventDuration(d);
+        // });
 
         points
             .attr('class', function(d) {
