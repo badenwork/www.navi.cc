@@ -98,7 +98,8 @@ angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.accoun
             var fullUrl = window.location.origin + '/' + path;
             //TODO: реализовать сохранение ссылки в буфер обмена
             //window.prompt ("Чтобы скопировать текст в буфер обмена, нажмите Ctrl+C и Enter", fullUrl);
-            location.href = fullUrl;
+            //window.location = fullUrl;
+            window.location.href = path;
 
             //window.open (fullUrl, path);
         };
