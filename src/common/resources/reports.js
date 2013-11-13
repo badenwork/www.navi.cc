@@ -494,7 +494,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                                 row.data = row_fullData.range;
                                 mRows.push (row);*/
                             if (prevMainRow && prevMainRow.eventTypeStr === 'm' &&
-                                row_fullData.eventTypeStr === 'm' || row_fullData.eventTypeStr === 'ss') {
+                                (row_fullData.eventTypeStr === 'm' || row_fullData.eventTypeStr === 'ss')) {
                                 //console.log ('full main row concatted!! prevMainRow : ', prevMainRow, ' currentMainRow : ', row_fullData);
                                 row_fullData = concatMainRows (prevMainRow, row_fullData, report);
                             } else if (prevMainRow) {
