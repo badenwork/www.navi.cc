@@ -489,7 +489,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     
                     for (i = 0; i < rows_fullData.length; i++) {
                         row_fullData = rows_fullData [i];
-                        if ((row_fullData.eventTypeStr === 'ss') || !skipMainRow (row_fullData, template)) {
+                        if ((prevMainRow && prevMainRow.eventTypeStr === 'm' && row_fullData.eventTypeStr === 'ss') || !skipMainRow (row_fullData, template)) {
                             /*var row = getMainRow (row_fullData, template, systemParams);
                                 row.data = row_fullData.range;
                                 mRows.push (row);*/
