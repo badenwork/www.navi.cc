@@ -204,6 +204,7 @@ angular.module('resources.geogps', [])
                                 gpoint = lastStopgPoint;
                                 point.lat = lastStopPoint.lat;
                                 point.lon = lastStopPoint.lon;
+                                point.dt = hour * 3600;
                                 //i -= 32;
                             }
                         } else if (!cleared) {
