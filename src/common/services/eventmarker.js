@@ -98,7 +98,12 @@
         var div = points.enter().append('div')
             .attr('class', 'track')
             .attr('title', function(d) {
-                return (d.type == 'HOLD' ? 'Остановка: ' : 'Стоянка: ') + eventDuration(d);
+                switch(d.type){
+                    case 'HOLD': return 'Остановка: ' + eventDuration(d);
+                    case 'STOP': return 'Стоянка: ' + eventDuration(d);
+                    case 'START': return 'Начало трека';
+                    case 'FINISH': return 'Конец трека';
+                }
             })
         // .attr('style', function(d){
         //     var px = overlayProjection.fromLatLngToDivPixel(d.pos);
