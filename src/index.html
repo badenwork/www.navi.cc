@@ -2,7 +2,7 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" manifest="/manifest.appcache" ng-app="app"> <!--<![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="app"> <!--<![endif]-->
 
 <head>
     <meta charset="utf-8"/>
@@ -105,12 +105,14 @@
         }   // Запретим выделение (внимание решение может быть не кроссбраузерно)
 
 
-        if(window.hasOwnProperty('applicationCache')){
-          var appCache = window.applicationCache;
+        // if(window.hasOwnProperty('applicationCache')){
+        if(window.applicationCache){
+          // var appCache = window.applicationCache;
           window.addEventListener('load', function(e) {
-            window.applicationCache.addEventListener('updateready', function(e) {
-              if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-                window.applicationCache.swapCache();
+            window.applicationCache.addEventListener('updateready', function() {
+              if (window.applicationCache.status === window.applicationCache.UPDATEREADY) {
+                // alert('found new version!');
+                // window.applicationCache.swapCache();
                 if (confirm('Доступна новая версия сайта. Перезагрузить страницу?')) {
                   window.location.reload();
                 }
@@ -120,6 +122,16 @@
             }, false);
           }, false);
         }
+
+
+// function onUpdateReady() {
+//   alert('found new version!');
+// }
+// window.applicationCache.addEventListener('updateready', onUpdateReady);
+// if(window.applicationCache.status === window.applicationCache.UPDATEREADY) {
+//   onUpdateReady();
+// }
+
 
         // $("[rel=tooltip]").tooltip();
         //angular.bootstrap(document, ['app']);
