@@ -33,14 +33,16 @@ angular.module('app').constant('SERVER', {
 });
 
 // angular.module('app').config(['$routeProvider', '$locationProvider', '$httpProvider', /*'$compileProvider',*/ 'SERVER', function ($routeProvider, $locationProvider, $httpProvider, /*$compileProvider,*/ SERVER) {
-angular.module('app').config(['$routeProvider', '$locationProvider', '$httpProvider', 'SERVER',
-    function($routeProvider, $locationProvider, $httpProvider, SERVER) {
+angular.module('app').config(['$routeProvider', '$locationProvider', '$httpProvider', '$compileProvider', 'SERVER',
+    function($routeProvider, $locationProvider, $httpProvider, $compileProvider, SERVER) {
         'use strict';
 
         $httpProvider.defaults.withCredentials = SERVER.api_withCredentials;
 
         // Разрешим вызывать ссылки вида chrome:.... Не пригодилось, ссылки вида chrome браузер блокирует
-        // $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome):/);
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome|chrome-extension|data|blob):/);
+
+        // $compileProvider.urlSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|chrome-extension|data):/);
 
         if (!$httpProvider.defaults.headers.patch) {
             $httpProvider.defaults.headers.patch = {};

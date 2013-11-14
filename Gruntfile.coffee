@@ -129,9 +129,10 @@ module.exports = (grunt) ->
           "moment": "2.4.0"
           # moment:
           #   select: ["moment.js", "ru.js"]
-          jszip:
-            select: [ 'jszip.js', 'jszip-deflate.js' ]
+          # jszip:
+          #   select: [ 'jszip.js', 'jszip-deflate.js' ]
           "https://github.com/stephen-hardy/xlsx.js.git": ""
+          "https://github.com/Stuk/jszip.git": ""
           # "sockjs-client": ""
 
           # Для поддержки старых браузеров. Проверить это вообще помогает?
@@ -376,7 +377,7 @@ module.exports = (grunt) ->
         files: [
           src: [
             'components/xlsx.js/xlsx.js',
-            'components/jszip/jszip.min.js',
+            'components/jszip/jszip.js',
             'components/jszip/jszip-deflate.js',
             'components/jquery/jquery.min.js',
             'components/jquery-ui/ui/jquery.ui.core.js',

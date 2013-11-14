@@ -1,6 +1,6 @@
 /* global angular:true, $:true */
 
-angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'resources.geogps', 'app.filters', 'config.system.params.master', 'pasvaz.bindonce', 'infinite-scroll', 'i18n'])
+angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'resources.geogps', 'app.filters', 'config.system.params.master', 'pasvaz.bindonce', 'infinite-scroll', 'i18n', 'services.xlsx'])
 
 .config(['$routeProvider',
     function($routeProvider) {
@@ -56,8 +56,8 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
     }
 ])
 
-.controller('GPSViewCtrl', ['$scope', '$route', '$routeParams', '$location', 'account', 'systems', 'GeoGPS', '$filter', 'i18n',
-    function($scope, $route, $routeParams, $location, account, systems, GeoGPS, $filter, i18n) {
+.controller('GPSViewCtrl', ['$scope', '$route', '$routeParams', '$location', 'account', 'systems', 'GeoGPS', '$filter', 'i18n', 'XLSX',
+    function($scope, $route, $routeParams, $location, account, systems, GeoGPS, $filter, i18n, XLSX) {
         'use strict';
         var day = $scope.day = $routeParams.day || 0;
 
@@ -113,6 +113,70 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
                 .then(function(data) {
                     $scope.track = data;
                     $scope.myPagingFunction();
+
+                    var worksheets = [
+                    {
+                        data: [
+                            [{
+                                value: 'Время',
+                                autoWidth: true
+                                // width: '5cm'
+                            },{
+                                value: 'Координаты',
+                                autoWidth: true
+                            },{
+                                value: 'Спутники',
+                                autoWidth: true
+                            }, {
+                                value: 'Скорость',
+                                autoWidth: false
+                            }, {
+                                value: 'Uосн',
+                                autoWidth: true
+                            }, {
+                                value: 'Uрез',
+                                autoWidth: true
+                            }, {
+                                value: 'Топл',
+                                autoWidth: false
+                            }]
+                        ],
+                        table: true,
+                        name: 'Экспорт GPS'
+                        // colWidth: ['1cm', '2cm', '3cm', '4cm', '5cm', '6cm', '7cm']
+                    }];
+                    // console.log('data', data);
+                    var datetimeFilter = $filter('datetime');
+                    var numberFilter = $filter('number');
+
+                    data.points.forEach(function(p){
+                        worksheets[0].data.push([
+                            datetimeFilter(p.dt),
+                            numberFilter(p.lat, 4) + ',' + numberFilter(p.lon, 4),
+                            p.sats,
+                            {
+                                formatCode: '0.0',
+                                value: p.speed
+                            },
+                            {
+                                formatCode: '0.0',
+                                value: p.vout
+                            },
+                            {
+                                formatCode: '0.0',
+                                value: p.vin
+                            },
+                            {
+                                formatCode: '0.0',
+                                value: p.fuel
+                            }
+                        ]);
+                    });
+
+                    var sheet = new XLSX.document('exportgps', worksheets);
+                    $scope.exporturl = sheet.url();
+                    // console.log('$scope.exporturl=', $scope.exporturl);
+
                 });
 
             $scope.onMouseOver = function(g) {

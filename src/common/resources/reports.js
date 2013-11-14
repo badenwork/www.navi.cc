@@ -1,7 +1,7 @@
 angular.module('resources.reports', ['resources.account', '$strap.directives', 'resources.geogps', 'resources.system', 'i18n'])
 
-.factory('Reports', ['$location', 'Account', '$http', 'SERVER', 'GeoGPS', 'System', '$rootScope', '$filter',
-    function($location, Account, $http, SERVER, GeoGPS, System, $rootScope, $filter) {
+.factory('Reports', ['$location', 'Account', '$http', 'SERVER', 'GeoGPS', 'System', '$rootScope', '$filter', 'XLSX',
+    function($location, Account, $http, SERVER, GeoGPS, System, $rootScope, $filter, XLSX) {
        'use strict';
         var humanizeMiliseconds = $filter ('humanizeMiliseconds');
         var Reports = {
@@ -138,7 +138,6 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 }
                 summaryReport.push (line);
             }
-            
             var sheet = xlsx({
                 worksheets: [{
                     data: mainReport,
@@ -161,12 +160,17 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             };
             return interval;
         };
-        Reports.downloadReport = function (report) {
+        Reports.getSingleReportDowloadData = function (report) {
             var interval = Reports.getReportInterval (report);
             var fileName = report.systemName + '_' + interval.start + '_' + interval.stop + '.xlsx';
+            var link = getXLSXDownloadLink (report);
+            return { fileName: fileName, link: link };
+        };
+        Reports.downloadReport = function (report) {
+            var data = Reports.getSingleReportDowloadData (report);
             var link = $('<a />');
-            link.attr ('href', getXLSXDownloadLink (report));
-            link.attr ('download', fileName);
+            link.attr ('href', data.link);
+            link.attr ('download', data.fileName);
             link [0].click ();
         };
         
@@ -178,6 +182,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             var formatPosition = function (report, index, coordinatesIndex) {
                 if (index === report.reportData.mRows.length || report.reportData.mRows.length === 0) {
                     report.reportData.addressesIsReady = true;
+                    report.dowloadData = Reports.getSingleReportDowloadData ($scope.report);
                     return;
                 }
                 var eventType = report.reportData.mRows [index].event;
@@ -621,6 +626,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     report.reportData.sRows = sRows;                
                     report.reportData.addressesIsReady = false;
                     convertCoordinatesToAdresses (report);
+                    report.dowloadData = Reports.getSingleReportDowloadData (report);
                     report.ready = true;
                     return report;
                 });

@@ -147,12 +147,12 @@ ul.nav-tabs>li {
             <td>{{ report.systemName }}</td>
             <td>{{ Reports.getReportInterval(report).start + ' - ' +  Reports.getReportInterval(report).stop }}</td>
             <!--<td>{{ '00:00 - 23:59' }}</td>-->
-            <td><a href="" ng-click="openInNewPage(report.url)">Ссылка</a></td>
-            <td><a href="" ng-click="Reports.downloadReport(report)">Загрузить</a></td>
+            <td><a href="{{'#/singleReport' + report.url}}">Ссылка</a></td>
+            <td><a href="{{report.dowloadData.link}}" download="{{report.dowloadData.fileName}}">Загрузить</a></td>
             <td><button class="btn" title="Remove" ng-click="Reports.removeReport(report)" >x</button></td>
         </tr>
     </table>
-</div>        
+</div><!--((webkit_req_fs) ? ('.' + report.dowloadData.fileName) :'')-->        
         
 <div class="modal fade" id="templatesSettingsModal">
 	<div class="modal-dialog">
