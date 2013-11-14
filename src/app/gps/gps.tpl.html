@@ -13,6 +13,8 @@
             <button href="#" class="btn btn-primary small dropdown-toggle" ng-class="{active: ((day!=0) && (day!=-1))}"  id="inputDate"><span ng-show="(day == 0) || (day == -1)">Выбрать</span><span ng-hide="(day == 0) || (day == -1)">{{ datetime | datetime:false:'date' }}</span> <span class="caret"></span></button>
 
         </div>
+
+        <a href="{{exporturl}}" download="exportGPS.xlsx" title="Загрузить в формате Excel" style="float:right; margin:5px;"><span class="icon-file icon-2x"></span></a>
     </form>
 
     <div class="georow" style="font-weight: bold;">
