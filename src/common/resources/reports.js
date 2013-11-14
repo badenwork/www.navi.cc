@@ -364,7 +364,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 newRow.coordinates = '';
                 newRow.travelDistance = (row2.travelDistance + row1.travelDistance);
                 newRow.averageSpeed = newRow.travelDistance / (duration_milisec / 1000 / 60 / 60);
-                newRow.interval = getPointsInterval (row1.range.stop, row2.range.start, report);
+                newRow.interval = getPointsInterval (row2.range.start, row1.range.stop, report);
                 var newRange = {};
                 newRange.start = row2.range.start;
                 newRange.stop = row1.range.stop;
