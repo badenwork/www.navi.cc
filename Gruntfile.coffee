@@ -486,6 +486,7 @@ module.exports = (grunt) ->
             'font/caricons.woff?82948991'
           ]
           network: [
+            '/'
             'http://*'
             'https://*'
             'http://dev.new.navi.cc/1.0/*'
