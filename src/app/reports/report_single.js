@@ -39,8 +39,10 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
         var updateUI = function (miliseconds) {
             setTimeout (function () {
                 $scope.$apply (function () {
-                    if (report.reportData.addressesIsReady)
+                    if (report.reportData.addressesIsReady) {
+                        report.dowloadData = Reports.getSingleReportDowloadData ($scope.report);
                         return;
+                    }
                     updateUI (miliseconds);
                 });
             }, miliseconds);

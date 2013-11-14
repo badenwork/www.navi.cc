@@ -93,17 +93,6 @@ angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.accoun
             $('#templatesSettingsModal').modal (options);
         };
 
-        $scope.openInNewPage = function (url) {
-            var path = (url ? ('/singleReport' + url) : '/error');
-            // var fullUrl = window.location.origin + '/' + path;
-            //TODO: реализовать сохранение ссылки в буфер обмена
-            //window.prompt ("Чтобы скопировать текст в буфер обмена, нажмите Ctrl+C и Enter", fullUrl);
-            //window.location = fullUrl;
-            // window.location.href = path;
-            $location.url(path);
-
-            //window.open (fullUrl, path);
-        };
 
         $scope.generateReport = function() {
             if (!$scope.reportSettings.systemKey)
@@ -114,6 +103,6 @@ angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.accoun
             report.system = systems [$scope.reportSettings.systemKey];
             report.systemName = report.system.title;
             Reports.saveReport (report);
-            $scope.openInNewPage (report.url);
+            $location.url (report.url ? ('/singleReport' + report.url) : '/error');
         };
 }]);
