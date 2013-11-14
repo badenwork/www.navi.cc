@@ -23,7 +23,7 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
                     }
                 ]
             },
-            reloadOnSearch: false
+            reloadOnSearch: true
         });
     }
 ])
