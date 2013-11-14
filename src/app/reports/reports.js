@@ -54,8 +54,8 @@ angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.accoun
     }
 ])
 
-.controller('ReportsViewCtrl', ['$scope', 'account', 'systems', '$routeParams', 'i18n', 'Reports', 'Templates',
-    function($scope, account, systems, $routeParams, i18n, Reports, Templates) {
+.controller('ReportsViewCtrl', ['$scope', 'account', 'systems', '$routeParams', 'i18n', 'Reports', 'Templates', '$location',
+    function($scope, account, systems, $routeParams, i18n, Reports, Templates, $location) {
 
         'use strict';
 
@@ -94,12 +94,13 @@ angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.accoun
         };
 
         $scope.openInNewPage = function (url) {
-            var path = (url ? ('#/singleReport' + url) : '/#/error');
-            var fullUrl = window.location.origin + '/' + path;
+            var path = (url ? ('/singleReport' + url) : '/error');
+            // var fullUrl = window.location.origin + '/' + path;
             //TODO: реализовать сохранение ссылки в буфер обмена
             //window.prompt ("Чтобы скопировать текст в буфер обмена, нажмите Ctrl+C и Enter", fullUrl);
             //window.location = fullUrl;
-            window.location.href = path;
+            // window.location.href = path;
+            $location.url(path);
 
             //window.open (fullUrl, path);
         };

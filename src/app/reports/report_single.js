@@ -3,7 +3,8 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
 .config(['$routeProvider',
     function($routeProvider, $routeParams) {
 
-        $routeProvider.when('/singleReport:skey:hStart:hStop:mE:mD:sE:sD', {
+        // $routeProvider.when('/singleReport:skey:hStart:hStop:mE:mD:sE:sD', {
+        $routeProvider.when('/singleReport', {
             templateUrl: 'templates/reports/report_single.tpl.html',
             controller: 'SingleReportViewCtrl',
             resolve: {
@@ -27,7 +28,7 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
         });
     }
 ])
-    
+
 .controller('SingleReportViewCtrl', ['$scope', '$location', '$http', 'SERVER', 'GeoGPS', 'System', '$route', '$routeParams', 'i18n', 'report', 'Reports', '$rootScope',
     function($scope, $location, $http, SERVER, GeoGPS, System, $route, $routeParams, i18n, report, Reports, $rootScope) {
         $scope.interval = Reports.getReportInterval (report);
@@ -43,6 +44,6 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
                     updateUI (miliseconds);
                 });
             }, miliseconds);
-        };    
+        };
         updateUI (1000); // Не самое элегантное решение но пока не знаю как заставить оюновлять таблицу при изменении её значений
     }]);
