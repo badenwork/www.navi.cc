@@ -224,6 +224,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
                 },
                 scaleControl: true,
+                maxZoom: 16,
                 draggableCursor: 'pointer',
                 zoom: prev_config.zoom
             };

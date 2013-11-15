@@ -56,8 +56,8 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
     }
 ])
 
-.controller('GPSViewCtrl', ['$scope', '$route', '$routeParams', '$location', 'account', 'systems', 'GeoGPS', '$filter', 'i18n', 'XLSX',
-    function($scope, $route, $routeParams, $location, account, systems, GeoGPS, $filter, i18n, XLSX) {
+.controller('GPSViewCtrl', ['$scope', '$route', '$routeParams', '$location', 'account', 'systems', 'GeoGPS', '$filter', 'i18n', 'XLSX', '$timeout',
+    function($scope, $route, $routeParams, $location, account, systems, GeoGPS, $filter, i18n, XLSX, $timeout) {
         'use strict';
         var day = $scope.day = $routeParams.day || 0;
 
@@ -107,6 +107,71 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             centermarker: true
         };
 
+        $scope.exporturl = null;
+        var xlsxdoc = function(data){
+            var worksheets = [
+            {
+                data: [
+                    [{
+                        value: 'Время',
+                        autoWidth: true
+                        // width: '5cm'
+                    },{
+                        value: 'Координаты',
+                        autoWidth: true
+                    },{
+                        value: 'Спутники',
+                        autoWidth: true
+                    }, {
+                        value: 'Скорость',
+                        autoWidth: false
+                    }, {
+                        value: 'Uосн',
+                        autoWidth: true
+                    }, {
+                        value: 'Uрез',
+                        autoWidth: true
+                    }, {
+                        value: 'Топл',
+                        autoWidth: false
+                    }]
+                ],
+                table: true,
+                name: 'Экспорт GPS'
+                // colWidth: ['1cm', '2cm', '3cm', '4cm', '5cm', '6cm', '7cm']
+            }];
+            // console.log('data', data);
+            var datetimeFilter = $filter('datetime');
+            var numberFilter = $filter('number');
+
+            data.points.forEach(function(p){
+                worksheets[0].data.push([
+                    datetimeFilter(p.dt),
+                    numberFilter(p.lat, 4) + ',' + numberFilter(p.lon, 4),
+                    p.sats,
+                    {
+                        formatCode: '0.0',
+                        value: p.speed
+                    },
+                    {
+                        formatCode: '0.0',
+                        value: p.vout
+                    },
+                    {
+                        formatCode: '0.0',
+                        value: p.vin
+                    },
+                    {
+                        formatCode: '0.0',
+                        value: p.fuel
+                    }
+                ]);
+            });
+
+            var sheet = new XLSX.document('exportgps', worksheets);
+            $scope.exporturl = sheet.url();
+        };
+
         if ($scope.skey && ($scope.skey !== '') && ($scope.skey !== '+')) {
             GeoGPS.select($scope.skey);
             GeoGPS.getTrack(hourfrom, hourfrom + 23)
@@ -114,67 +179,8 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
                     $scope.track = data;
                     $scope.myPagingFunction();
 
-                    var worksheets = [
-                    {
-                        data: [
-                            [{
-                                value: 'Время',
-                                autoWidth: true
-                                // width: '5cm'
-                            },{
-                                value: 'Координаты',
-                                autoWidth: true
-                            },{
-                                value: 'Спутники',
-                                autoWidth: true
-                            }, {
-                                value: 'Скорость',
-                                autoWidth: false
-                            }, {
-                                value: 'Uосн',
-                                autoWidth: true
-                            }, {
-                                value: 'Uрез',
-                                autoWidth: true
-                            }, {
-                                value: 'Топл',
-                                autoWidth: false
-                            }]
-                        ],
-                        table: true,
-                        name: 'Экспорт GPS'
-                        // colWidth: ['1cm', '2cm', '3cm', '4cm', '5cm', '6cm', '7cm']
-                    }];
-                    // console.log('data', data);
-                    var datetimeFilter = $filter('datetime');
-                    var numberFilter = $filter('number');
+                    if(0) xlsxdoc(data);
 
-                    data.points.forEach(function(p){
-                        worksheets[0].data.push([
-                            datetimeFilter(p.dt),
-                            numberFilter(p.lat, 4) + ',' + numberFilter(p.lon, 4),
-                            p.sats,
-                            {
-                                formatCode: '0.0',
-                                value: p.speed
-                            },
-                            {
-                                formatCode: '0.0',
-                                value: p.vout
-                            },
-                            {
-                                formatCode: '0.0',
-                                value: p.vin
-                            },
-                            {
-                                formatCode: '0.0',
-                                value: p.fuel
-                            }
-                        ]);
-                    });
-
-                    var sheet = new XLSX.document('exportgps', worksheets);
-                    $scope.exporturl = sheet.url();
                     // console.log('$scope.exporturl=', $scope.exporturl);
 
                 });
@@ -201,6 +207,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             }
         };
 
+        $scope.alldata = false;
         $scope.myPagingFunction = function() {
             if (!$scope.track) return;
             var offset = items.length;
@@ -213,6 +220,20 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             for (var i = start; i >= stop; i--) {
                 items.push ($scope.track.points[i]);
             }
+            if(items.length >= $scope.track.points.length) {
+                $scope.alldata = true;
+            }
+        };
+
+        $scope.allprogress = 'icon-forward';
+        $scope.loadAllData = function(){
+            $scope.allprogress = "icon-repeat icon-spin";
+            $timeout(function(){
+                while(items.length < $scope.track.points.length) {
+                    $scope.myPagingFunction();
+                }
+                $scope.allprogress = "";
+            }, 200);
         };
 
         var dp = $('#inputDate').datepicker({
