@@ -215,6 +215,8 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             //mapTypeIds.push('Google');
             // mapTypeIds.push('Quest');
 
+            var maxZoom = (window.localStorage.getItem('map.maxZoom') || '16') | 0;
+
             // var latlng = new google.maps.LatLng(48.397, 34.644);
             var myOptions = {
                 center: new google.maps.LatLng(prev_config.center[0], prev_config.center[1]),
@@ -224,6 +226,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
                 },
                 scaleControl: true,
+                maxZoom: maxZoom,
                 draggableCursor: 'pointer',
                 zoom: prev_config.zoom
             };
