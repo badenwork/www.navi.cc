@@ -225,7 +225,7 @@ angular.module('resources.geogps', [])
                     if(prevpoint){
                         var d = distance(point, prevpoint);
                         if(d > 4.0){
-                            console.log(d, new Date(point.dt * 1000));
+                            window.console.log(d, new Date(point.dt * 1000));
                             continue;
                         }
                     }
