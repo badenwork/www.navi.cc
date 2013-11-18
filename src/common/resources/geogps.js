@@ -160,7 +160,7 @@ angular.module('resources.geogps', [])
 
         //если нужно убрать получение данных на correctFromHours часов назад то установить cleared в true а correctFromHours в 0
         var correctFromHours = 120;
-        
+
 
         var bingpsparse = function(array, hoursFrom, offset) {
             // console.log('parse');
@@ -184,6 +184,7 @@ angular.module('resources.geogps', [])
             var index = 0;
 
             var fuelscale = System.$fuelscale(skey);
+            var prevpoint = null;
 
             for (var i = 0; i < array.length; i += 32) {
                 var point = parse_onebin(array.subarray(i, i + 32));
@@ -220,6 +221,15 @@ angular.module('resources.geogps', [])
                             continue;
                         }
                     }
+
+                    if(prevpoint){
+                        var d = distance(point, prevpoint);
+                        if(d > 4.0){
+                            window.console.log(d, new Date(point.dt * 1000));
+                            continue;
+                        }
+                    }
+                    prevpoint = point;
 
                     if (bounds === null) {
                         bounds = new google.maps.LatLngBounds(gpoint, gpoint);
@@ -472,7 +482,7 @@ angular.module('resources.geogps', [])
         //     }
         // };
 
-        GeoGPS.distance = function(p1, p2) {
+        var distance = function(p1, p2) {
             var R = 6371; // km (change this constant to get miles)
             var dLat = (p2.lat - p1.lat) * Math.PI / 180;
             var dLon = (p2.lon - p1.lon) * Math.PI / 180;
@@ -483,6 +493,7 @@ angular.module('resources.geogps', [])
             var d = R * c;
             return d;
         };
+        GeoGPS.distance = distance;
 
         // Инициирует данные для бинарного поиска
         GeoGPS.initQuadtree = function(points){
