@@ -393,8 +393,8 @@
         return params_descs;
     })
 
-    .controller('ConfigParamsCtrl', ['$scope', '$route', '$routeParams', 'account', 'params', 'system', 'System', 'Tags',
-        function($scope, $route, $routeParams, account, params, system, System, Tags) {
+    .controller('ConfigParamsCtrl', ['$scope', '$route', '$routeParams', 'account', 'params', 'system', 'System',
+        function($scope, $route, $routeParams, account, params, system, System) {
             $scope.system = system;
             $scope.skey = $routeParams.skey;
             $scope.params = params;
@@ -455,9 +455,18 @@
                 value: null
             };
 
-            $('#changeParamModal').modal({
-                show: false
-            }).on('hidden.bs.modal', function() {
+            $scope.$on('$viewContentLoaded', function() {
+                // console.log('tbd setup');
+                // console.log('setup changeParamModal', $('#changeParamModal'));
+                $('#changeParamModal').modal({
+                    show: false
+                }).on('hidden.bs.modal', function() {
+                    // console.log('changeParamModal. Устаревшее.');
+                });
+            });
+
+            $scope.changeParamDone = function(){
+                // console.log('changeParamDone');
                 var key = $scope.param.key,
                     value = $scope.param.value;
 
@@ -467,7 +476,7 @@
 
                 params.queue[key] = value;
                 params.$patch('queue'); // Сохраним очередь
-            });
+            };
 
             $scope.changeParam = function(key) {
                 params.queue = params.queue || {};
