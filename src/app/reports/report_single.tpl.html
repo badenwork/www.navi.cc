@@ -21,8 +21,22 @@ table td.td_i {
     <p translate>Empty data</p>
 </div>
 <div ng-hide="!report.ready || report.reportData.mRows.length === 0">
+    <br>
     <div id="downloadLink" ng-hide="report.reportData.mRows.length === 0">
-         <a href="{{report.dowloadData.link}}" download="{{report.dowloadData.fileName}}" translate>Download report</a>
+        <table class="table table-hover table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th><trans translate>report in</trans>&nbspxlsx</td>
+                    <th><trans translate>report in</trans>&nbspcsv</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="{{report.dowloadData.link}}" download="{{report.dowloadData.fileName}}" translate>Download report</a></td>
+                    <td><a href="{{report.dowloadData.CSVlink}}" download="{{report.dowloadData.CSVfileName}}" translate>Download report</a></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <h4 translate>Main report</h4>
     <table class="table table-hover table-bordered table-condensed">

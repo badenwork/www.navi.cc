@@ -97,7 +97,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             }
             return report;
         };
-        var getXLSXDownloadLink = function (report) {
+        var getReportTables = function (report) {
             var row, line, i, j, str;
             var mHeaders = [$filter("translate")('event')];
             for (i = 0; i < report.reportData.mHeaders.length; i++) {
@@ -138,12 +138,42 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 }
                 summaryReport.push (line);
             }
+            return {mainReport: mainReport, summaryReport: summaryReport};
+        }
+        var doubleArrayToCSV = function (arr) {
+            var csv = "";
+            var sep = "";
+            for (var i = 0; i < arr.length; i++) {
+                sep = "";
+                for (var j = 0; j < arr [i].length; j++) {
+                    csv += sep + arr [i][j];
+                    sep = ";";
+                }
+                csv += "\n";
+            }
+            return csv;
+        };
+        var getCSVDownloadLink = function (reportTables) {
+            var fullReportCSV = "";
+            var mainReportCSV = doubleArrayToCSV (reportTables.mainReport);
+            var summaryReportCSV = doubleArrayToCSV (reportTables.summaryReport);
+            
+            fullReportCSV += mainReportCSV;
+            fullReportCSV += "\n\n\n\n\n\n\n\n\n";
+            fullReportCSV += summaryReportCSV;
+            
+            var URL = window.URL || window.webkiURL;
+            var blob = new Blob([fullReportCSV]);
+            var blobURL = URL.createObjectURL(blob);
+            return blobURL;
+        };
+        var getXLSXDownloadLink = function (reportTables) {     
             var sheet = xlsx({
                 worksheets: [{
-                    data: mainReport,
+                    data: reportTables.mainReport || [],
                     name: $filter("translate")('Main report')
                 }, {
-                    data: summaryReport,
+                    data: reportTables.summaryReport || [],
                     name: $filter("translate")('Summary report')
                 }]
             });
@@ -162,9 +192,11 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
         };
         Reports.getSingleReportDowloadData = function (report) {
             var interval = Reports.getReportInterval (report);
-            var fileName = report.systemName + '_' + interval.start + '_' + interval.stop + '.xlsx';
-            var link = getXLSXDownloadLink (report);
-            return { fileName: fileName, link: link };
+            var fileName = report.systemName + '_' + interval.start + '_' + interval.stop;
+            var reportTables = getReportTables (report);
+            var link = getXLSXDownloadLink (reportTables);
+            var CSVlink = getCSVDownloadLink (reportTables);
+            return { fileName: fileName + '.xlsx', link: link, CSVfileName: fileName + '.csv', CSVlink: CSVlink};
         };
         Reports.downloadReport = function (report) {
             var data = Reports.getSingleReportDowloadData (report);
@@ -182,7 +214,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             var formatPosition = function (report, index, coordinatesIndex) {
                 if (index === report.reportData.mRows.length || report.reportData.mRows.length === 0) {
                     report.reportData.addressesIsReady = true;
-                    report.dowloadData = Reports.getSingleReportDowloadData ($scope.report);
+                    report.dowloadData = Reports.getSingleReportDowloadData (report);
                     return;
                 }
                 var eventType = report.reportData.mRows [index].event;
