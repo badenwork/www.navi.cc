@@ -460,12 +460,12 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     switch (template.mD [i]) {
                         case 'c': row.columns.push (row_fullData.coordinates); break;
                         case 'i': row.columns.push (row_fullData.interval); break;
-                        case 'cFLa': row.columns.push (row_fullData.fuelChanges_analytically); break;
-                        case 'cFL': if (systemParams.hasFuelSensor) row.columns.push (row_fullData.fuelChanges); break;
-                        case 'fL': if (systemParams.hasFuelSensor) row.columns.push (row_fullData.fuelLevel); break;
+                        case 'cFLa': row.columns.push (row_fullData.fuelChanges_analytically.toLocaleString()); break;
+                        case 'cFL': if (systemParams.hasFuelSensor) row.columns.push (row_fullData.fuelChanges.toLocaleString()); break;
+                        case 'fL': if (systemParams.hasFuelSensor) row.columns.push (row_fullData.fuelLevel.toLocaleString()); break;
                         case 'd': row.columns.push (row_fullData.duration); break;
-                        case 'aS': row.columns.push (row_fullData.averageSpeed); break;
-                        case 'dT': row.columns.push (row_fullData.travelDistance); break;
+                        case 'aS': row.columns.push (row_fullData.averageSpeed.toLocaleString()); break;
+                        case 'dT': row.columns.push (row_fullData.travelDistance.toLocaleString()); break;
                         default: continue;
                     }
                 }
@@ -666,15 +666,15 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         return sRow;
                     };
                     var summary_row_full = [];
-                    summary_row_full.totalTraveledDistance = calculateTotalTraveledDistance (ranges, points, systemParams) + ' км';
+                    summary_row_full.totalTraveledDistance = calculateTotalTraveledDistance (ranges, points, systemParams).toLocaleString() + ' км';
                     summary_row_full.totalTraveledTime = humanizeMiliseconds (calculateTotalTraveledTime (ranges, points, systemParams));
                     summary_row_full.totalStopedTime = humanizeMiliseconds (calculateTotalStopedTime (ranges, points, systemParams));
-                    summary_row_full.maxSpeed = Math.round (calculateMaxSpeed (ranges, points, systemParams)) + ' км/ч';
-                    summary_row_full.totalAverageSpeed = calculateTotalAverageSpeed (ranges, points, systemParams) + ' км/ч';
-                    summary_row_full.fuelConsumption_sensor = calculateFuelConsumption_sensor (ranges, points, systemParams) + ' л';
-                    summary_row_full.fuelConsumption_analytically = calculateFuelConsumption_analytically (ranges, points, systemParams) + ' л';
-                    summary_row_full.totalDrainFuel = calculateTotalDrainFuel (ranges, points, systemParams) + ' л';
-                    summary_row_full.totalRefueling = calculateTotalRefueling (ranges, points, systemParams) + ' л';
+                    summary_row_full.maxSpeed = Math.round (calculateMaxSpeed (ranges, points, systemParams)).toLocaleString() + ' км/ч';
+                    summary_row_full.totalAverageSpeed = calculateTotalAverageSpeed (ranges, points, systemParams).toLocaleString() + ' км/ч';
+                    summary_row_full.fuelConsumption_sensor = calculateFuelConsumption_sensor (ranges, points, systemParams).toLocaleString() + ' л';
+                    summary_row_full.fuelConsumption_analytically = calculateFuelConsumption_analytically (ranges, points, systemParams).toLocaleString() + ' л';
+                    summary_row_full.totalDrainFuel = calculateTotalDrainFuel (ranges, points, systemParams).toLocaleString() + ' л';
+                    summary_row_full.totalRefueling = calculateTotalRefueling (ranges, points, systemParams).toLocaleString() + ' л';
                     for (i = 0; i < template.sE.length; i++) {
                         var sRow_final = getSummaryRow (template.sE [i], systemParams);
                         if (sRow_final) {
