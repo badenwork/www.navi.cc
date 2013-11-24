@@ -29,11 +29,15 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
     }
 ])
 
-.controller('SingleReportViewCtrl', ['$scope', '$location', '$http', 'SERVER', 'GeoGPS', 'System', '$route', '$routeParams', 'i18n', 'report', 'Reports', '$rootScope',
-    function($scope, $location, $http, SERVER, GeoGPS, System, $route, $routeParams, i18n, report, Reports, $rootScope) {
+.controller('SingleReportViewCtrl', ['$scope', '$location', '$http', 'SERVER', 'GeoGPS', 'System', '$route', '$routeParams', 'i18n', 'report', 'Reports', '$rootScope', '$filter',
+    function($scope, $location, $http, SERVER, GeoGPS, System, $route, $routeParams, i18n, report, Reports, $rootScope, $filter) {
         $scope.interval = Reports.getReportInterval (report);
         $scope.report = report;
         $scope.Reports = Reports;
+        $scope.updateDowloadLink = function () {  
+            
+        };
+        
         Reports.completeSingleReport ($scope.report);
         //TODO: оптимизировать
         var updateUI = function (miliseconds) {

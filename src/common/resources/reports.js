@@ -139,7 +139,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 summaryReport.push (line);
             }
             return {mainReport: mainReport, summaryReport: summaryReport};
-        }
+        };
         var doubleArrayToCSV = function (arr) {
             var csv = "";
             var sep = "";
@@ -153,8 +153,28 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             }
             return csv;
         };
+        var getPDFDownloadLink = function () {
+            //TODO: проблемы с русской кодировкой...
+            /*var doc = new jsPDF ();
+            // We'll make our own renderer to skip this editor
+            var specialElementHandlers = {
+                '#downloadLink': function(element, renderer){
+                    return true;
+                }
+            };
+            
+            // All units are in the set measurement for the document
+            // This can be changed to "pt" (points), "mm" (Default), "cm", "in"
+            var renderEl = $('#report');
+            doc.fromHTML(renderEl.get(0), 15, 15, {
+                'width': 170, 
+                'elementHandlers': specialElementHandlers
+            });
+            doc.save('Test.pdf');*/
+        };
         var getCSVDownloadLink = function (reportTables) {
-            var fullReportCSV = "";
+            //var fullReportCSV = "data:text/csv;charset=utf-8,";
+            var fullReportCSV = "\uFEFF"; //Необходим что бы JavaScript определял текст как UTF8 with BOM
             var mainReportCSV = doubleArrayToCSV (reportTables.mainReport);
             var summaryReportCSV = doubleArrayToCSV (reportTables.summaryReport);
             
@@ -163,9 +183,10 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             fullReportCSV += summaryReportCSV;
             
             var URL = window.URL || window.webkiURL;
-            var blob = new Blob([fullReportCSV]);
-            var blobURL = URL.createObjectURL(blob);
-            return blobURL;
+            var blob = new Blob([fullReportCSV],{type:"text/plain;charset=UTF-8"});
+            var url = URL.createObjectURL(blob);
+            //var url = encodeURI(fullReportCSV);
+            return url;
         };
         var getXLSXDownloadLink = function (reportTables) {     
             var sheet = xlsx({
@@ -196,7 +217,8 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             var reportTables = getReportTables (report);
             var link = getXLSXDownloadLink (reportTables);
             var CSVlink = getCSVDownloadLink (reportTables);
-            return { fileName: fileName + '.xlsx', link: link, CSVfileName: fileName + '.csv', CSVlink: CSVlink};
+            var PDFlink = getPDFDownloadLink ();
+            return { fileName: fileName + '.xlsx', link: link, CSVfileName: fileName + '.csv', CSVlink: CSVlink, PDFfileName: fileName + '.pdf', PDFlink: PDFlink};
         };
         Reports.downloadReport = function (report) {
             var data = Reports.getSingleReportDowloadData (report);
@@ -229,8 +251,24 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         if (status == google.maps.GeocoderStatus.OK) {
                             var address = '';
                             var parts = results [0].address_components;
+                            var sep = "";
+                            var types = {
+                                country :'',                //страна
+                                locality:'',                //город
+                                //sublocality :'',
+                                street_number:'',           //номер дома
+                                //establishment:'',
+                                route:'',                   //улица
+                                /*postal_code:'',
+                                administrative_area_level_1:'',
+                                administrative_area_level_2:'',
+                                administrative_area_level_3:''*/
+                            };
                             for (var i = parts.length - 1; i >= 0; --i) {
-                                address += parts [i].long_name + ((i === 0) ? '' : ', ');
+                                if (parts [i].types[0] in types) {
+                                    address += sep + parts [i].long_name;
+                                    sep = ", ";
+                                }
                             }
                             var item = report.reportData.mRows [index].columns [coordinatesIndex] = address;
                             setTimeout(function() {
@@ -260,15 +298,6 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             };
             var pointToPointDistance = function (p1, p2) {
                 return GeoGPS.distance (p1, p2);
-                /*var R = 6371; // km (change this constant to get miles)
-                var dLat = (p2.lat - p1.lat) * Math.PI / 180;
-                var dLon = (p2.lon - p1.lon) * Math.PI / 180;
-                var a = Math.sin (dLat / 2) * Math.sin (dLat / 2) +
-                    Math.cos (p1.lat * Math.PI / 180) * Math.cos (p2.lat * Math.PI / 180) *
-                    Math.sin (dLon / 2) * Math.sin (dLon / 2);
-                var c = 2 * Math.atan2 (Math.sqrt (a), Math.sqrt (1 - a));
-                var d = R * c;
-                return d;*/
             };
             
             var getPointsInterval = function (p1, p2, report) {
