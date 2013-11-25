@@ -479,7 +479,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     map: map
                 });
 
-
     // console.log('data=', angular.copy(data));
                 if (data.select) {
                     var start = data.select.start_index;
@@ -514,28 +513,46 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     if (select) {
                         select.setPath([]);
                     }
-                    if (scope.config.autobounds) {
+                    if (scope.config.autobounds && !data.update) {
                         map.fitBounds(data.bounds);
                     }
                 }
                 eventmarker.setData(data.events);
             };
-
-            // TODO. Не нравится мне чтото это. Заменить бып на событие.
-            scope.$watch('track', function(data) {
-                if (path) {
-                    path.setMap(null);
-                    path = null;
-                    eventmarker.setData([]);
-                }
-                if ((data === null) || (data.points.length === 0)) {
-                    if (select) {
-                        select.setPath([]);
+            if (scope.delegat) {
+                scope.delegat.setTrack = function(data) {
+                    if (path) {
+                        path.setMap(null);
+                        path = null;
+                        eventmarker.setData([]);
                     }
-                    return;
-                }
-                showTrack(data);
-            }, true);
+                    if ((data === null) || (data.points.length === 0)) {
+                        if (select) {
+                            select.setPath([]);
+                        }
+                        return;
+                    }
+                    //console.log("setTrack");
+                    showTrack(data);
+                };
+            } else {
+                // TODO. Не нравится мне чтото это. Заменить бып на событие.
+                scope.$watch('track', function(data) {
+                    if (path) {
+                        path.setMap(null);
+                        path = null;
+                        eventmarker.setData([]);
+                    }
+                    if ((data === null) || (data.points.length === 0)) {
+                        if (select) {
+                            select.setPath([]);
+                        }
+                        return;
+                    }
+                    console.log("watch track");
+                    showTrack(data);
+                }, true);
+            }
 
             var lastmarker = new LastMarker(map);
 
@@ -616,6 +633,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 center:  '=',
                 account: '=',
                 systems: '=',
+                delegat: '=',
                 onHide: '&',
                 sfilter: '=sfilter'
             },
