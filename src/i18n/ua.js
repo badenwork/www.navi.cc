@@ -105,7 +105,8 @@ angular.module('i18n.ua', ['pascalprecht.translate'])
             'Report options': 'Параметри звіту',
             'Full template': 'Повний шаблон',
             'Note': 'Примітка',
-            'cFLa': 'Витрачено палива (аналітично)'
+            'cFLa': 'Витрачено палива (аналітично)',
+            'report in': 'Звіт у форматі'
         });
     }
 ]);

@@ -65,6 +65,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         $scope.account = account;
         $scope.systems = systems;
         $scope.track = null;
+        $scope.mapDelegat = {};
 
         var date;
         var hourfrom;
@@ -177,6 +178,8 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             GeoGPS.getTrack(hourfrom, hourfrom + 23)
                 .then(function(data) {
                     $scope.track = data;
+                    if ($scope.mapDelegat.setTrack)
+                        $scope.mapDelegat.setTrack (data);
                     $scope.myPagingFunction();
 
                     if(0) xlsxdoc(data);

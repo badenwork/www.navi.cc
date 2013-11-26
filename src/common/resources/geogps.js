@@ -222,14 +222,14 @@ angular.module('resources.geogps', [])
                         }
                     }
 
-                    if(prevpoint){
-                        var d = distance(point, prevpoint);
-                        if(d > 4.0){
-                            window.console.log(d, new Date(point.dt * 1000));
-                            continue;
-                        }
-                    }
-                    prevpoint = point;
+                    // if(prevpoint){
+                    //     var d = distance(point, prevpoint);
+                    //     if(d > 4.0){
+                    //         window.console.log(d, new Date(point.dt * 1000));
+                    //         continue;
+                    //     }
+                    // }
+                    // prevpoint = point;
 
                     if (bounds === null) {
                         bounds = new google.maps.LatLngBounds(gpoint, gpoint);

@@ -104,7 +104,8 @@ angular.module('i18n.pl', ['pascalprecht.translate'])
             'Report options': 'Zgłoś Opcje',
             'Full template': 'Pełny szablon',
             'Note': 'Uwaga',
-            'cFLa': 'Zostały wypalone paliwo (analitycznie)'
+            'cFLa': 'Zostały wypalone paliwo (analitycznie)',
+            'report in': 'Raport w'
         });
     }
 ]);

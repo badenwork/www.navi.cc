@@ -97,7 +97,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             }
             return report;
         };
-        var getXLSXDownloadLink = function (report) {
+        var getReportTables = function (report) {
             var row, line, i, j, str;
             var mHeaders = [$filter("translate")('event')];
             for (i = 0; i < report.reportData.mHeaders.length; i++) {
@@ -138,12 +138,63 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 }
                 summaryReport.push (line);
             }
+            return {mainReport: mainReport, summaryReport: summaryReport};
+        };
+        var doubleArrayToCSV = function (arr) {
+            var csv = "";
+            var sep = "";
+            for (var i = 0; i < arr.length; i++) {
+                sep = "";
+                for (var j = 0; j < arr [i].length; j++) {
+                    csv += sep + arr [i][j];
+                    sep = ";";
+                }
+                csv += "\n";
+            }
+            return csv;
+        };
+        var getPDFDownloadLink = function () {
+            //TODO: проблемы с русской кодировкой...
+            /*var doc = new jsPDF ();
+            // We'll make our own renderer to skip this editor
+            var specialElementHandlers = {
+                '#downloadLink': function(element, renderer){
+                    return true;
+                }
+            };
+            
+            // All units are in the set measurement for the document
+            // This can be changed to "pt" (points), "mm" (Default), "cm", "in"
+            var renderEl = $('#report');
+            doc.fromHTML(renderEl.get(0), 15, 15, {
+                'width': 170, 
+                'elementHandlers': specialElementHandlers
+            });
+            doc.save('Test.pdf');*/
+        };
+        var getCSVDownloadLink = function (reportTables) {
+            //var fullReportCSV = "data:text/csv;charset=utf-8,";
+            var fullReportCSV = "\uFEFF"; //Необходим что бы JavaScript определял текст как UTF8 with BOM
+            var mainReportCSV = doubleArrayToCSV (reportTables.mainReport);
+            var summaryReportCSV = doubleArrayToCSV (reportTables.summaryReport);
+            
+            fullReportCSV += mainReportCSV;
+            fullReportCSV += "\n\n\n\n\n\n\n\n\n";
+            fullReportCSV += summaryReportCSV;
+            
+            var URL = window.URL || window.webkiURL;
+            var blob = new Blob([fullReportCSV],{type:"text/plain;charset=UTF-8"});
+            var url = URL.createObjectURL(blob);
+            //var url = encodeURI(fullReportCSV);
+            return url;
+        };
+        var getXLSXDownloadLink = function (reportTables) {     
             var sheet = xlsx({
                 worksheets: [{
-                    data: mainReport,
+                    data: reportTables.mainReport || [],
                     name: $filter("translate")('Main report')
                 }, {
-                    data: summaryReport,
+                    data: reportTables.summaryReport || [],
                     name: $filter("translate")('Summary report')
                 }]
             });
@@ -162,9 +213,12 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
         };
         Reports.getSingleReportDowloadData = function (report) {
             var interval = Reports.getReportInterval (report);
-            var fileName = report.systemName + '_' + interval.start + '_' + interval.stop + '.xlsx';
-            var link = getXLSXDownloadLink (report);
-            return { fileName: fileName, link: link };
+            var fileName = report.systemName + '_' + interval.start + '_' + interval.stop;
+            var reportTables = getReportTables (report);
+            var link = getXLSXDownloadLink (reportTables);
+            var CSVlink = getCSVDownloadLink (reportTables);
+            var PDFlink = getPDFDownloadLink ();
+            return { fileName: fileName + '.xlsx', link: link, CSVfileName: fileName + '.csv', CSVlink: CSVlink, PDFfileName: fileName + '.pdf', PDFlink: PDFlink};
         };
         Reports.downloadReport = function (report) {
             var data = Reports.getSingleReportDowloadData (report);
@@ -182,7 +236,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             var formatPosition = function (report, index, coordinatesIndex) {
                 if (index === report.reportData.mRows.length || report.reportData.mRows.length === 0) {
                     report.reportData.addressesIsReady = true;
-                    report.dowloadData = Reports.getSingleReportDowloadData ($scope.report);
+                    report.dowloadData = Reports.getSingleReportDowloadData (report);
                     return;
                 }
                 var eventType = report.reportData.mRows [index].event;
@@ -197,8 +251,24 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         if (status == google.maps.GeocoderStatus.OK) {
                             var address = '';
                             var parts = results [0].address_components;
+                            var sep = "";
+                            var types = {
+                                country :'',                //страна
+                                locality:'',                //город
+                                //sublocality :'',
+                                street_number:'',           //номер дома
+                                //establishment:'',
+                                route:'',                   //улица
+                                /*postal_code:'',
+                                administrative_area_level_1:'',
+                                administrative_area_level_2:'',
+                                administrative_area_level_3:''*/
+                            };
                             for (var i = parts.length - 1; i >= 0; --i) {
-                                address += parts [i].long_name + ((i === 0) ? '' : ', ');
+                                if (parts [i].types[0] in types) {
+                                    address += sep + parts [i].long_name;
+                                    sep = ", ";
+                                }
                             }
                             var item = report.reportData.mRows [index].columns [coordinatesIndex] = address;
                             setTimeout(function() {
@@ -228,15 +298,6 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
             };
             var pointToPointDistance = function (p1, p2) {
                 return GeoGPS.distance (p1, p2);
-                /*var R = 6371; // km (change this constant to get miles)
-                var dLat = (p2.lat - p1.lat) * Math.PI / 180;
-                var dLon = (p2.lon - p1.lon) * Math.PI / 180;
-                var a = Math.sin (dLat / 2) * Math.sin (dLat / 2) +
-                    Math.cos (p1.lat * Math.PI / 180) * Math.cos (p2.lat * Math.PI / 180) *
-                    Math.sin (dLon / 2) * Math.sin (dLon / 2);
-                var c = 2 * Math.atan2 (Math.sqrt (a), Math.sqrt (1 - a));
-                var d = R * c;
-                return d;*/
             };
             
             var getPointsInterval = function (p1, p2, report) {
@@ -399,12 +460,12 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     switch (template.mD [i]) {
                         case 'c': row.columns.push (row_fullData.coordinates); break;
                         case 'i': row.columns.push (row_fullData.interval); break;
-                        case 'cFLa': row.columns.push (row_fullData.fuelChanges_analytically); break;
-                        case 'cFL': if (systemParams.hasFuelSensor) row.columns.push (row_fullData.fuelChanges); break;
-                        case 'fL': if (systemParams.hasFuelSensor) row.columns.push (row_fullData.fuelLevel); break;
+                        case 'cFLa': row.columns.push (row_fullData.fuelChanges_analytically.toLocaleString()); break;
+                        case 'cFL': if (systemParams.hasFuelSensor) row.columns.push (row_fullData.fuelChanges.toLocaleString()); break;
+                        case 'fL': if (systemParams.hasFuelSensor) row.columns.push (row_fullData.fuelLevel.toLocaleString()); break;
                         case 'd': row.columns.push (row_fullData.duration); break;
-                        case 'aS': row.columns.push (row_fullData.averageSpeed); break;
-                        case 'dT': row.columns.push (row_fullData.travelDistance); break;
+                        case 'aS': row.columns.push (row_fullData.averageSpeed.toLocaleString()); break;
+                        case 'dT': row.columns.push (row_fullData.travelDistance.toLocaleString()); break;
                         default: continue;
                     }
                 }
@@ -605,15 +666,15 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         return sRow;
                     };
                     var summary_row_full = [];
-                    summary_row_full.totalTraveledDistance = calculateTotalTraveledDistance (ranges, points, systemParams) + ' км';
+                    summary_row_full.totalTraveledDistance = calculateTotalTraveledDistance (ranges, points, systemParams).toLocaleString() + ' км';
                     summary_row_full.totalTraveledTime = humanizeMiliseconds (calculateTotalTraveledTime (ranges, points, systemParams));
                     summary_row_full.totalStopedTime = humanizeMiliseconds (calculateTotalStopedTime (ranges, points, systemParams));
-                    summary_row_full.maxSpeed = Math.round (calculateMaxSpeed (ranges, points, systemParams)) + ' км/ч';
-                    summary_row_full.totalAverageSpeed = calculateTotalAverageSpeed (ranges, points, systemParams) + ' км/ч';
-                    summary_row_full.fuelConsumption_sensor = calculateFuelConsumption_sensor (ranges, points, systemParams) + ' л';
-                    summary_row_full.fuelConsumption_analytically = calculateFuelConsumption_analytically (ranges, points, systemParams) + ' л';
-                    summary_row_full.totalDrainFuel = calculateTotalDrainFuel (ranges, points, systemParams) + ' л';
-                    summary_row_full.totalRefueling = calculateTotalRefueling (ranges, points, systemParams) + ' л';
+                    summary_row_full.maxSpeed = Math.round (calculateMaxSpeed (ranges, points, systemParams)).toLocaleString() + ' км/ч';
+                    summary_row_full.totalAverageSpeed = calculateTotalAverageSpeed (ranges, points, systemParams).toLocaleString() + ' км/ч';
+                    summary_row_full.fuelConsumption_sensor = calculateFuelConsumption_sensor (ranges, points, systemParams).toLocaleString() + ' л';
+                    summary_row_full.fuelConsumption_analytically = calculateFuelConsumption_analytically (ranges, points, systemParams).toLocaleString() + ' л';
+                    summary_row_full.totalDrainFuel = calculateTotalDrainFuel (ranges, points, systemParams).toLocaleString() + ' л';
+                    summary_row_full.totalRefueling = calculateTotalRefueling (ranges, points, systemParams).toLocaleString() + ' л';
                     for (i = 0; i < template.sE.length; i++) {
                         var sRow_final = getSummaryRow (template.sE [i], systemParams);
                         if (sRow_final) {

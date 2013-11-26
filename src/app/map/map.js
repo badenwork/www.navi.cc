@@ -52,6 +52,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
         $scope.day = $routeParams.day || 0;
         $scope.track = null;
         $scope.points = 0;
+        $scope.mapDelegat = {};
 
         var dp = $('#datepicker').datepicker({
             language: i18n.shortLang(),
@@ -76,6 +77,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 });
                 $location.search(params);
                 $location.replace();
+                $scope.updateTrack ();
             });
         });
 
@@ -116,33 +118,51 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
 
             GeoGPS.getTrack(hourfrom, hourfrom + 23) // +23? не 24?
             .then(function(data) {
+                data.update = !!$scope.isUpdate;
+                if ($scope.mapDelegat.setTrack)
+                    $scope.mapDelegat.setTrack (data);
                 $scope.track = data;
                 $scope.points = data.track.length;
                 $scope.timeline = data.ranges;
-            });
+            });   
         };
-
-        if ($scope.skey) {
+        var loadTrack = function () {
+            $scope.isUpdate = false;
             load_date();
             gettrack();
+        };
+        
+        var updateTrack = function () {
+            //console.log("updateTrack");
+            $scope.isUpdate = true;
+            load_date();
+            gettrack();
+        };
+        $scope.updateTrack = updateTrack;
+        if ($scope.skey) {
+            loadTrack ();
         }
-
+        
+        
         $scope.$on('$routeUpdate', function() {
             $scope.skey = $routeParams.skey;
             $scope.day = $routeParams.day;
-            load_date();
-            gettrack();
+            loadTrack ();
         });
 
         $scope.onSelect = function(skey) {
             if (angular.isUndefined(skey)) return;
 
             var s = systems[skey];
+            if ($scope.skey === skey) {
+                $scope.updateTrack ();
+            }
             $scope.skey = skey;
             var params = angular.copy($routeParams);
             angular.extend(params, {
                 skey: skey
             });
+            
             $location.search(params);
             if (s.dynamic && s.dynamic.latitude && s.dynamic.longitude) {
                 $scope.center = {

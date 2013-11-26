@@ -106,7 +106,8 @@ angular.module('i18n.ru', ['pascalprecht.translate'])
             'Report options': 'Параметры отчета',
             'Full template': 'Полный шаблон',
             'Note': 'Примечание',
-            'cFLa': 'Израсходовано топлива (аналитически)'
+            'cFLa': 'Израсходовано топлива (аналитически)',
+            'report in': 'Отчет в формате'
         });
     }
 ]);
