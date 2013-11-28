@@ -215,7 +215,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             //mapTypeIds.push('Google');
             // mapTypeIds.push('Quest');
 
-            var maxZoom = (window.localStorage.getItem('map.maxZoom') || '17') | 0; //TODO: window.localStorage.getItem('map.maxZoom') значение пустое и всегда возвращает значение по умолчанию а 16 мало для гугловских карт
+            var maxZoom = (window.localStorage.getItem('map.maxZoom') || '19') | 0; //TODO: window.localStorage.getItem('map.maxZoom') значение пустое и всегда возвращает значение по умолчанию а 16 мало для гугловских карт
 
             // var latlng = new google.maps.LatLng(48.397, 34.644);
             var myOptions = {
