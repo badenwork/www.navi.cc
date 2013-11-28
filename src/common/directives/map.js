@@ -530,6 +530,8 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                         if (select) {
                             select.setPath([]);
                         }
+                        pointmarkers.hideInfo();
+                        pointmarkers.setData ([]);
                         return;
                     }
                     //console.log("setTrack");
@@ -596,10 +598,12 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             scope.hideTrack = function(){
                 // console.log('gmap:hideTrack');
+                
                 scope.track.track = [];
                 scope.track.points = [];
                 scope.track.ranges = [];
-
+                //if (scope.delegat)
+                    //scope.delegat.setTrack (scope.track);
                 scope.onHide();
 
                 // $scope.track.track = [];

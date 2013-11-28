@@ -111,7 +111,11 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
         };
 
         var gettrack = function() {
-            if (angular.isUndefined($scope.day)) return;
+            if (angular.isUndefined($scope.day)) {
+                if ($scope.mapDelegat.setTrack)
+                    $scope.mapDelegat.setTrack (null);
+                return;
+            }
 
             var tz = (new Date()).getTimezoneOffset() / 60;
             var hourfrom = $scope.day * 24 + tz;
