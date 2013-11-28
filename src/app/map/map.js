@@ -128,14 +128,14 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 $scope.track = data;
                 $scope.points = data.track.length;
                 $scope.timeline = data.ranges;
-            });   
+            });
         };
         var loadTrack = function () {
             $scope.isUpdate = false;
             load_date();
             gettrack();
         };
-        
+
         var updateTrack = function () {
             //console.log("updateTrack");
             $scope.isUpdate = true;
@@ -146,8 +146,8 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
         if ($scope.skey) {
             loadTrack ();
         }
-        
-        
+
+
         $scope.$on('$routeUpdate', function() {
             $scope.skey = $routeParams.skey;
             $scope.day = $routeParams.day;
@@ -166,7 +166,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             angular.extend(params, {
                 skey: skey
             });
-            
+
             $location.search(params);
             if (s.dynamic && s.dynamic.latitude && s.dynamic.longitude) {
                 $scope.center = {
@@ -185,6 +185,9 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 } else {
                     $scope.track.select = d;
                 }
+
+                if ($scope.mapDelegat.setTrack)
+                    $scope.mapDelegat.setTrack ($scope.track);
             });
         };
 
