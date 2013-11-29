@@ -235,6 +235,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             var map_element = element.find('.gmap-container');
             // console.log('map_element=', map_element);
             var map = new google.maps.Map(map_element[0], myOptions);
+
             // console.log('scope=', scope);
             // scope.gmap(map);
             scope.map = map;
@@ -538,7 +539,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                         pointmarkers.setData ([]);
                         return;
                     }
-                    google.maps.event.trigger(map, "resize");
                     showTrack(data);
              });
 
@@ -594,8 +594,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 // $scope.track.points = [];
                 // $scope.track.ranges = [];
             };
-
-
             // '<div class='map-search'>'
             //     '<div class='input-group'>'
             //         '<span class='input-group-addon'><i class='icon-search icon-large'></i></span>'

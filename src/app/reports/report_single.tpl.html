@@ -27,8 +27,8 @@ table td.td_i {
 .showMap_btn {
     margin-left: 15px;    
 }
-.hidden {
-    z-index: -1;
+.hidden_map {
+    top: -110%;
 }
 </style>
 
@@ -98,7 +98,7 @@ table td.td_i {
 <div id="loader" ng-hide="report.ready">
     <i class="icon-refresh icon-4x icon-spin"></i>
 </div>
-<div ng-class="{hidden: mapShow === false}" class="mapContainer">
+<div ng-class="{hidden_map: mapShow === false}" class="mapContainer">
     <div class="report_map">
         <gmap track="track" config="mapconfig" center="center" ></gmap>
     </div>
