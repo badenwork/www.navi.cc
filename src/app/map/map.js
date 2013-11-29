@@ -52,7 +52,6 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
         $scope.day = $routeParams.day || 0;
         $scope.track = null;
         $scope.points = 0;
-        $scope.mapDelegat = {};
 
         var dp = $('#datepicker').datepicker({
             language: i18n.shortLang(),
@@ -112,8 +111,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
 
         var gettrack = function() {
             if (angular.isUndefined($scope.day)) {
-                if ($scope.mapDelegat.setTrack)
-                    $scope.mapDelegat.setTrack (null);
+                $scope.$broadcast('setTrack', null);
                 return;
             }
 
@@ -123,8 +121,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             GeoGPS.getTrack(hourfrom, hourfrom + 23) // +23? не 24?
             .then(function(data) {
                 data.update = !!$scope.isUpdate;
-                if ($scope.mapDelegat.setTrack)
-                    $scope.mapDelegat.setTrack (data);
+                $scope.$broadcast('setTrack', data);
                 $scope.track = data;
                 $scope.points = data.track.length;
                 $scope.timeline = data.ranges;

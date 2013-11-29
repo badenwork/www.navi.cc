@@ -523,9 +523,9 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 }
                 eventmarker.setData(data.events);
             };
-            if (scope.delegat) {
-                scope.delegat.setTrack = function(data) {
-                    if (path) {
+            
+             scope.$on('setTrack', function(event, data) { 
+                 if (path) {
                         path.setMap(null);
                         path = null;
                         eventmarker.setData([]);
@@ -538,27 +538,9 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                         pointmarkers.setData ([]);
                         return;
                     }
-                    //console.log("setTrack");
+                    google.maps.event.trigger(map, "resize");
                     showTrack(data);
-                };
-            } else {
-                // TODO. Не нравится мне чтото это. Заменить бып на событие.
-                scope.$watch('track', function(data) {
-                    if (path) {
-                        path.setMap(null);
-                        path = null;
-                        eventmarker.setData([]);
-                    }
-                    if ((data === null) || (data.points.length === 0)) {
-                        if (select) {
-                            select.setPath([]);
-                        }
-                        return;
-                    }
-                    console.log("watch track");
-                    showTrack(data);
-                }, true);
-            }
+             });
 
             var lastmarker = new LastMarker(map);
 
@@ -606,8 +588,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 scope.track.track = [];
                 scope.track.points = [];
                 scope.track.ranges = [];
-                //if (scope.delegat)
-                    //scope.delegat.setTrack (scope.track);
                 scope.onHide();
 
                 // $scope.track.track = [];

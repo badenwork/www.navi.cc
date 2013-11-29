@@ -37,16 +37,14 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
         $scope.updateDowloadLink = function () {  
             
         };
-        $scope.mapDelegat = {
-            mapconfig: {
+        $scope.mapconfig = {
                 autobounds: true, // Автоматическая центровка трека при загрузке
                 animation: false, // Анимация направления трека
                 numbers: true, // Нумерация стоянок/остановок
                 centermarker: true
-            },
-            track: null,
-            center: null
-        };
+            };
+        $scope.track = null;
+        $scope.center = null;
         $scope.mapShow = false;
         
         var createTrack = function (row) {
@@ -79,9 +77,9 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
             } else {
                 track = createTrack (row);
             }
-            $scope.mapDelegat.track = track;
-            $scope.mapDelegat.setTrack (track);
+            $scope.track = track;
             $scope.mapShow = true;
+            $scope.$broadcast('setTrack', track);
         };
         $scope.hideMap = function () {
             $scope.mapShow = false;
