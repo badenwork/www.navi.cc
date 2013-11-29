@@ -160,7 +160,7 @@ angular.module('resources.geogps', [])
 
         //если нужно убрать получение данных на correctFromHours часов назад то установить cleared в true а correctFromHours в 0
         var correctFromHours = 120;
-        
+////////////////////////////////////////////////////////////////////        
         GeoGPS.getPointsFromPoints = function (points, startIndex, stopIndex) {
             var ret_points = [];
             if (points) {
@@ -208,6 +208,71 @@ angular.module('resources.geogps', [])
             return bounds;
         };
         
+        GeoGPS.getRangesFromPoints = function (points, startIndex, stopIndex) {
+            var ranges = [];
+            if (points) {
+                if (!startIndex)
+                    startIndex = 0;
+                if (!stopIndex)
+                    stopIndex = points.length;
+                var stop_start = null;
+                var move_start = null;
+                var i = startIndex;
+                for (; i < stopIndex; i++) {
+                    var point = points [i];
+                    if (isStop (point.fsource)) {
+                        if (stop_start === null) {
+                            stop_start = i;
+                        }
+                        if (move_start !== null) {
+                            ranges.push({
+                                type: 'MOVE', // Движение
+                                start_index: move_start,
+                                start: points [move_start],
+                                stop_index: i,
+                                stop: points [i]
+                            });
+                            move_start = null;   
+                        }
+                    } else {
+                        if (move_start === null) {
+                            move_start = i;   
+                        }
+                        if (stop_start !== null) {
+                            ranges.push({
+                                type: 'STOP', // Остановка
+                                start_index: stop_start,
+                                start: points [stop_start],
+                                stop_index: i,
+                                stop: points [i]
+                            });
+                            stop_start = null;
+                        }
+                    }
+                }
+                if (stop_start !== null) {
+                    ranges.push({
+                        type: 'STOP', // Остановка
+                        start_index: stop_start,
+                        start: points [stop_start],
+                        stop_index: i - 1,
+                        stop: points [i - 1]
+                    });
+                    stop_start = null;
+                }
+                if (move_start !== null) {
+                    ranges.push({
+                        type: 'MOVE', // Движение
+                        start_index: move_start,
+                        start: points [move_start],
+                        stop_index: i - 1,
+                        stop: points [i - 1]
+                    });
+                    move_start = null;   
+                }
+            }
+            return ranges;
+        };
         
         
         GeoGPS.getEventsFromPoints = function (points, startIndex, stopIndex, system) {
@@ -271,8 +336,143 @@ angular.module('resources.geogps', [])
             }
             return events;
         };
+            
+        var clearStopPointsCoordinates = function (points) {
+            var stop_start = null;
+            for (var i = 0; i < points.length; i++) {
+                var point = points [i];
+                if (isStop  (point.fsource)) {
+                    if (stop_start === null) {
+                        stop_start = i;
+                    } else {
+                        point.lat = points[stop_start].lat;
+                        point.lon = points[stop_start].lon;
+                    }
+                } else {
+                    stop_start = null;
+                }
+            }
+        };
+        
+        var transferStopPoint = function (points, hoursFrom, offset) {
+            var points_ret = [];
+            var i = 0;
+            var stopPoint = null;
+            for (; i < points.length; i++) {
+                    var hour = ~~ (points [i].dt / 3600);
+                    if (hour > hoursFrom + offset) {
+                        if (stopPoint !== null) {
+                            points [i].lat = stopPoint.lat;
+                            points [i].lon = stopPoint.lon;
+                            break;
+                        }
+                    } else {
+                        if (isStop (points [i].fsource)) {
+                             if (stopPoint === null) {
+                                 stopPoint = points [i];
+                             }
+                        } else {
+                            stopPoint = null;
+                        }                        
+                    }
+            }
+            return GeoGPS.getPointsFromPoints (points, i, points.length);
+        };
+        
+        var updatePointsFuel = function (points) {
+            var fuelscale = System.$fuelscale(skey);
+            for (var i = 0; i < points.length; i++) {
+             if(points [i] !== null && points [i].fuel) {
+                    points [i].fuel = fuelscale (points [i].fuel);
+                }   
+            }
+        };
+        
+        var removeShortTrips = function (points, minTripTime) {
+            console.log ("minTripTime : ", minTripTime);
+            var points_ret = [];
+            var move_start = null;
+            var lastInsertPointIndex = 0;
+            var insertPoints = function (pointIndex) {
+                for (var j = lastInsertPointIndex; j <= pointIndex; j++) {
+                    points_ret.push (points [j]);
+                }
+                lastInsertPointIndex = pointIndex ;
+            };
+            for (var i = 0; i < points.length; i++) {
+                var point = points [i];
+                if (!isStop (point.fsource)) {
+                    if (move_start === null) {
+                        move_start = i;
+                    }
+                } else {
+                    if (move_start !== null) {
+                        if (minTripTime < (points [i].dt - points [move_start].dt)) {
+                            insertPoints (i - 1);
+                        } else {
+                            lastInsertPointIndex = i - 1;
+                        }
+                        move_start = null;
+                    }
+                }
+            }
+            return points_ret;
+        };
+        
+        GeoGPS.getHoursFromPoints = function (points, startIndex, stopIndex) {
+            var hours = {};
+            var min_hour = 1e15;
+            var max_hour = 0;
+            if (points) {
+                if (!startIndex)
+                    startIndex = 0;
+                if (!stopIndex)
+                    stopIndex = points.length;
+                for (var i = startIndex; i < stopIndex; i++) {
+                    var hour = ~~ (points [i].dt / 3600);
+                    if (hour < min_hour) min_hour = hour;
+                    if (hour > max_hour) max_hour = hour;
+                    hours[hour] = (hours[hour] || 0) + 1;  
+                }
+            }
+            return hours;
+        };
+            
+////////////////////////////////////////////////////////////////////
+        var bingpsparse_2 = function (array, hoursFrom, offset) {
+            var points = [];
+            for (var i = 0; i < array.length; i += 32) {
+                var point = parse_onebin(array.subarray(i, i + 32));
+                if (point) {
+                    points.push(point);
+                }
+            }
+            var system = System.cached(skey);
+            var minTripSeconds = 180;
+            if (system && system.car && system.car.minMoveTime)
+                minTripSeconds = system.car.minMoveTime * 60;
+            points = transferStopPoint (points, hoursFrom, offset);
+            points = removeShortTrips (points, minTripSeconds);
+            clearStopPointsCoordinates (points);
+            updatePointsFuel (points);
+            var events = GeoGPS.getEventsFromPoints (points, 0, points.length, system);
+            var bounds = GeoGPS.getBoundsFromPoints (points, 0, points.length);
+            var track = GeoGPS.getTrackFromPoints (points, 0, points.length);
+            var ranges = GeoGPS.getRangesFromPoints (points, 0, points.length);
+            var hours = GeoGPS.getHoursFromPoints (points, 0, points.length);
+            return {
+                track: track,
+                bounds: bounds,
+                points: points,
+                min_hour: hours [0] || 0,
+                max_hour: hours [hours.length - 1] || 1e15,
+                hours: hours,
+                events: events,
+                ranges: ranges
+            };
+        };
 
-
+////////////////////////////////////////////////////////////////////
         var bingpsparse = function(array, hoursFrom, offset) {
             // console.log('parse');
             var track = [];
@@ -579,7 +779,7 @@ angular.module('resources.geogps', [])
                 // var parsed = bingpsparse(uInt8Array);
                 // console.log('parsed=', parsed);
                 // parsed.constants = parsed.constants || {skey: skey};
-                defer.resolve(bingpsparse(uInt8Array, hourfrom, correctFromHours));
+                defer.resolve(bingpsparse_2(uInt8Array, hourfrom, correctFromHours));
             }).error(function(data, status) {
                 window.console.error('GeoGPS.getTrack.error', data, status);
             });

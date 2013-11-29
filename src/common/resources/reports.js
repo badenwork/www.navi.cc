@@ -570,7 +570,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         }
                     }
                     
-                    if (!skipMainRow (prevMainRow, template)) {
+                    if (prevMainRow && !skipMainRow (prevMainRow, template)) {
                         var row = getMainRow (prevMainRow, template, systemParams);
                         mRows.push (row);
                     }
