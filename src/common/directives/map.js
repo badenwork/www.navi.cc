@@ -171,7 +171,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 .directive('gmap', ['Connect', 'EventMarker', 'LastMarker', 'PointMarker', 'GeoGPS',
     function(Connect, EventMarker, LastMarker, PointMarker, GeoGPS) {
         // 'use strict';
-
+        
         // TODO! Необходима унификация для поддержки как минимум Google Maps и Leaflet
 
         var link = function(scope, element) {
@@ -416,7 +416,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             var mouseMove = function(event){
 
-                if ((scope.track === null) || (scope.track.points.length === 0)) return null;
+                if ((scope.track === null) || (scope.track.points.length === 0 )) return null;
 
                 var point = {lat: event.latLng.lat(), lon: event.latLng.lng()};
                 // console.log('mousemove', event);
@@ -454,6 +454,10 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 //     scope.infowindow.close();
                 // updatePoints(data.points);
                 pointmarkers.hideInfo();
+                if (!data) {
+                    eventmarker.setData([]);
+                    return;
+                }
 
                 quadtree = GeoGPS.initQuadtree(data.points);
                 // console.dir(quadtree);
@@ -618,7 +622,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             //         '<input type='text' class='form-control' google-maps-search='bounds'>'
             //     '</div>'
             // '</div>'
-
         };
 
         return {

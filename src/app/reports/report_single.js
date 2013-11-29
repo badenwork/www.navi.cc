@@ -37,18 +37,68 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
         $scope.updateDowloadLink = function () {  
             
         };
+        $scope.mapDelegat = {
+            mapconfig: {
+                autobounds: true, // Автоматическая центровка трека при загрузке
+                animation: false, // Анимация направления трека
+                numbers: true, // Нумерация стоянок/остановок
+                centermarker: true
+            },
+            track: null,
+            center: null
+        };
+        $scope.mapShow = false;
         
+        var createTrack = function (row) {
+            var track = {};
+            var points = $scope.report.reportData.track.points;
+            var startIndex = 0;
+            var stopIndex = points.length;
+            if (row) {
+                startIndex = row.data.start_index;
+                stopIndex = row.data.stop_index;
+                /*if ($scope.track && $scope.track.startIndex === startIndex) {
+                    $scope.hideMap ();
+                    return;
+                }*/
+            }
+            var system = $scope.report.system;
+            track.events = GeoGPS.getEventsFromPoints (points, startIndex, stopIndex, system);
+            track.track = GeoGPS.getTrackFromPoints (points, startIndex, stopIndex);
+            track.points = GeoGPS.getPointsFromPoints (points, startIndex, stopIndex);
+            track.bounds = GeoGPS.getBoundsFromPoints (points, startIndex, stopIndex);
+            return track;
+        };
+        
+        $scope.showMap = function (row) {
+            var track = null;
+            if (!row) {
+                if (!$scope.fullTrack)
+                    $scope.fullTrack = createTrack (null);
+                track = $scope.fullTrack;
+            } else {
+                track = createTrack (row);
+            }
+            $scope.mapDelegat.track = track;
+            $scope.mapDelegat.setTrack (track);
+            $scope.mapShow = true;
+        };
+        $scope.hideMap = function () {
+            $scope.mapShow = false;
+        };
         Reports.completeSingleReport ($scope.report);
         //TODO: оптимизировать
         var updateUI = function (miliseconds) {
             setTimeout (function () {
-                $scope.$apply (function () {
-                    if (report.reportData.addressesIsReady) {
-                        report.dowloadData = Reports.getSingleReportDowloadData ($scope.report);
-                        return;
-                    }
-                    updateUI (miliseconds);
-                });
+                if (report.ready) {
+                    $scope.$apply (function () {
+                        if (report.reportData.addressesIsReady) {
+                            report.dowloadData = Reports.getSingleReportDowloadData ($scope.report);
+                            return;
+                        }
+                    });
+                }
+                updateUI (miliseconds);
             }, miliseconds);
         };
         updateUI (1000); // Не самое элегантное решение но пока не знаю как заставить оюновлять таблицу при изменении её значений

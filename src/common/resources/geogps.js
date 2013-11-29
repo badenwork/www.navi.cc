@@ -160,6 +160,117 @@ angular.module('resources.geogps', [])
 
         //если нужно убрать получение данных на correctFromHours часов назад то установить cleared в true а correctFromHours в 0
         var correctFromHours = 120;
+        
+        GeoGPS.getPointsFromPoints = function (points, startIndex, stopIndex) {
+            var ret_points = [];
+            if (points) {
+                if (!startIndex)
+                    startIndex = 0;
+                if (!stopIndex)
+                    stopIndex = points.length;
+                for (var i = startIndex; i < stopIndex; i++) {
+                    ret_points.push (points [i]);   
+                }
+            }
+            return ret_points;
+        };
+        
+        GeoGPS.getTrackFromPoints = function (points, startIndex, stopIndex) {
+            var track = [];
+            if (points) {
+                if (!startIndex)
+                    startIndex = 0;
+                if (!stopIndex)
+                    stopIndex = points.length;
+                for (var i = startIndex; i < stopIndex; i++) {
+                    track.push (new google.maps.LatLng (points [i].lat, points [i].lon));   
+                }
+            }
+            return track;
+        };
+        
+        GeoGPS.getBoundsFromPoints = function (points, startIndex, stopIndex) {
+            var bounds = null;
+            if (points) {
+                if (!startIndex)
+                    startIndex = 0;
+                if (!stopIndex)
+                    stopIndex = points.length;
+                for (var i = startIndex; i < stopIndex; i++) {
+                    var gpoint = new google.maps.LatLng (points [i].lat, points [i].lon);
+                    if (bounds === null) {
+                        bounds = new google.maps.LatLngBounds (gpoint, gpoint);
+                    } else {
+                        bounds.extend (gpoint);
+                    } 
+                }
+            }
+            return bounds;
+        };
+        
+        
+        
+        GeoGPS.getEventsFromPoints = function (points, startIndex, stopIndex, system) {
+            var events = [];
+            if (points) {
+                if (!startIndex)
+                    startIndex = 0;
+                if (!stopIndex)
+                    stopIndex = points.length;
+                var gpoint;
+                var point = null;
+                var stop_start = null;
+                var stopTime_minutes = 3;
+                if (system && system.car && system.car.stop) {
+                    stopTime_minutes = system.car.stop | 0;
+                }
+                var stopTime = stopTime_minutes * 60;
+                for (var i = startIndex; i < stopIndex; i++) {
+                    point = points [i];
+                    if (events.length === 0) { // Первая точка
+                        events.push({
+                            point: point,
+                            position: new google.maps.LatLng(point.lat, point.lon),
+                            type: 'START',
+                            index: i
+                        });
+                    }
+                    if (isStop(point.fsource)) {
+                        if (stop_start === null) {
+                            stop_start = i;
+                            events.push({
+                                point: point,
+                                position: new google.maps.LatLng(points[stop_start].lat, points[stop_start].lon),
+                                type: 'STOP', // Стоянка/остановка (тит пока не определен)
+                                index: i
+                            });
+                        }
+                    } else {
+                        if (stop_start !== null) {
+                            var lastevent = events [events.length - 1];
+                            lastevent.end = point;
+                            if (lastevent.type === 'STOP') {
+                                var duration = lastevent.end.dt - lastevent.point.dt;
+                                if (duration < stopTime) {
+                                    lastevent.type = 'HOLD';
+                                }
+                            }
+                        }
+                        stop_start = null;
+                    }
+                }
+                if (events.length > 0) {
+                    
+                    events.push({
+                        point: point,
+                        position: new google.maps.LatLng(point.lat, point.lon),
+                        type: 'FINISH',
+                        index: stopIndex - 1
+                    });
+                }
+            }
+            return events;
+        };
 
 
         var bingpsparse = function(array, hoursFrom, offset) {

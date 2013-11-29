@@ -120,15 +120,6 @@ angular.module('services.lastmarker', ['newgps.services'])
                 .on('click', function(d) {
                     window.console.log('TODO', d3.select(this), d);
                 });
-            // oO жестяк!!! через CSS это делается намного проще (см map.less)
-            // .on('mouseout', function(e){
-            //     var lastM = document.getElementById('lastmarkerID_' + e.key);
-            //     lastM.setAttribute('class','hide');
-            // })
-            // .on('mouseover', function(e){
-            //     var lastM = document.getElementById('lastmarkerID_' + e.key);
-            //     lastM.setAttribute('class','');
-            // });
 
             div.append('i');
             var label = div.append('span')

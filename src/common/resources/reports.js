@@ -686,6 +686,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     report.reportData.sHeaders = sHeaders;
                     report.reportData.sRows = sRows;                
                     report.reportData.addressesIsReady = false;
+                    report.reportData.track = track;
                     convertCoordinatesToAdresses (report);
                     report.dowloadData = Reports.getSingleReportDowloadData (report);
                     report.ready = true;
