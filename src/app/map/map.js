@@ -134,6 +134,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             load_date();
             gettrack();
         };
+
         var dayIsNow = function (day) {
             var date = new Date();
             var tz = (date).getTimezoneOffset() / 60;
@@ -141,6 +142,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             var dayNow = (hourfrom - tz) / 24;
             return day == Math.floor(dayNow);
         };
+
         var updateTrack = function () {
             //console.log("updateTrack");
             
