@@ -159,8 +159,8 @@ angular.module('resources.geogps', [])
 
         // Возвращает true если точка относится к стоянке
         var isStop = function(point) {
-            //return point.type === POINTTYPE.STOP;
-            return $.inArray(point.fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
+            return point.type === POINTTYPE.STOP;
+            //return $.inArray(point.fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
         };
         GeoGPS.isStop = isStop;
 
@@ -478,17 +478,94 @@ angular.module('resources.geogps', [])
         };
         
         var isSlowingPoint = function (point) {
-            return  point.fsource == FSOURCE.SUDDENSTOP;
+            //return  point.fsource == FSOURCE.SUDDENSTOP;
+            //return $.inArray (point.fsource, [FSOURCE.SUDDENSTOP, FSOURCE.STOPACC, FSOURCE.TIMESTOPACC]) == -1;
+            return point.speed < 1;
         };
         
-        var isStopMoving = function (points, index, slowingPointIndex) {
-            var slowingPoint = points [slowingPointIndex];
-            var point = points [index];
-            var nextPoint = points [index + 1] || null;
-            //var nextTimeInterval = (prevPoint) ? nextPoint.dt - point.dt : 0;
-            var accelerometerOn = isAccelerometerOn (point);
-            var motorOn = isMotorOn (point);
+        var isStopMoving = function (slowingPoint, interval_0, interval_1, interval_2) {
+            var i = 0;
+            var minDistance = 0.01;
+            var minDistance_2 = 0.02;
+            //Если в течение 60 сек (программируется) после отправки точки замедления акселерометр не фиксирует сработок - трекер фиксирует точку замедления, как точку стоянки
+            var condition_1 = true;
+            for (;i < interval_0.length; i++) {
+                if (isAccelerometerOn (interval_0 [i])) {
+                    condition_1 = false;
+                    break;
+                }
+            }
+            if (condition_1)
+                return true;
+            //Если в течение 60 сек после отправки точки замедления акселерометр фиксирует сработки, но через 60 сек напряжения бортовой сети оказывается ниже 13,5V (27,0V) - трекер фиксирует точку замедления, как точку стоянки
+            var condition_2 = true;
+            for (i = 0; i < interval_1.length; i++) {
+                if (isMotorOn (interval_1 [i])) {
+                    condition_2 = false;
+                    break;
+                }
+            }
+            if (condition_2)
+                return true;
+            //Если в течение 60 сек после отправки точки замедления акселерометр фиксирует сработки, через 60 сек напряжения бортовой сети не опускается ниже 13,5V (27,0V), но трекер перемещается менее чем на 10 метров (программируется) - трекер фиксирует точку замедления, как точку стоянки
+            var condition_3 = true;
+            for (i = 0; i < interval_1.length; i ++) {
+                if (distance (slowingPoint, interval_1 [i]) < minDistance) {
+                    condition_3 = false;
+                    break;
+                }
+            }
+            if (condition_3)
+                return true;
+            //Если в интервале 60...120 сек после отправки точки замедления акселерометр не фиксирует сработок - трекер фиксирует точку замедления, как точку стоянки
+            var condition_4 = true;
+            for (;i < interval_1.length; i++) {
+                if (isAccelerometerOn (interval_1 [i])) {
+                    condition_4 = false;
+                    break;
+                }
+            }
+            if (condition_4)
+                return true;
+            //Если в интервале 60...120 сек после отправки точки замедления акселерометр фиксирует сработки, но через 120 сек напряжения бортовой сети оказывается ниже 13,5V (27,0V) - трекер фиксирует точку замедления, как точку стоянки
+            var condition_5 = true;
+            for (i = 0; i < interval_2.length; i++) {
+                if (isMotorOn (interval_2 [i])) {
+                    condition_5 = false;
+                    break;
+                }
+            }
+            if (condition_5)
+                return true;
+            //Если в интервале 60...120 сек после отправки точки замедления акселерометр фиксирует сработки, через 120 сек напряжения бортовой сети не опускается ниже 13,5V (27,0V), но трекер перемещается менее чем на 20 метров - трекер фиксирует точку замедления, как точку стоянки
+            var condition_6 = true;
+            for (i = 0; i < interval_2.length; i ++) {
+                if (distance (slowingPoint, interval_2 [i]) < minDistance_2) {
+                    condition_6 = false;
+                    break;
+                }
+            }
+            if (condition_6)
+                return true;
+            
             return false;
+        };
+        
+        var addPointToInterval = function (slowingPoint, point, interval_0, interval_1, interval_2) {
+            var slowingInterval = point.dt - slowingPoint.dt;
+            var zeroInterval = 60;
+            var firstInterval = 120;
+            var secondInterval = 180;
+            if (slowingInterval < zeroInterval) {
+                interval_0.push (point);
+            } else if (slowingInterval >= zeroInterval && slowingInterval < firstInterval) {
+                interval_1.push (point);
+            } else if (slowingInterval >= firstInterval && slowingInterval < secondInterval) {
+                interval_2.push (point);   
+            } else {
+                return false;   
+            }
+            return true;
         };
         
         var setPointType = function (point, type) {
@@ -503,21 +580,21 @@ angular.module('resources.geogps', [])
             pointTo.lat = pointFrom.lat;
             pointTo.lon = pointFrom.lon;
         };
-        
-        var isSlowingToStopInterval = function (slowingPoint, point) {
-            return point.dt - slowingPoint.dt < 121;
-        };
 
         var identifyPointsType = function (points) {
             var slowingPoint = null;
             var stopPoint = null;
             var movePoint = null;
+            var interval_0 = [];
+            var interval_1 = [];
+            var interval_2 = [];
             
             for (var i = 0; i < points.length; i++) {
                 var point = points [i];
                 if (movePoint === null) {
                     if (slowingPoint === null && isStartMoving (points, i)) {
                         movePoint = i;
+                        stopPoint = null;
                         setPointType (point, POINTTYPE.MOVE);
                         continue;
                     }
@@ -527,33 +604,34 @@ angular.module('resources.geogps', [])
                 if (slowingPoint === null && stopPoint === null) {
                     if (isSlowingPoint (point)) {
                         slowingPoint = i;
+                        interval_0 = [];
+                        interval_1 = [];
+                        interval_2 = [];
                         continue;
                     }
                 }
                 if (stopPoint === null) {
                     if (slowingPoint !== null) {
                         var etalonStopPoint = points [slowingPoint];
-                        if (!isSlowingToStopInterval (etalonStopPoint, point)) {
-                            slowingPoint = null;
+                        if (addPointToInterval (etalonStopPoint, interval_0, interval_1, interval_2)) {
                             continue;
                         }
-                        if (isStopMoving (points, i, slowingPoint)) {
+                        if (isStopMoving (etalonStopPoint, interval_0, interval_1, interval_2)) {
                             stopPoint = i;
-                            for (var j = slowingPoint + 1; j < stopPoint; j++) {
+                            for (var j = slowingPoint + 1; j <= stopPoint; j++) {
                                 copyPointParams (etalonStopPoint, points [j]);
                             }
-                            copyPointParams (etalonStopPoint, points [stopPoint]);
                             if (movePoint !== null) {
                                 setPointsType (points, movePoint, slowingPoint, POINTTYPE.MOVE);
                                 setPointsType (points, slowingPoint, stopPoint, POINTTYPE.STOP);
                                 movePoint = null;
                             }
-                            slowingPoint = null;
                         }
+                        slowingPoint = null;
                     } else if (movePoint !== null) {
                         setPointType (point, POINTTYPE.MOVE);
                     }
-                } else {
+                } else if (movePoint === null) {
                     copyPointParams (points [stopPoint], point);
                     setPointType (point, POINTTYPE.STOP);
                 }
@@ -578,7 +656,7 @@ angular.module('resources.geogps', [])
                 if (system.car.minTripDistance)
                     minTripDistance = system.car.minTripDistance;
             }
-            //identifyPointsType (points);
+            identifyPointsType (points);
             points = transferStopPoint (points, hoursFrom, offset);
             points = removeShortTrips (points, minTripSeconds, minTripDistance);
             clearStopPointsCoordinates (points);
