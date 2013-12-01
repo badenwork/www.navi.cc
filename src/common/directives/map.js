@@ -215,7 +215,8 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             //mapTypeIds.push('Google');
             // mapTypeIds.push('Quest');
 
-            var maxZoom = (window.localStorage.getItem('map.maxZoom') || '19') | 0; //TODO: window.localStorage.getItem('map.maxZoom') значение пустое и всегда возвращает значение по умолчанию а 16 мало для гугловских карт
+            // Для установки максимального зума для целей отладки нужно выполнить в консоли: localStorage.setItem('map.maxZoom', 30)
+            var maxZoom = (window.localStorage.getItem('map.maxZoom') || '17') | 0; //TODO: window.localStorage.getItem('map.maxZoom') значение пустое и всегда возвращает значение по умолчанию а 16 мало для гугловских карт
 
             // var latlng = new google.maps.LatLng(48.397, 34.644);
             var myOptions = {
@@ -273,7 +274,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 },
                 tileSize: new google.maps.Size(256, 256),
                 name: 'Ovi карта',
-                maxZoom: 17     // (17) TODO: Временная борьба с тормозами на большом зуме
+                maxZoom: 17
             }));
 
             map.mapTypes.set('OVISAT', new google.maps.ImageMapType({
@@ -283,7 +284,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 },
                 tileSize: new google.maps.Size(256, 256),
                 name: 'Ovi спутник',
-                maxZoom: 17 // (18) TODO: Временная борьба с тормозами на большом зуме
+                maxZoom: 17
             }));
 
             map.mapTypes.set('Google', new google.maps.ImageMapType({
@@ -293,7 +294,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 },
                 tileSize: new google.maps.Size(256, 256),
                 name: 'Google',
-                maxZoom: 19     // (17) TODO: Временная борьба с тормозами на большом зуме
+                maxZoom: 17
             }));
 
             map.mapTypes.set('YMAP', yandexMapType);
@@ -584,7 +585,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             scope.hideTrack = function(){
                 // console.log('gmap:hideTrack');
-                
+
                 scope.track.track = [];
                 scope.track.points = [];
                 scope.track.ranges = [];

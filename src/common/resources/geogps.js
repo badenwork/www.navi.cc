@@ -24,6 +24,11 @@ var FSOURCE = {
     SUDDENPOS:      15, // Это признак возможных проблем с акселерометром
     TIMEINIT:       16  // Фиксация точек при первоначальной запитке
 };
+var POINTTYPE = {
+    UNKNOWN:        0,
+    MOVE:           1,
+    STOP:           2
+};
 
 angular.module('resources.geogps', [])
 
@@ -153,8 +158,9 @@ angular.module('resources.geogps', [])
         };
 
         // Возвращает true если точка относится к стоянке
-        var isStop = function(fsource) {
-            return $.inArray(fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
+        var isStop = function(point) {
+            //return point.type === POINTTYPE.STOP;
+            return $.inArray(point.fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
         };
         GeoGPS.isStop = isStop;
 
@@ -220,7 +226,7 @@ angular.module('resources.geogps', [])
                 var i = startIndex;
                 for (; i < stopIndex; i++) {
                     var point = points [i];
-                    if (isStop (point.fsource)) {
+                    if (isStop (point)) {
                         if (stop_start === null) {
                             stop_start = i;
                         }
@@ -300,7 +306,7 @@ angular.module('resources.geogps', [])
                             index: i
                         });
                     }
-                    if (isStop(point.fsource)) {
+                    if (isStop(point)) {
                         if (stop_start === null) {
                             stop_start = i;
                             events.push({
@@ -341,7 +347,7 @@ angular.module('resources.geogps', [])
             var stop_start = null;
             for (var i = 0; i < points.length; i++) {
                 var point = points [i];
-                if (isStop  (point.fsource)) {
+                if (isStop  (point)) {
                     if (stop_start === null) {
                         stop_start = i;
                     } else {
@@ -362,12 +368,11 @@ angular.module('resources.geogps', [])
                     var hour = ~~ (points [i].dt / 3600);
                     if (hour > hoursFrom + offset) {
                         if (stopPoint !== null) {
-                            points [i].lat = stopPoint.lat;
-                            points [i].lon = stopPoint.lon;
-                            break;
+                            copyPointParams (stopPoint, points [i]);
                         }
+                        break;
                     } else {
-                        if (isStop (points [i].fsource)) {
+                        if (isStop (points [i])) {
                              if (stopPoint === null) {
                                  stopPoint = points [i];
                              }
@@ -388,37 +393,42 @@ angular.module('resources.geogps', [])
             }
         };
         
-        var removeShortTrips = function (points, minTripTime) {
-            console.log ("minTripTime : ", minTripTime);
+        var removeShortTrips = function (points, minTripTime, minTripDistance) {
             var points_ret = [];
             var move_start = null;
             var lastInsertPointIndex = 0;
+            var i = 0;
             var insertPoints = function (pointIndex) {
-                for (var j = lastInsertPointIndex; j <= pointIndex; j++) {
+                for (var j = lastInsertPointIndex; j < pointIndex; j++) {
                     points_ret.push (points [j]);
                 }
-                lastInsertPointIndex = pointIndex ;
+                lastInsertPointIndex = pointIndex;
             };
-            for (var i = 0; i < points.length; i++) {
+            for (; i < points.length; i++) {
                 var point = points [i];
-                if (!isStop (point.fsource)) {
+                if (!isStop (point)) {
                     if (move_start === null) {
+                        insertPoints (i);
                         move_start = i;
                     }
                 } else {
                     if (move_start !== null) {
-                        if (minTripTime < (points [i].dt - points [move_start].dt)) {
-                            insertPoints (i - 1);
+                        if (minTripTime < (point.dt - points [move_start].dt) &&
+                           minTripDistance < distance (point, points [move_start])) {
+                            insertPoints (i);
                         } else {
-                            lastInsertPointIndex = i - 1;
+                            lastInsertPointIndex = i;
                         }
                         move_start = null;
                     }
                 }
             }
+            if (lastInsertPointIndex < points.length) {
+                insertPoints (points.length);
+            }
             return points_ret;
-        };
-        
+        };                    
+                    
         GeoGPS.getHoursFromPoints = function (points, startIndex, stopIndex) {
             var hours = {};
             var min_hour = 1e15;
@@ -437,6 +447,118 @@ angular.module('resources.geogps', [])
             }
             return hours;
         };
+
+        var isMotorOn = function (point) {
+            return (point.vout > 13.5 && point.vout < 19) || (point.vout > 26);
+        };
+        
+        var isAccelerometerOn = function (point) {
+            return $.inArray (point.fsource, [FSOURCE.SUDDENSTOP, FSOURCE.STOPACC, FSOURCE.TIMESTOPACC]) == -1;
+        };
+        
+        var isStartMoving = function (points, index) {
+            var point = points [index];
+            var prevPoint = points [index - 1] || null;
+            var accelerometerOn = isAccelerometerOn (point);
+            var motorOn = isMotorOn (point);
+            
+            var moving_speed_with_out_accelerometer = 60;    // км/ч
+            var moving_a_distance_with_out_accelerometer = 1000;  // метров
+            var moving_speed_with_accelerometer = 20;    // км/ч
+            var moving_a_distance_with_accelerometer = 50;  // метров
+            var moving_speed_with_motor_on = 5; // км/ч
+            var moving_a_distance_with_motor_on = 30;  // метров
+            var condition_1 = !accelerometerOn && point.speed > moving_speed_with_out_accelerometer; //Перемещение со скоростью более 60 км/час (программируется) без срабатывания акселерометра
+            var condition_2 = !accelerometerOn && prevPoint && distance (prevPoint, point) > moving_a_distance_with_out_accelerometer;  //Перемещение на расстояние более чем на 1000 метров (программируется) без срабатывания акселерометра
+            var condition_3 = accelerometerOn && point.speed >  moving_speed_with_accelerometer; //Срабатывание акселерометра и перемещение со скоростью более 20 км/час (программируется).
+            var condition_4 = accelerometerOn && prevPoint && distance (prevPoint, point) > moving_a_distance_with_accelerometer;  // Срабатывание акселерометра и перемещение на расстояние более 50 метров (программируется)
+            var condition_5 = motorOn && point.speed > moving_speed_with_motor_on;  //Повышение напряжения бортового питания выше 13,5V (27,0V) и перемещение со скоростью более 5 км/час (программируется)
+            var condition_6 = motorOn && prevPoint && distance (prevPoint, point) > moving_a_distance_with_motor_on;  //Повышение напряжения бортового питания выше 13,5V (27,0V) и перемещение на расстояние более 30 метров (программируется)
+            return condition_1 || condition_2 || condition_3 || condition_4 || condition_5 || condition_6;
+        };
+        
+        var isSlowingPoint = function (point) {
+            return  point.fsource == FSOURCE.SUDDENSTOP;
+        };
+        
+        var isStopMoving = function (points, index, slowingPointIndex) {
+            var slowingPoint = points [slowingPointIndex];
+            var point = points [index];
+            var nextPoint = points [index + 1] || null;
+            //var nextTimeInterval = (prevPoint) ? nextPoint.dt - point.dt : 0;
+            var accelerometerOn = isAccelerometerOn (point);
+            var motorOn = isMotorOn (point);
+            return false;
+        };
+        
+        var setPointType = function (point, type) {
+            point.type = type;
+        };
+        var setPointsType = function (points, indexStart, indexStop, type) {
+            for (var i = indexStart; i < indexStop; i++) {
+                setPointType (points [i], type);
+            }
+        };
+        var copyPointParams = function (pointFrom, pointTo) {
+            pointTo.lat = pointFrom.lat;
+            pointTo.lon = pointFrom.lon;
+        };
+        
+        var isSlowingToStopInterval = function (slowingPoint, point) {
+            return point.dt - slowingPoint.dt < 121;
+        };
+
+        var identifyPointsType = function (points) {
+            var slowingPoint = null;
+            var stopPoint = null;
+            var movePoint = null;
+            
+            for (var i = 0; i < points.length; i++) {
+                var point = points [i];
+                if (movePoint === null) {
+                    if (slowingPoint === null && isStartMoving (points, i)) {
+                        movePoint = i;
+                        setPointType (point, POINTTYPE.MOVE);
+                        continue;
+                    }
+                } else {
+                    setPointType (point, POINTTYPE.MOVE);
+                }
+                if (slowingPoint === null && stopPoint === null) {
+                    if (isSlowingPoint (point)) {
+                        slowingPoint = i;
+                        continue;
+                    }
+                }
+                if (stopPoint === null) {
+                    if (slowingPoint !== null) {
+                        var etalonStopPoint = points [slowingPoint];
+                        if (!isSlowingToStopInterval (etalonStopPoint, point)) {
+                            slowingPoint = null;
+                            continue;
+                        }
+                        if (isStopMoving (points, i, slowingPoint)) {
+                            stopPoint = i;
+                            for (var j = slowingPoint + 1; j < stopPoint; j++) {
+                                copyPointParams (etalonStopPoint, points [j]);
+                            }
+                            copyPointParams (etalonStopPoint, points [stopPoint]);
+                            if (movePoint !== null) {
+                                setPointsType (points, movePoint, slowingPoint, POINTTYPE.MOVE);
+                                setPointsType (points, slowingPoint, stopPoint, POINTTYPE.STOP);
+                                movePoint = null;
+                            }
+                            slowingPoint = null;
+                        }
+                    } else if (movePoint !== null) {
+                        setPointType (point, POINTTYPE.MOVE);
+                    }
+                } else {
+                    copyPointParams (points [stopPoint], point);
+                    setPointType (point, POINTTYPE.STOP);
+                }
+            }
+        };
             
 ////////////////////////////////////////////////////////////////////
         var bingpsparse_2 = function (array, hoursFrom, offset) {
@@ -448,11 +570,17 @@ angular.module('resources.geogps', [])
                 }
             }
             var system = System.cached(skey);
-            var minTripSeconds = 180;
-            if (system && system.car && system.car.minMoveTime)
-                minTripSeconds = system.car.minMoveTime * 60;
+            var minTripSeconds = 15;
+            var minTripDistance = 0.05;
+            if (system && system.car) {
+                if (system.car.minMoveTime)
+                    minTripSeconds = system.car.minMoveTime * 60;
+                if (system.car.minTripDistance)
+                    minTripDistance = system.car.minTripDistance;
+            }
+            //identifyPointsType (points);
             points = transferStopPoint (points, hoursFrom, offset);
-            points = removeShortTrips (points, minTripSeconds);
+            points = removeShortTrips (points, minTripSeconds, minTripDistance);
             clearStopPointsCoordinates (points);
             updatePointsFuel (points);
             var events = GeoGPS.getEventsFromPoints (points, 0, points.length, system);
@@ -460,7 +588,7 @@ angular.module('resources.geogps', [])
             var track = GeoGPS.getTrackFromPoints (points, 0, points.length);
             var ranges = GeoGPS.getRangesFromPoints (points, 0, points.length);
             var hours = GeoGPS.getHoursFromPoints (points, 0, points.length);
-            return {
+            var ret = {
                 track: track,
                 bounds: bounds,
                 points: points,
@@ -470,6 +598,8 @@ angular.module('resources.geogps', [])
                 events: events,
                 ranges: ranges
             };
+            console.log ("track : ", ret);
+            return ret;
         };
 
 ////////////////////////////////////////////////////////////////////
@@ -520,7 +650,7 @@ angular.module('resources.geogps', [])
                                 //i -= 32;
                             }
                         } else if (!cleared) {
-                            if (isStop (point.fsource)) {
+                            if (isStop (point)) {
                                  if (!prevPointIsStop) {
                                      prevPointIsStop = true;
                                      lastStopgPoint = gpoint;
@@ -563,7 +693,7 @@ angular.module('resources.geogps', [])
                         });
                         range_start = point;
 
-                        if (isStop(point.fsource)) {
+                        if (isStop(point)) {
                             stop_start = 0;
                             events.push({
                                 point: point,
@@ -575,7 +705,7 @@ angular.module('resources.geogps', [])
                             move_start = 0;
                         }
                     }
-                    if (isStop(point.fsource)) {
+                    if (isStop(point)) {
                         if (stop_start === null) {
                             stop_start = index;
                             events.push({

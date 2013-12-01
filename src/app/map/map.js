@@ -74,9 +74,12 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 angular.extend(params, {
                     day: day
                 });
-                $location.search(params);
-                $location.replace();
-                $scope.updateTrack ();
+                if (day == $scope.day) {
+                    $scope.updateTrack ();
+                } else {
+                    $location.search(params);
+                    $location.replace();
+                }
             });
         });
 
@@ -87,7 +90,6 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                     var day = $scope.day || 0;
                     // Недокументированный метод. Метод update изменяет текущий месяц
                     $('#datepicker').datepicker('fill');
-
                     var tz = (new Date()).getTimezoneOffset() / 60,
                         hourfrom, date;
 
@@ -125,26 +127,37 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 $scope.track = data;
                 $scope.points = data.track.length;
                 $scope.timeline = data.ranges;
-            });   
+            });
         };
         var loadTrack = function () {
             $scope.isUpdate = false;
             load_date();
             gettrack();
         };
-        
+        var dayIsNow = function (day) {
+            var date = new Date();
+            var tz = (date).getTimezoneOffset() / 60;
+            var hourfrom = date.valueOf() / 1000 / 3600;
+            var dayNow = (hourfrom - tz) / 24;
+            return day == Math.floor(dayNow);
+        };
         var updateTrack = function () {
             //console.log("updateTrack");
-            $scope.isUpdate = true;
+            
             load_date();
+            if (dayIsNow ($scope.day)) {
+                $scope.isUpdate = true; 
+            } else {
+                $scope.isUpdate = false;
+            }
             gettrack();
         };
         $scope.updateTrack = updateTrack;
         if ($scope.skey) {
             loadTrack ();
         }
-        
-        
+
+
         $scope.$on('$routeUpdate', function() {
             $scope.skey = $routeParams.skey;
             $scope.day = $routeParams.day;
@@ -155,7 +168,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             if (angular.isUndefined(skey)) return;
 
             var s = systems[skey];
-            if ($scope.skey === skey) {
+            if ($scope.skey === skey && dayIsNow ($scope.day)) {
                 $scope.updateTrack ();
             }
             $scope.skey = skey;
@@ -163,7 +176,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             angular.extend(params, {
                 skey: skey
             });
-            
+
             $location.search(params);
             if (s.dynamic && s.dynamic.latitude && s.dynamic.longitude) {
                 $scope.center = {
@@ -182,6 +195,9 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 } else {
                     $scope.track.select = d;
                 }
+
+                if ($scope.mapDelegat.setTrack)
+                    $scope.mapDelegat.setTrack ($scope.track);
             });
         };
 
