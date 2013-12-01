@@ -451,6 +451,8 @@ angular.module('resources.geogps', [])
                     hours[hour] = (hours[hour] || 0) + 1;  
                 }
             }
+            hours.min = min_hour;
+            hours.max = max_hour;
             return hours;
         };
 
@@ -668,9 +670,11 @@ angular.module('resources.geogps', [])
             var date = new Date();
             var tz = (date).getTimezoneOffset() / 60;
             var hourfrom = date.valueOf() / 1000 / 3600;
-            var dayNow = (hourfrom - tz) / 24;
+            var dayNow = (hourfrom + tz) / 24;
             if (day != Math.floor(dayNow)) {
-                addP.dt = ((dayNow * 24 + 24) * 60) * 60 + 59;
+                addP.dt = ~~(addP.dt / 3600);
+                addP.dt = ~~(addP.dt / 24);
+                addP.dt = (addP.dt * 24 + tz + 23) * 3600 + 3599;
                 points.push (addP);
             }
             ///////
@@ -694,7 +698,7 @@ angular.module('resources.geogps', [])
                 events: events,
                 ranges: ranges
             };
-            console.log ("track : ", ret);
+            //console.log ("track : ", ret);
             return ret;
         };
 

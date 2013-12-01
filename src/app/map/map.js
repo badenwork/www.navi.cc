@@ -139,7 +139,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             var date = new Date();
             var tz = (date).getTimezoneOffset() / 60;
             var hourfrom = date.valueOf() / 1000 / 3600;
-            var dayNow = (hourfrom - tz) / 24;
+            var dayNow = (hourfrom + tz) / 24;
             return day == Math.floor(dayNow);
         };
 
