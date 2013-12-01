@@ -197,9 +197,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 } else {
                     $scope.track.select = d;
                 }
-
-                if ($scope.mapDelegat.setTrack)
-                    $scope.mapDelegat.setTrack ($scope.track);
+                $scope.$broadcast('setTrack', $scope.track);
             });
         };
 
