@@ -163,6 +163,11 @@ angular.module('resources.geogps', [])
             //return $.inArray(point.fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
         };
         GeoGPS.isStop = isStop;
+        
+        var isStop_fsource = function(fsource) {
+            return $.inArray(fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
+        };
+        GeoGPS.isStop_fsource = isStop_fsource;
 
         //если нужно убрать получение данных на correctFromHours часов назад то установить cleared в true а correctFromHours в 0
         var correctFromHours = 120;
@@ -369,6 +374,7 @@ angular.module('resources.geogps', [])
                     if (hour > hoursFrom + offset) {
                         if (stopPoint !== null) {
                             copyPointParams (stopPoint, points [i]);
+                            points [i].dt = hour * 3600;
                         }
                         break;
                     } else {
@@ -656,6 +662,18 @@ angular.module('resources.geogps', [])
                 if (system.car.minTripDistance)
                     minTripDistance = system.car.minTripDistance;
             }
+            //////  добавить точку в конец трека с временем 23:59:59 если выбран не текущий день
+            var addP = points [points.length - 1];
+            var day = new Date (addP.dt * 1000);
+            var date = new Date();
+            var tz = (date).getTimezoneOffset() / 60;
+            var hourfrom = date.valueOf() / 1000 / 3600;
+            var dayNow = (hourfrom - tz) / 24;
+            if (day != Math.floor(dayNow)) {
+                addP.dt = ((dayNow * 24 + 24) * 60) * 60 + 59;
+                points.push (addP);
+            }
+            ///////
             identifyPointsType (points);
             points = transferStopPoint (points, hoursFrom, offset);
             points = removeShortTrips (points, minTripSeconds, minTripDistance);
@@ -670,8 +688,8 @@ angular.module('resources.geogps', [])
                 track: track,
                 bounds: bounds,
                 points: points,
-                min_hour: hours [0] || 0,
-                max_hour: hours [hours.length - 1] || 1e15,
+                min_hour: hours.min || 0,
+                max_hour: hours.max || 1e15,
                 hours: hours,
                 events: events,
                 ranges: ranges
