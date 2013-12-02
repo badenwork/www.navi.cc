@@ -526,21 +526,25 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 eventmarker.setData(data.events);
             };
             
+            var setTrack = function (data) {
+                if (path) {
+                    path.setMap(null);
+                    path = null;
+                    eventmarker.setData([]);
+                }
+                if (!data || (data.points.length === 0)) {
+                    if (select) {
+                        select.setPath([]);
+                    }
+                    pointmarkers.hideInfo();
+                    pointmarkers.setData ([]);
+                    return;
+                }
+                showTrack(data);
+            };
+            
              scope.$on('setTrack', function(event, data) { 
-                 if (path) {
-                        path.setMap(null);
-                        path = null;
-                        eventmarker.setData([]);
-                    }
-                    if ((data === null) || (data.points.length === 0)) {
-                        if (select) {
-                            select.setPath([]);
-                        }
-                        pointmarkers.hideInfo();
-                        pointmarkers.setData ([]);
-                        return;
-                    }
-                    showTrack(data);
+                 setTrack (data);
              });
 
             var lastmarker = new LastMarker(map);
@@ -586,9 +590,10 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             scope.hideTrack = function(){
                 // console.log('gmap:hideTrack');
 
-                scope.track.track = [];
-                scope.track.points = [];
-                scope.track.ranges = [];
+                //scope.track.track = [];
+                //scope.track.points = [];
+                //scope.track.ranges = [];
+                setTrack (null);
                 scope.onHide();
 
                 // $scope.track.track = [];

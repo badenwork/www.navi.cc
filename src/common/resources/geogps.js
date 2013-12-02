@@ -159,8 +159,11 @@ angular.module('resources.geogps', [])
 
         // Возвращает true если точка относится к стоянке
         var isStop = function(point) {
-            //return point.type === POINTTYPE.STOP;
-            return $.inArray(point.fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
+            if (GeoGPS.options.useServerFiltration) {
+                return point.type === POINTTYPE.STOP;
+            } else {
+                return $.inArray(point.fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
+            }
         };
         var isStop_2 = function(point) {
             return point.type === POINTTYPE.STOP;
@@ -363,7 +366,6 @@ angular.module('resources.geogps', [])
         };
         
         var transferStopPoint = function (points, hoursFrom, offset) {
-            var points_ret = [];
             var i = 0;
             var stopPoint = null;
             for (; i < points.length; i++) {
@@ -387,6 +389,20 @@ angular.module('resources.geogps', [])
             return GeoGPS.getPointsFromPoints (points, i, points.length);
         };
         
+        var removeInvalidPoints = function (points) {
+            var points_ret = [];
+            var i = 0;
+            for (; i < points.length; i++) {
+                var point = points [i];
+                if (point.lat === 0 && point.lon === 0)
+                    continue;
+                if (!point.sats || point.sats < GeoGPS.options.minSputniksCount)
+                    continue;
+                points_ret.push (point);
+            }
+            return points_ret;
+        };
+        
         var updatePointsFuel = function (points) {
             var fuelscale = System.$fuelscale(skey);
             for (var i = 0; i < points.length; i++) {
@@ -396,7 +412,9 @@ angular.module('resources.geogps', [])
             }
         };
         
-        var removeShortTrips = function (points, minTripTime, minTripDistance) {
+        var removeShortTrips = function (points) {
+            var minTripTime = GeoGPS.options.minMoveTime;
+            var minTripDistance = GeoGPS.options.minMoveDistance;
             var points_ret = [];
             var move_start = null;
             var lastInsertPointIndex = 0;
@@ -468,12 +486,37 @@ angular.module('resources.geogps', [])
             var motorOn = isMotorOn (point);
 
             var condition_1 = !accelerometerOn && point.speed > GeoGPS.options.moving_speed_with_out_accelerometer; //Перемещение со скоростью более 60 км/час (программируется) без срабатывания акселерометра
+            if (condition_1) {
+                //console.log ("condition_1");
+                return true;
+            }
             var condition_2 = !accelerometerOn && prevPoint && distance (prevPoint, point) > GeoGPS.options.moving_a_distance_with_out_accelerometer;  //Перемещение на расстояние более чем на 1000 метров (программируется) без срабатывания акселерометра
+            if (condition_2) {
+                //console.log ("condition_2");
+                return true;
+            }
             var condition_3 = accelerometerOn && point.speed >  GeoGPS.options.moving_speed_with_accelerometer; //Срабатывание акселерометра и перемещение со скоростью более 20 км/час (программируется).
+            if (condition_3) {
+                //console.log ("condition_3");
+                return true;
+            }
             var condition_4 = accelerometerOn && prevPoint && distance (prevPoint, point) > GeoGPS.options.moving_a_distance_with_accelerometer;  // Срабатывание акселерометра и перемещение на расстояние более 50 метров (программируется)
+            if (condition_4) {
+                //console.log ("condition_4");
+                return true;
+            }
             var condition_5 = motorOn && point.speed > GeoGPS.options.moving_speed_with_motor_on;  //Повышение напряжения бортового питания выше 13,5V (27,0V) и перемещение со скоростью более 5 км/час (программируется)
+            if (condition_5) {
+                //console.log ("condition_5");
+                return true;
+            }
             var condition_6 = motorOn && prevPoint && distance (prevPoint, point) > GeoGPS.options.moving_a_distance_with_motor_on;  //Повышение напряжения бортового питания выше 13,5V (27,0V) и перемещение на расстояние более 30 метров (программируется)
-            return condition_1 || condition_2 || condition_3 || condition_4 || condition_5 || condition_6;
+            if (condition_6) {
+                //console.log ("condition_6");
+                return true;
+            }
+            return false;
+            //return condition_1 || condition_2 || condition_3 || condition_4 || condition_5 || condition_6;
         };
         
         var isSlowingPoint = function (point) {
@@ -638,7 +681,7 @@ angular.module('resources.geogps', [])
             }
         };
         GeoGPS.options = {
-            useServerFiltration: true,
+            useServerFiltration: false,
             stopTime: 3,
             minMoveDistance: 0.05,
             minMoveTime: 15,
@@ -651,17 +694,18 @@ angular.module('resources.geogps', [])
             stopMovingMinDistance: 0.01,
             stopMovingMinDistance_2: 0.02,
             moving_speed_with_out_accelerometer: 60,
-            moving_a_distance_with_out_accelerometer: 1000,
+            moving_a_distance_with_out_accelerometer: 1,
             moving_speed_with_accelerometer: 20,
             moving_a_distance_with_accelerometer: 0.05,
             moving_speed_with_motor_on: 5,
             moving_a_distance_with_motor_on: 0.03,
             correctFromHours: 120,
+            minSputniksCount: 4, //если меньше то удалить точку
             updateValues: function (sys) {
                 if (system && system.car) {
                     if (system.car.minMoveTime)
                         this.minMoveTime = system.car.minMoveTime * 60;
-                    if (system.car.minTripDistance)
+                    if (system.car.minMoveDistance)
                         this.minMoveDistance = system.car.minMoveDistance;
                     if (system.car.stop) {
                         this.stopTime = system.car.stop | 0;
@@ -678,6 +722,9 @@ angular.module('resources.geogps', [])
                     points.push(point);
                 }
             }
+            if (points.length === 0) {
+                return;   
+            }
             var system = System.cached(skey);
             GeoGPS.options.updateValues (system);
             //////  добавить точку в конец трека с временем 23:59:59 если выбран не текущий день
@@ -687,20 +734,25 @@ angular.module('resources.geogps', [])
             var day = (new Date (addP.dt * 1000).valueOf() / 1000 / 3600) / 24;
             var dayNow = date.valueOf() / 1000 / 3600 / 24;
             if (Math.floor(day) != Math.floor(dayNow)) {
-                addP.dt = ~~(addP.dt / 3600);
-                addP.dt = ~~(addP.dt / 24);
-                addP.dt = (addP.dt * 24 + tz + 23) * 3600 + 3599;
-                points.push (addP);
+                var oldValue = addP.dt;
+                var newValue = ~~(addP.dt / 3600);
+                newValue = ~~(newValue / 24);
+                newValue = (newValue * 24 + tz + 23) * 3600 + 3599;
+                addP.dt = newValue;
+                if (newValue < (oldValue + 3600)) {
+                    points.push (addP);
+                }
             }
             ///////
             if (GeoGPS.options.useServerFiltration) {
-                GeoGPS.isStop = isStop_2;
+                //GeoGPS.isStop = isStop_2;
                 identifyPointsType (points);
             } else {
-                GeoGPS.isStop = isStop;
+                //GeoGPS.isStop = isStop;
             }
+            points = removeInvalidPoints (points);
             points = transferStopPoint (points, hoursFrom, offset);
-            points = removeShortTrips (points, GeoGPS.options.minMoveTime, GeoGPS.options.minMoveDistance);
+            points = removeShortTrips (points);
             clearStopPointsCoordinates (points);
             updatePointsFuel (points);
             var events = GeoGPS.getEventsFromPoints (points, 0, points.length, system);
