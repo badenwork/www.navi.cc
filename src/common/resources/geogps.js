@@ -159,8 +159,8 @@ angular.module('resources.geogps', [])
 
         // Возвращает true если точка относится к стоянке
         var isStop = function(point) {
-            return point.type === POINTTYPE.STOP;
-            //return $.inArray(point.fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
+            //return point.type === POINTTYPE.STOP;
+            return $.inArray(point.fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
         };
         GeoGPS.isStop = isStop;
         
@@ -678,7 +678,7 @@ angular.module('resources.geogps', [])
                 points.push (addP);
             }
             ///////
-            identifyPointsType (points);
+            //identifyPointsType (points);
             points = transferStopPoint (points, hoursFrom, offset);
             points = removeShortTrips (points, minTripSeconds, minTripDistance);
             clearStopPointsCoordinates (points);
