@@ -162,6 +162,9 @@ angular.module('resources.geogps', [])
             //return point.type === POINTTYPE.STOP;
             return $.inArray(point.fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
         };
+        var isStop_2 = function(point) {
+            return point.type === POINTTYPE.STOP;
+        };
         GeoGPS.isStop = isStop;
         
         var isStop_fsource = function(fsource) {
@@ -645,7 +648,19 @@ angular.module('resources.geogps', [])
                 }
             }
         };
-            
+        GeoGPS.options = {
+            useServerFiltration: false,
+            minMoveDistance: 0.05,
+            minMoveTime: 15,
+            updateValues: function (sys) {
+                if (system && system.car) {
+                    if (system.car.minMoveTime)
+                        this.minMoveTime = system.car.minMoveTime * 60;
+                    if (system.car.minTripDistance)
+                        this.minMoveDistance = system.car.minMoveDistance;
+                }
+            }
+        };
 ////////////////////////////////////////////////////////////////////
         var bingpsparse_2 = function (array, hoursFrom, offset) {
             var points = [];
@@ -656,14 +671,7 @@ angular.module('resources.geogps', [])
                 }
             }
             var system = System.cached(skey);
-            var minTripSeconds = 15;
-            var minTripDistance = 0.05;
-            if (system && system.car) {
-                if (system.car.minMoveTime)
-                    minTripSeconds = system.car.minMoveTime * 60;
-                if (system.car.minTripDistance)
-                    minTripDistance = system.car.minTripDistance;
-            }
+            GeoGPS.options.updateValues (system);
             //////  добавить точку в конец трека с временем 23:59:59 если выбран не текущий день
             var addP = points [points.length - 1];
             var day = new Date (addP.dt * 1000);
@@ -678,9 +686,14 @@ angular.module('resources.geogps', [])
                 points.push (addP);
             }
             ///////
-            //identifyPointsType (points);
+            if (GeoGPS.options.useServerFiltration) {
+                GeoGPS.isStop = isStop_2;
+                identifyPointsType (points);
+            } else {
+                GeoGPS.isStop = isStop;
+            }
             points = transferStopPoint (points, hoursFrom, offset);
-            points = removeShortTrips (points, minTripSeconds, minTripDistance);
+            points = removeShortTrips (points, GeoGPS.options.minMoveTime, GeoGPS.options.minMoveDistance);
             clearStopPointsCoordinates (points);
             updatePointsFuel (points);
             var events = GeoGPS.getEventsFromPoints (points, 0, points.length, system);
