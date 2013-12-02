@@ -412,6 +412,32 @@ angular.module('resources.geogps', [])
             }
         };
         
+        var removeLargeMoveInShortTime = function (points) {
+            if (!points || points.length === 0)
+                return [];
+            var points_ret = [];
+            var ejection = null;
+            var ejectionDistance = GeoGPS.options.ejectionDistance;
+            var ejectionTime = GeoGPS.options.ejectionTime;
+            points.push (points [0]);
+            for (var i = 0; i < points.length - 1; i++) {
+                if (ejection !== null) {
+                    if (distance (ejection, points [i + 1]) > ejectionDistance)  {
+                        continue;
+                    } else {
+                        ejection = null;
+                    }
+                } else {
+                    if (distance (points [i], points [i + 1]) > ejectionDistance && ((points [i + 1].dt - points [i].dt) < ejectionTime)) {
+                        ejection = points [i];
+                        continue;
+                    }
+                }
+                points_ret.push (points [i + 1]);
+            }
+            return points_ret;
+        };
+        
         var removeShortTrips = function (points) {
             var minTripTime = GeoGPS.options.minMoveTime;
             var minTripDistance = GeoGPS.options.minMoveDistance;
@@ -701,6 +727,8 @@ angular.module('resources.geogps', [])
             moving_a_distance_with_motor_on: 0.03,
             correctFromHours: 120,
             minSputniksCount: 4, //если меньше то удалить точку
+            ejectionDistance: 0.5,
+            ejectionTime: 20,
             updateValues: function (sys) {
                 if (system && system.car) {
                     if (system.car.minMoveTime)
@@ -714,7 +742,7 @@ angular.module('resources.geogps', [])
             }
         };
 ////////////////////////////////////////////////////////////////////
-        var bingpsparse_2 = function (array, hoursFrom, offset) {
+        var bingpsparse_2 = function (array, hoursFrom) {
             var points = [];
             for (var i = 0; i < array.length; i += 32) {
                 var point = parse_onebin(array.subarray(i, i + 32));
@@ -751,7 +779,9 @@ angular.module('resources.geogps', [])
                 //GeoGPS.isStop = isStop;
             }
             points = removeInvalidPoints (points);
-            points = transferStopPoint (points, hoursFrom, offset);
+            if (GeoGPS.options.correctFromHours > 0)
+                points = transferStopPoint (points, hoursFrom, GeoGPS.options.correctFromHours);
+            points = removeLargeMoveInShortTime (points);
             points = removeShortTrips (points);
             clearStopPointsCoordinates (points);
             updatePointsFuel (points);
@@ -1081,7 +1111,7 @@ angular.module('resources.geogps', [])
                 // var parsed = bingpsparse(uInt8Array);
                 // console.log('parsed=', parsed);
                 // parsed.constants = parsed.constants || {skey: skey};
-                defer.resolve(bingpsparse_2(uInt8Array, hourfrom, GeoGPS.options.correctFromHours));
+                defer.resolve(bingpsparse_2(uInt8Array, hourfrom));
             }).error(function(data, status) {
                 window.console.error('GeoGPS.getTrack.error', data, status);
             });
