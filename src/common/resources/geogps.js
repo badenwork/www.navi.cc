@@ -172,8 +172,6 @@ angular.module('resources.geogps', [])
         };
         GeoGPS.isStop_fsource = isStop_fsource;
 
-        //если нужно убрать получение данных на correctFromHours часов назад то установить cleared в true а correctFromHours в 0
-        var correctFromHours = 120;
 ////////////////////////////////////////////////////////////////////        
         GeoGPS.getPointsFromPoints = function (points, startIndex, stopIndex) {
             var ret_points = [];
@@ -299,11 +297,7 @@ angular.module('resources.geogps', [])
                 var gpoint;
                 var point = null;
                 var stop_start = null;
-                var stopTime_minutes = 3;
-                if (system && system.car && system.car.stop) {
-                    stopTime_minutes = system.car.stop | 0;
-                }
-                var stopTime = stopTime_minutes * 60;
+                var stopTime = GeoGPS.options.stopTime * 60;
                 for (var i = startIndex; i < stopIndex; i++) {
                     point = points [i];
                     if (events.length === 0) { // Первая точка
@@ -460,7 +454,7 @@ angular.module('resources.geogps', [])
         };
 
         var isMotorOn = function (point) {
-            return (point.vout > 13.1 && point.vout < 19) || (point.vout > 26.2);
+            return (point.vout > GeoGPS.options.motorOn_min && point.vout < GeoGPS.options.motorOn_max) || (point.vout > GeoGPS.options.motorOn_min_2);
         };
         
         var isAccelerometerOn = function (point) {
@@ -472,19 +466,13 @@ angular.module('resources.geogps', [])
             var prevPoint = points [index - 1] || null;
             var accelerometerOn = isAccelerometerOn (point);
             var motorOn = isMotorOn (point);
-            
-            var moving_speed_with_out_accelerometer = 60;    // км/ч
-            var moving_a_distance_with_out_accelerometer = 1000;  // метров
-            var moving_speed_with_accelerometer = 20;    // км/ч
-            var moving_a_distance_with_accelerometer = 50;  // метров
-            var moving_speed_with_motor_on = 5; // км/ч
-            var moving_a_distance_with_motor_on = 30;  // метров
-            var condition_1 = !accelerometerOn && point.speed > moving_speed_with_out_accelerometer; //Перемещение со скоростью более 60 км/час (программируется) без срабатывания акселерометра
-            var condition_2 = !accelerometerOn && prevPoint && distance (prevPoint, point) > moving_a_distance_with_out_accelerometer;  //Перемещение на расстояние более чем на 1000 метров (программируется) без срабатывания акселерометра
-            var condition_3 = accelerometerOn && point.speed >  moving_speed_with_accelerometer; //Срабатывание акселерометра и перемещение со скоростью более 20 км/час (программируется).
-            var condition_4 = accelerometerOn && prevPoint && distance (prevPoint, point) > moving_a_distance_with_accelerometer;  // Срабатывание акселерометра и перемещение на расстояние более 50 метров (программируется)
-            var condition_5 = motorOn && point.speed > moving_speed_with_motor_on;  //Повышение напряжения бортового питания выше 13,5V (27,0V) и перемещение со скоростью более 5 км/час (программируется)
-            var condition_6 = motorOn && prevPoint && distance (prevPoint, point) > moving_a_distance_with_motor_on;  //Повышение напряжения бортового питания выше 13,5V (27,0V) и перемещение на расстояние более 30 метров (программируется)
+
+            var condition_1 = !accelerometerOn && point.speed > GeoGPS.options.moving_speed_with_out_accelerometer; //Перемещение со скоростью более 60 км/час (программируется) без срабатывания акселерометра
+            var condition_2 = !accelerometerOn && prevPoint && distance (prevPoint, point) > GeoGPS.options.moving_a_distance_with_out_accelerometer;  //Перемещение на расстояние более чем на 1000 метров (программируется) без срабатывания акселерометра
+            var condition_3 = accelerometerOn && point.speed >  GeoGPS.options.moving_speed_with_accelerometer; //Срабатывание акселерометра и перемещение со скоростью более 20 км/час (программируется).
+            var condition_4 = accelerometerOn && prevPoint && distance (prevPoint, point) > GeoGPS.options.moving_a_distance_with_accelerometer;  // Срабатывание акселерометра и перемещение на расстояние более 50 метров (программируется)
+            var condition_5 = motorOn && point.speed > GeoGPS.options.moving_speed_with_motor_on;  //Повышение напряжения бортового питания выше 13,5V (27,0V) и перемещение со скоростью более 5 км/час (программируется)
+            var condition_6 = motorOn && prevPoint && distance (prevPoint, point) > GeoGPS.options.moving_a_distance_with_motor_on;  //Повышение напряжения бортового питания выше 13,5V (27,0V) и перемещение на расстояние более 30 метров (программируется)
             return condition_1 || condition_2 || condition_3 || condition_4 || condition_5 || condition_6;
         };
         
@@ -496,8 +484,9 @@ angular.module('resources.geogps', [])
         
         var isStopMoving = function (slowingPoint, interval_0, interval_1, interval_2) {
             var i = 0;
-            var minDistance = 0.01;
-            var minDistance_2 = 0.02;
+            var minDistance = GeoGPS.options.stopMovingMinDistance;
+            var minDistance_2 = GeoGPS.options.stopMovingMinDistance_2;
+            
             //Если в течение 60 сек (программируется) после отправки точки замедления акселерометр не фиксирует сработок - трекер фиксирует точку замедления, как точку стоянки
             var condition_1 = true;
             for (;i < interval_0.length; i++) {
@@ -564,9 +553,9 @@ angular.module('resources.geogps', [])
         
         var addPointToInterval = function (slowingPoint, point, interval_0, interval_1, interval_2) {
             var slowingInterval = point.dt - slowingPoint.dt;
-            var zeroInterval = 60;
-            var firstInterval = 120;
-            var secondInterval = 180;
+            var zeroInterval =  GeoGPS.options.interval_0;
+            var firstInterval = GeoGPS.options.interval_1;
+            var secondInterval = GeoGPS.options.interval_2;
             if (slowingInterval < zeroInterval) {
                 interval_0.push (point);
             } else if (slowingInterval >= zeroInterval && slowingInterval < firstInterval) {
@@ -649,15 +638,34 @@ angular.module('resources.geogps', [])
             }
         };
         GeoGPS.options = {
-            useServerFiltration: false,
+            useServerFiltration: true,
+            stopTime: 3,
             minMoveDistance: 0.05,
             minMoveTime: 15,
+            interval_0: 60,
+            interval_1: 120,
+            interval_2: 180,
+            motorOn_min: 13.1,
+            motorOn_min_2: 26.2,
+            motorOn_max: 19,
+            stopMovingMinDistance: 0.01,
+            stopMovingMinDistance_2: 0.02,
+            moving_speed_with_out_accelerometer: 60,
+            moving_a_distance_with_out_accelerometer: 1000,
+            moving_speed_with_accelerometer: 20,
+            moving_a_distance_with_accelerometer: 0.05,
+            moving_speed_with_motor_on: 5,
+            moving_a_distance_with_motor_on: 0.03,
+            correctFromHours: 120,
             updateValues: function (sys) {
                 if (system && system.car) {
                     if (system.car.minMoveTime)
                         this.minMoveTime = system.car.minMoveTime * 60;
                     if (system.car.minTripDistance)
                         this.minMoveDistance = system.car.minMoveDistance;
+                    if (system.car.stop) {
+                        this.stopTime = system.car.stop | 0;
+                    }
                 }
             }
         };
@@ -673,13 +681,12 @@ angular.module('resources.geogps', [])
             var system = System.cached(skey);
             GeoGPS.options.updateValues (system);
             //////  добавить точку в конец трека с временем 23:59:59 если выбран не текущий день
-            var addP = points [points.length - 1];
-            var day = new Date (addP.dt * 1000);
+            var addP = angular.copy(points [points.length - 1]);
             var date = new Date();
             var tz = (date).getTimezoneOffset() / 60;
-            var hourfrom = date.valueOf() / 1000 / 3600;
-            var dayNow = (hourfrom + tz) / 24;
-            if (day != Math.floor(dayNow)) {
+            var day = (new Date (addP.dt * 1000).valueOf() / 1000 / 3600) / 24;
+            var dayNow = date.valueOf() / 1000 / 3600 / 24;
+            if (Math.floor(day) != Math.floor(dayNow)) {
                 addP.dt = ~~(addP.dt / 3600);
                 addP.dt = ~~(addP.dt / 24);
                 addP.dt = (addP.dt * 24 + tz + 23) * 3600 + 3599;
@@ -985,7 +992,7 @@ angular.module('resources.geogps', [])
             //TODO: исправить очень опасно так как это работает только зимой после перехода на зимнее время
             // 1 час это смеещение изза перехода на зимнее время
 
-            hourfrom -= correctFromHours + 1; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
+            hourfrom -= GeoGPS.options.correctFromHours + 1; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
             var defer = $q.defer();
             // console.log('getTrack', skey, hourfrom, hourto);
 
@@ -1022,7 +1029,7 @@ angular.module('resources.geogps', [])
                 // var parsed = bingpsparse(uInt8Array);
                 // console.log('parsed=', parsed);
                 // parsed.constants = parsed.constants || {skey: skey};
-                defer.resolve(bingpsparse_2(uInt8Array, hourfrom, correctFromHours));
+                defer.resolve(bingpsparse_2(uInt8Array, hourfrom, GeoGPS.options.correctFromHours));
             }).error(function(data, status) {
                 window.console.error('GeoGPS.getTrack.error', data, status);
             });
