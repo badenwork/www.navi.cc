@@ -171,7 +171,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 .directive('gmap', ['Connect', 'EventMarker', 'LastMarker', 'PointMarker', 'GeoGPS',
     function(Connect, EventMarker, LastMarker, PointMarker, GeoGPS) {
         // 'use strict';
-
+        
         // TODO! Необходима унификация для поддержки как минимум Google Maps и Leaflet
 
         var link = function(scope, element) {
@@ -236,6 +236,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             var map_element = element.find('.gmap-container');
             // console.log('map_element=', map_element);
             var map = new google.maps.Map(map_element[0], myOptions);
+
             // console.log('scope=', scope);
             // scope.gmap(map);
             scope.map = map;
@@ -417,7 +418,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             var mouseMove = function(event){
 
-                if ((scope.track === null) || (scope.track.points.length === 0)) return null;
+                if ((scope.track === null) || (scope.track.points.length === 0 )) return null;
 
                 var point = {lat: event.latLng.lat(), lon: event.latLng.lng()};
                 // console.log('mousemove', event);
@@ -455,6 +456,10 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 //     scope.infowindow.close();
                 // updatePoints(data.points);
                 pointmarkers.hideInfo();
+                if (!data) {
+                    eventmarker.setData([]);
+                    return;
+                }
 
                 quadtree = GeoGPS.initQuadtree(data.points);
                 // console.dir(quadtree);
@@ -520,42 +525,27 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 }
                 eventmarker.setData(data.events);
             };
-            if (scope.delegat) {
-                scope.delegat.setTrack = function(data) {
-                    if (path) {
-                        path.setMap(null);
-                        path = null;
-                        eventmarker.setData([]);
+            
+            var setTrack = function (data) {
+                if (path) {
+                    path.setMap(null);
+                    path = null;
+                    eventmarker.setData([]);
+                }
+                if (!data || (data.points.length === 0)) {
+                    if (select) {
+                        select.setPath([]);
                     }
-                    if ((data === null) || (data.points.length === 0)) {
-                        if (select) {
-                            select.setPath([]);
-                        }
-                        pointmarkers.hideInfo();
-                        pointmarkers.setData ([]);
-                        return;
-                    }
-                    //console.log("setTrack");
-                    showTrack(data);
-                };
-            } else {
-                // TODO. Не нравится мне чтото это. Заменить бып на событие.
-                scope.$watch('track', function(data) {
-                    if (path) {
-                        path.setMap(null);
-                        path = null;
-                        eventmarker.setData([]);
-                    }
-                    if ((data === null) || (data.points.length === 0)) {
-                        if (select) {
-                            select.setPath([]);
-                        }
-                        return;
-                    }
-                    console.log("watch track");
-                    showTrack(data);
-                }, true);
-            }
+                    pointmarkers.hideInfo();
+                    pointmarkers.setData ([]);
+                    return;
+                }
+                showTrack(data);
+            };
+            
+             scope.$on('setTrack', function(event, data) { 
+                 setTrack (data);
+             });
 
             var lastmarker = new LastMarker(map);
 
@@ -600,26 +590,22 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             scope.hideTrack = function(){
                 // console.log('gmap:hideTrack');
 
-                scope.track.track = [];
-                scope.track.points = [];
-                scope.track.ranges = [];
-                //if (scope.delegat)
-                    //scope.delegat.setTrack (scope.track);
+                //scope.track.track = [];
+                //scope.track.points = [];
+                //scope.track.ranges = [];
+                setTrack (null);
                 scope.onHide();
 
                 // $scope.track.track = [];
                 // $scope.track.points = [];
                 // $scope.track.ranges = [];
             };
-
-
             // '<div class='map-search'>'
             //     '<div class='input-group'>'
             //         '<span class='input-group-addon'><i class='icon-search icon-large'></i></span>'
             //         '<input type='text' class='form-control' google-maps-search='bounds'>'
             //     '</div>'
             // '</div>'
-
         };
 
         return {

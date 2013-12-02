@@ -34,7 +34,7 @@
 
 <div id="geos_body">
     <div infinite-scroll="myPagingFunction()" infinite-scroll-distance="3" infinite-scroll-parent ng-mousemove="onMouse($event)">
-        <div ng-repeat="g in items" bindonce class="georow" bo-attr bo-attr-index = "$index">
+        <div ng-repeat="g in items track by $index" bindonce class="georow" bo-attr bo-attr-index = "$index">
             {{ i.dt }}
             <span bo-text="g.dt | datetime:true:'time'"></span>
             <span><span bo-text="g.lat | number:3"></span>,<span bo-text="g.lon | number:3"></span></span>
@@ -49,5 +49,5 @@
 </div>
 
 <div class="geo_map" style="">
-    <gmap delegat="mapDelegat" track="track" center="center" config="mapconfig"></gmap>
+    <gmap track="track" center="center" config="mapconfig"></gmap>
 </div>

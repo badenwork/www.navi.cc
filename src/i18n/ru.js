@@ -107,7 +107,8 @@ angular.module('i18n.ru', ['pascalprecht.translate'])
             'Full template': 'Полный шаблон',
             'Note': 'Примечание',
             'cFLa': 'Израсходовано топлива (аналитически)',
-            'report in': 'Отчет в формате'
+            'report in': 'Отчет в формате',
+            'Show map': 'Показать карту'
         });
     }
 ]);

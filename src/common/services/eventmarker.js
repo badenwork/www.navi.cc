@@ -76,7 +76,7 @@
         // console.log('EventMarker.prototype.draw', this.data, this.data[1]);
 
         // Назначим индексы стоянкам
-        var index = 1;
+        var index = 0;
         for (var i = 0; i < this.data.length; i++) {
             var e = this.data[i];
             var title = '';
@@ -180,7 +180,7 @@
             .attr('style', function(d) {
                 var px = overlayProjection.fromLatLngToDivPixel(d.position);
                 // console.log('d=', d, 'px=', px);
-                return 'left: ' + (px.x) + 'px; top: ' + (px.y) + 'px;';
+                return 'left: ' + (px ? px.x : 0) + 'px; top: ' + (px ? px.y : 0) + 'px;';
             });
 
         points.exit().remove();

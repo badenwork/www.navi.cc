@@ -52,7 +52,6 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
         $scope.day = $routeParams.day || 0;
         $scope.track = null;
         $scope.points = 0;
-        $scope.mapDelegat = {};
 
         var dp = $('#datepicker').datepicker({
             language: i18n.shortLang(),
@@ -75,9 +74,12 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 angular.extend(params, {
                     day: day
                 });
-                $location.search(params);
-                $location.replace();
-                $scope.updateTrack ();
+                if (day == $scope.day) {
+                    $scope.updateTrack ();
+                } else {
+                    $location.search(params);
+                    $location.replace();
+                }
             });
         });
 
@@ -88,7 +90,6 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                     var day = $scope.day || 0;
                     // Недокументированный метод. Метод update изменяет текущий месяц
                     $('#datepicker').datepicker('fill');
-
                     var tz = (new Date()).getTimezoneOffset() / 60,
                         hourfrom, date;
 
@@ -112,8 +113,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
 
         var gettrack = function() {
             if (angular.isUndefined($scope.day)) {
-                if ($scope.mapDelegat.setTrack)
-                    $scope.mapDelegat.setTrack (null);
+                $scope.$broadcast('setTrack', null);
                 return;
             }
 
@@ -123,8 +123,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             GeoGPS.getTrack(hourfrom, hourfrom + 23) // +23? не 24?
             .then(function(data) {
                 data.update = !!$scope.isUpdate;
-                if ($scope.mapDelegat.setTrack)
-                    $scope.mapDelegat.setTrack (data);
+                $scope.$broadcast('setTrack', data);
                 $scope.track = data;
                 $scope.points = data.track.length;
                 $scope.timeline = data.ranges;
@@ -136,10 +135,23 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             gettrack();
         };
 
+        var dayIsNow = function (day) {
+            var date = new Date();
+            var tz = (date).getTimezoneOffset() / 60;
+            var hourfrom = date.valueOf() / 1000 / 3600;
+            var dayNow = (hourfrom + tz) / 24;
+            return day == Math.floor(dayNow);
+        };
+
         var updateTrack = function () {
             //console.log("updateTrack");
-            $scope.isUpdate = true;
+            
             load_date();
+            if (dayIsNow ($scope.day)) {
+                $scope.isUpdate = true; 
+            } else {
+                $scope.isUpdate = false;
+            }
             gettrack();
         };
         $scope.updateTrack = updateTrack;
@@ -158,7 +170,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             if (angular.isUndefined(skey)) return;
 
             var s = systems[skey];
-            if ($scope.skey === skey) {
+            if ($scope.skey === skey && dayIsNow ($scope.day)) {
                 $scope.updateTrack ();
             }
             $scope.skey = skey;
@@ -185,9 +197,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 } else {
                     $scope.track.select = d;
                 }
-
-                if ($scope.mapDelegat.setTrack)
-                    $scope.mapDelegat.setTrack ($scope.track);
+                $scope.$broadcast('setTrack', $scope.track);
             });
         };
 

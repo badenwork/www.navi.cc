@@ -5,6 +5,31 @@ table td.td_i {
 .td_cFLa, .td_cFL, .td_fL, .td_aS, .td_dT {
     text-align: center;
 }
+.report_map {
+     
+}
+.mapContainer {
+    position: fixed;
+    height: 97%;
+    width: 60%;
+    //left: 40%;
+    max-width: 1000px;
+    max-height: 1000px;
+    right: 16px;
+    top: 1.5%;
+    border: 1px solid black;
+}
+.hideMap_btn {
+    position:fixed;
+    margin-left: -18px;
+    margin-top: -12px;
+}
+.showMap_btn {
+    margin-left: 15px;    
+}
+.hidden_map {
+    top: -110%;
+}
 </style>
 
 <h4><navtool></navtool><span translate>Reports</span></h4>
@@ -25,24 +50,27 @@ table td.td_i {
     <br>
     <div id="downloadLink" ng-hide="report.reportData.mRows.length === 0">
         <div class="btn-group ng-scope">
-            <button type="button" class="btn ng-scope dropdown-toggle" ng-click="updateDowloadLink();" bs-dropdown="dropdown" data-toggle="dropdown"><trans translate="" class="ng-scope">Загрузить отчет</trans>&nbsp;<b class="caret"></b></button>
+            <button type="button" class="btn ng-scope dropdown-toggle" ng-click="updateDowloadLink();" bs-dropdown="dropdown" data-toggle="dropdown"><trans translate>Download report</trans>&nbsp;<b class="caret"></b></button>
             <ul class="dropdown-menu ng-scope" role="menu" aria-labelledby="drop1">
                 <li><a tabindex="-1" download="{{report.dowloadData.fileName}}" ng-href="{{report.dowloadData.link}}"><trans translate>report in</trans>&nbspXLSX</a></li>
                 <li><a tabindex="-1" download="{{report.dowloadData.CSVfileName}}" ng-href="{{report.dowloadData.CSVlink}}"><trans translate>report in</trans>&nbspCSV</a></li>
                 <!--<li><a tabindex="-1" download="{{report.dowloadData.PDFfileName}}" ng-href="{{report.dowloadData.PDFlink}}"><trans translate>report in</trans>&nbspPDF</a></li>-->
             </ul>
         </div>
+        <button type="button" class="btn showMap_btn" ng-click="showMap();"><trans translate>Show map</trans></button>
     </div>
     <h4 translate>Main report</h4>
     <table class="table table-hover table-bordered table-condensed">
         <thead>
             <tr>
+                <th></th>
                 <th translate>event</th>
                 <th ng-repeat="item in report.reportData.mHeaders" translate>{{ item }}</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="row in report.reportData.mRows">
+                <td class="td_map_button"><span type="button" class="btn icon-search" ng-click="showMap(row);"></span></td>
                 <td class="td_event" translate>{{ row.event }}</td>
                 <!-- разобраться с сепараторами -->
                 <td class="{{'td_' + report.reportData.mHeaders [$index]}}" ng-repeat="item in row.columns track by $index">{{ item }}</td>
@@ -69,6 +97,12 @@ table td.td_i {
 
 <div id="loader" ng-hide="report.ready">
     <i class="icon-refresh icon-4x icon-spin"></i>
+</div>
+<div ng-class="{hidden_map: mapShow === false}" class="mapContainer">
+    <div class="report_map">
+        <gmap track="track" config="mapconfig" center="center" ></gmap>
+    </div>
+    <button type="button" class="btn hideMap_btn icon-remove" ng-click="hideMap();"></button>
 </div>
 
 

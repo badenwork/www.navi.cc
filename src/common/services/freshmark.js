@@ -50,7 +50,7 @@ angular.module('newgps.services', ['resources.geogps'])
                     state.class = 'freshmark-offline';
                     state.title = 'Не выходит на связь более 10ти минут';
                 } else if (dynamic.fsource) {
-                    if (GeoGPS.isStop(dynamic.fsource)) {
+                    if (GeoGPS.isStop_fsource(dynamic.fsource)) {
                         state.class = 'freshmark-stop';
                         state.title = 'Стоит';
                     } else {
