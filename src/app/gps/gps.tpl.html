@@ -14,6 +14,8 @@
 
         </div>
 
+        <label ng-show="account.isAdmin()" title="Показать исходные данные (требуется повторное выполнение запроса)"><input type="checkbox" ng-model="geogpsconfig.raw"/> RAW</label>
+
         <a ng-if="exporturl" href="{{exporturl}}" download="exportGPS.xlsx" title="Загрузить в формате Excel" style="float:right; margin:5px;"><span class="icon-file icon-2x"></span></a>
     </form>
 

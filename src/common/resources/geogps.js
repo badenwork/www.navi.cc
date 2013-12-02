@@ -32,6 +32,9 @@ angular.module('resources.geogps', [])
         var GeoGPS = {},
             skey = null, // Ключ системы с которой идет работа
             system = null,
+            options = {
+                raw: false
+            },
             // path = null,
             days = {}; // Дни, в которые было движение
 
@@ -287,8 +290,10 @@ angular.module('resources.geogps', [])
                             move_start = null;
                         }
                         // Уберем фантомные точки в стоянке
-                        points[points.length-1].lat = points[stop_start].lat;
-                        points[points.length-1].lon = points[stop_start].lon;
+                        if(!options.raw){
+                            points[points.length-1].lat = points[stop_start].lat;
+                            points[points.length-1].lon = points[stop_start].lon;
+                        }
                     } else /*if(point['fsource'] === FSOURCE_START)*/ {
                         if (stop_start !== null) {
                             var lastevent = events[events.length - 1];
@@ -376,6 +381,15 @@ angular.module('resources.geogps', [])
         GeoGPS.select = function(newskey) {
             skey = newskey;
             system = System.cached(newskey); // Тут есть потенциальная опасность если данные на момент выбора еще не готовы
+        };
+
+        GeoGPS.setOptions = function(newoptions) {
+            angular.extend(options, newoptions);
+        };
+
+        GeoGPS.getOptions = function() {
+            // return angular.copy(options);
+            return options;
         };
 
         GeoGPS.getHours = function(hourfrom, hourto) {

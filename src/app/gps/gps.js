@@ -175,6 +175,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
 
         if ($scope.skey && ($scope.skey !== '') && ($scope.skey !== '+')) {
             GeoGPS.select($scope.skey);
+            // GeoGPS.setOptions({raw: true});
             GeoGPS.getTrack(hourfrom, hourfrom + 23)
                 .then(function(data) {
                     $scope.track = data;
@@ -260,6 +261,10 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         $scope.selectday = function(day) {
             $location.path('/gps/' + $scope.skey + '/' + day);
         };
+
+        $scope.geogpsconfig = GeoGPS.getOptions();
+        // console.log("$scope.geogpsconfig=", $scope.geogpsconfig);
+
 
     }
 ]);

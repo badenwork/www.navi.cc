@@ -200,6 +200,10 @@ angular.module('resources.account')
             }
         });
 
+        Account.isAdmin = function() {
+            return Account.account && $.inArray('admin', Account.account.groups) >= 0;
+        };
+
         return Account;
     }
 ]);
