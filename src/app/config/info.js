@@ -112,7 +112,6 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
         // $('[rel=tooltip]').tooltip();
 
         $scope.hwids = function(hwid) {
-            console.log(System, hwid);
             return System.hwids[hwid] || '?';
         };
     }
