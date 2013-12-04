@@ -172,13 +172,13 @@ angular.module('resources.geogps', [])
             return point.type === POINTTYPE.STOP;
         };
         GeoGPS.isStop = isStop;
-        
+
         var isStop_fsource = function(fsource) {
             return $.inArray(fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
         };
         GeoGPS.isStop_fsource = isStop_fsource;
 
-////////////////////////////////////////////////////////////////////        
+////////////////////////////////////////////////////////////////////
         GeoGPS.getPointsFromPoints = function (points, startIndex, stopIndex) {
             var ret_points = [];
             if (points) {
@@ -187,12 +187,12 @@ angular.module('resources.geogps', [])
                 if (!stopIndex)
                     stopIndex = points.length;
                 for (var i = startIndex; i < stopIndex; i++) {
-                    ret_points.push (points [i]);   
+                    ret_points.push (points [i]);
                 }
             }
             return ret_points;
         };
-        
+
         GeoGPS.getTrackFromPoints = function (points, startIndex, stopIndex) {
             var track = [];
             if (points) {
@@ -201,12 +201,12 @@ angular.module('resources.geogps', [])
                 if (!stopIndex)
                     stopIndex = points.length;
                 for (var i = startIndex; i < stopIndex; i++) {
-                    track.push (new google.maps.LatLng (points [i].lat, points [i].lon));   
+                    track.push (new google.maps.LatLng (points [i].lat, points [i].lon));
                 }
             }
             return track;
         };
-        
+
         GeoGPS.getBoundsFromPoints = function (points, startIndex, stopIndex) {
             var bounds = null;
             if (points) {
@@ -220,12 +220,12 @@ angular.module('resources.geogps', [])
                         bounds = new google.maps.LatLngBounds (gpoint, gpoint);
                     } else {
                         bounds.extend (gpoint);
-                    } 
+                    }
                 }
             }
             return bounds;
         };
-        
+
         GeoGPS.getRangesFromPoints = function (points, startIndex, stopIndex) {
             var ranges = [];
             if (points) {
@@ -250,11 +250,11 @@ angular.module('resources.geogps', [])
                                 stop_index: i,
                                 stop: points [i]
                             });
-                            move_start = null;   
+                            move_start = null;
                         }
                     } else {
                         if (move_start === null) {
-                            move_start = i;   
+                            move_start = i;
                         }
                         if (stop_start !== null) {
                             ranges.push({
@@ -286,13 +286,13 @@ angular.module('resources.geogps', [])
                         stop_index: i - 1,
                         stop: points [i - 1]
                     });
-                    move_start = null;   
+                    move_start = null;
                 }
             }
             return ranges;
         };
-        
-        
+
+
         GeoGPS.getEventsFromPoints = function (points, startIndex, stopIndex, system) {
             var events = [];
             if (points) {
@@ -339,7 +339,7 @@ angular.module('resources.geogps', [])
                     }
                 }
                 if (events.length > 0) {
-                    
+
                     events.push({
                         point: point,
                         position: new google.maps.LatLng(point.lat, point.lon),
@@ -350,7 +350,7 @@ angular.module('resources.geogps', [])
             }
             return events;
         };
-            
+
         var clearStopPointsCoordinates = function (points) {
             var stop_start = null;
             for (var i = 0; i < points.length; i++) {
@@ -367,7 +367,7 @@ angular.module('resources.geogps', [])
                 }
             }
         };
-        
+
         var transferStopPoint = function (points, hoursFrom, offset) {
             var i = 0;
             var stopPoint = null;
@@ -386,12 +386,12 @@ angular.module('resources.geogps', [])
                              }
                         } else {
                             stopPoint = null;
-                        }                        
+                        }
                     }
             }
             return GeoGPS.getPointsFromPoints (points, i, points.length);
         };
-        
+
         var removeInvalidPoints = function (points) {
             var points_ret = [];
             var i = 0;
@@ -405,16 +405,16 @@ angular.module('resources.geogps', [])
             }
             return points_ret;
         };
-        
+
         var updatePointsFuel = function (points) {
             var fuelscale = System.$fuelscale(skey);
             for (var i = 0; i < points.length; i++) {
              if(points [i] !== null && points [i].fuel) {
                     points [i].fuel = fuelscale (points [i].fuel);
-                }   
+                }
             }
         };
-        
+
         var removeShortTrips = function (points) {
             var minTripTime = GeoGPS.options.minMoveTime;
             var minTripDistance = GeoGPS.options.minMoveDistance;
@@ -451,8 +451,8 @@ angular.module('resources.geogps', [])
                 insertPoints (points.length);
             }
             return points_ret;
-        };                    
-                    
+        };
+
         GeoGPS.getHoursFromPoints = function (points, startIndex, stopIndex) {
             var hours = {};
             var min_hour = 1e15;
@@ -466,7 +466,7 @@ angular.module('resources.geogps', [])
                     var hour = ~~ (points [i].dt / 3600);
                     if (hour < min_hour) min_hour = hour;
                     if (hour > max_hour) max_hour = hour;
-                    hours[hour] = (hours[hour] || 0) + 1;  
+                    hours[hour] = (hours[hour] || 0) + 1;
                 }
             }
             hours.min = min_hour;
@@ -477,11 +477,11 @@ angular.module('resources.geogps', [])
         var isMotorOn = function (point) {
             return (point.vout > GeoGPS.options.motorOn_min && point.vout < GeoGPS.options.motorOn_max) || (point.vout > GeoGPS.options.motorOn_min_2);
         };
-        
+
         var isAccelerometerOn = function (point) {
             return $.inArray (point.fsource, [FSOURCE.SUDDENSTOP, FSOURCE.STOPACC, FSOURCE.TIMESTOPACC]) == -1;
         };
-        
+
         var isStartMoving = function (points, index) {
             var point = points [index];
             var prevPoint = points [index - 1] || null;
@@ -521,18 +521,18 @@ angular.module('resources.geogps', [])
             return false;
             //return condition_1 || condition_2 || condition_3 || condition_4 || condition_5 || condition_6;
         };
-        
+
         var isSlowingPoint = function (point) {
             //return  point.fsource == FSOURCE.SUDDENSTOP;
             //return $.inArray (point.fsource, [FSOURCE.SUDDENSTOP, FSOURCE.STOPACC, FSOURCE.TIMESTOPACC]) == -1;
             return point.speed < 1;
         };
-        
+
         var isStopMoving = function (slowingPoint, interval_0, interval_1, interval_2) {
             var i = 0;
             var minDistance = GeoGPS.options.stopMovingMinDistance;
             var minDistance_2 = GeoGPS.options.stopMovingMinDistance_2;
-            
+
             //Если в течение 60 сек (программируется) после отправки точки замедления акселерометр не фиксирует сработок - трекер фиксирует точку замедления, как точку стоянки
             var condition_1 = true;
             for (;i < interval_0.length; i++) {
@@ -593,10 +593,10 @@ angular.module('resources.geogps', [])
             }
             if (condition_6)
                 return true;
-            
+
             return false;
         };
-        
+
         var addPointToInterval = function (slowingPoint, point, interval_0, interval_1, interval_2) {
             var slowingInterval = point.dt - slowingPoint.dt;
             var zeroInterval =  GeoGPS.options.interval_0;
@@ -607,13 +607,13 @@ angular.module('resources.geogps', [])
             } else if (slowingInterval >= zeroInterval && slowingInterval < firstInterval) {
                 interval_1.push (point);
             } else if (slowingInterval >= firstInterval && slowingInterval < secondInterval) {
-                interval_2.push (point);   
+                interval_2.push (point);
             } else {
-                return false;   
+                return false;
             }
             return true;
         };
-        
+
         var setPointType = function (point, type) {
             point.type = type;
         };
@@ -634,7 +634,7 @@ angular.module('resources.geogps', [])
             var interval_0 = [];
             var interval_1 = [];
             var interval_2 = [];
-            
+
             for (var i = 0; i < points.length; i++) {
                 var point = points [i];
                 if (movePoint === null) {
@@ -726,7 +726,7 @@ angular.module('resources.geogps', [])
                 }
             }
             if (points.length === 0) {
-                return;   
+                return;
             }
             var system = System.cached(skey);
             GeoGPS.options.updateValues (system);
@@ -811,7 +811,7 @@ angular.module('resources.geogps', [])
                 if (point) {
                     var gpoint = new google.maps.LatLng(point.lat, point.lon);
                     var hour = ~~ (point.dt / 3600);
-                    {// этот блок находит координату последней стоянки и позаоляет перенести координаты стоянки на следующие сутки (подразумевается что запрос бинарных данных был сделан с учетом предыдущих correctFromHours часов)
+                    if(!options.raw){// этот блок находит координату последней стоянки и позаоляет перенести координаты стоянки на следующие сутки (подразумевается что запрос бинарных данных был сделан с учетом предыдущих correctFromHours часов)
                         //if (firstHour === null)
                             //firstHour = hour;
                         if (!cleared && hour > firstHour + offset) {
@@ -1058,7 +1058,9 @@ angular.module('resources.geogps', [])
             //TODO: исправить очень опасно так как это работает только зимой после перехода на зимнее время
             // 1 час это смеещение изза перехода на зимнее время
 
-            hourfrom -= GeoGPS.options.correctFromHours + 1; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
+            if(!options.raw){
+                hourfrom -= GeoGPS.options.correctFromHours + 1; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
+            }
             var defer = $q.defer();
             // console.log('getTrack', skey, hourfrom, hourto);
 
@@ -1095,7 +1097,11 @@ angular.module('resources.geogps', [])
                 // var parsed = bingpsparse(uInt8Array);
                 // console.log('parsed=', parsed);
                 // parsed.constants = parsed.constants || {skey: skey};
-                defer.resolve(bingpsparse_2(uInt8Array, hourfrom, GeoGPS.options.correctFromHours));
+                if(options.raw){
+                    defer.resolve(bingpsparse(uInt8Array, hourfrom, 0));
+                } else {
+                    defer.resolve(bingpsparse_2(uInt8Array, hourfrom, GeoGPS.options.correctFromHours));
+                }
             }).error(function(data, status) {
                 window.console.error('GeoGPS.getTrack.error', data, status);
             });
