@@ -37,9 +37,48 @@ angular.module('resources.geogps', [])
         var GeoGPS = {},
             skey = null, // Ключ системы с которой идет работа
             system = null,
+            options = {
+                raw: false,
+                useServerFiltration: true,
+                filter_shortTraveled: true,
+                filter_invalidPoints: true,
+                filter_ejection: true,
+                filter_clearStopPoints: true,
+                addPoint_23_59: true,
+                addPoint_00_00: true,
+                stopTime: 3,
+                minMoveDistance: 0.05,
+                minMoveTime: 15,
+                interval_0: 60,
+                interval_1: 120,
+                interval_2: 180,
+                motorOn_min: 13.1,
+                motorOn_min_2: 26.2,
+                motorOn_max: 19,
+                stopMovingMinDistance: 0.01,
+                stopMovingMinDistance_2: 0.02,
+                moving_speed_with_out_accelerometer: 60,
+                moving_a_distance_with_out_accelerometer: 1,
+                moving_speed_with_accelerometer: 20,
+                moving_a_distance_with_accelerometer: 0.05,
+                moving_speed_with_motor_on: 5,
+                moving_a_distance_with_motor_on: 0.03,
+                correctFromHours: 120,
+                minSputniksCount: 4, //если меньше то удалить точку
+                ejectionDistance: 0.5,
+                ejectionTime: 20,
+                updateValues: function (sys) {
+                    if (system && system.car) {
+                        for(var key in this) {
+                            if (key in sys.car)
+                                this [key] = sys.car [key];
+                        }
+                    }
+                }
+            },
             // path = null,
             days = {}; // Дни, в которые было движение
-
+        GeoGPS.options = options;
         // var days = {};
 
         var parse_onebin = function(packet) {
@@ -713,47 +752,6 @@ angular.module('resources.geogps', [])
                 }
             }
         };
-        GeoGPS.options = {
-            useServerFiltration: true,
-            filter_shortTraveled: true,
-            filter_invalidPoints: true,
-            filter_ejection: true,
-            filter_clearStopPoints: true,
-            addPoint_23_59: true,
-            addPoint_00_00: true,
-            stopTime: 3,
-            minMoveDistance: 0.05,
-            minMoveTime: 15,
-            interval_0: 60,
-            interval_1: 120,
-            interval_2: 180,
-            motorOn_min: 13.1,
-            motorOn_min_2: 26.2,
-            motorOn_max: 19,
-            stopMovingMinDistance: 0.01,
-            stopMovingMinDistance_2: 0.02,
-            moving_speed_with_out_accelerometer: 60,
-            moving_a_distance_with_out_accelerometer: 1,
-            moving_speed_with_accelerometer: 20,
-            moving_a_distance_with_accelerometer: 0.05,
-            moving_speed_with_motor_on: 5,
-            moving_a_distance_with_motor_on: 0.03,
-            correctFromHours: 120,
-            minSputniksCount: 4, //если меньше то удалить точку
-            ejectionDistance: 0.5,
-            ejectionTime: 20,
-            updateValues: function (sys) {
-                if (system && system.car) {
-                    for(var key in this) {
-                        if (key in sys.car)
-                            this [key] = sys.car [key];
-                    }
-                    /*if (system.car.stop) {
-                        this.stopTime = system.car.stop;
-                    }*/
-                }
-            }
-        };
 ////////////////////////////////////////////////////////////////////
         var bingpsparse_2 = function (array, hoursFrom) {
             var points = [];
@@ -948,8 +946,10 @@ angular.module('resources.geogps', [])
                             move_start = null;
                         }
                         // Уберем фантомные точки в стоянке
-                        points[points.length-1].lat = points[stop_start].lat;
-                        points[points.length-1].lon = points[stop_start].lon;
+                        if(!options.raw){
+                            points[points.length-1].lat = points[stop_start].lat;
+                            points[points.length-1].lon = points[stop_start].lon;
+                        }
                     } else /*if(point['fsource'] === FSOURCE_START)*/ {
                         if (stop_start !== null) {
                             var lastevent = events[events.length - 1];
@@ -1037,6 +1037,15 @@ angular.module('resources.geogps', [])
         GeoGPS.select = function(newskey) {
             skey = newskey;
             system = System.cached(newskey); // Тут есть потенциальная опасность если данные на момент выбора еще не готовы
+        };
+
+        GeoGPS.setOptions = function(newoptions) {
+            angular.extend(options, newoptions);
+        };
+
+        GeoGPS.getOptions = function() {
+            // return angular.copy(options);
+            return options;
         };
 
         GeoGPS.getHours = function(hourfrom, hourto) {

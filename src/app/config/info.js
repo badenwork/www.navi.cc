@@ -110,5 +110,9 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
             $scope.system.$patch('tags');
         };
         // $('[rel=tooltip]').tooltip();
+
+        $scope.hwids = function(hwid) {
+            return System.hwids[hwid] || '?';
+        };
     }
 ]);

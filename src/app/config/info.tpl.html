@@ -10,7 +10,7 @@
         <h4>Информация о трекере</h4>
 
         <dl class="dl-horizontal">
-            <dt>Модель</dt><dd>{{system.hwid || '?'}}</dd>
+            <dt>Модель</dt><dd>{{hwids(system.hwid)}}</dd>
             <dt>IMEI</dt><dd><input class="clone" value="{{ system.imei }}"/></dd>
             <dt>Телефон SIM-карты</dt><dd><input class="clone" value="{{ system.phone || '?'}}"/></dd>
             <dt>Зарегестрирован</dt><dd><datetime seconds="false" datetime="{{ system.date }}"></datetime></dd>
