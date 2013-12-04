@@ -18,7 +18,8 @@ angular.module('app', [
     'help',
     'i18n',
     'directives.loginform',
-    'services.httpRequestTracker'
+    'services.httpRequestTracker',
+    'config.root'
 ]);
 
 var DEVELOP = ((location.hostname === 'localhost') || (location.hostname === 'bigbrother') || (location.hostname.match(/192\.168\.*/)));

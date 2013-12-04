@@ -365,15 +365,17 @@ angular.module('resources.geogps', [])
             }
         };
         
-        var transferStopPoint = function (points, hoursFrom, offset) {
+        var transferStopPoint = function (points, hoursFrom) {
             var i = 0;
             var stopPoint = null;
             for (; i < points.length; i++) {
                     var hour = ~~ (points [i].dt / 3600);
-                    if (hour > hoursFrom + offset) {
+                    if (hour > hoursFrom + GeoGPS.options.correctFromHours) {
                         if (stopPoint !== null) {
                             copyPointParams (stopPoint, points [i]);
-                            points [i].dt = hour * 3600;
+                            if (GeoGPS.options.addPoint_00_00) {
+                                points [i].dt = hour * 3600;
+                            }
                         }
                         break;
                     } else {
@@ -419,7 +421,7 @@ angular.module('resources.geogps', [])
             var ejection = null;
             var ejectionDistance = GeoGPS.options.ejectionDistance;
             var ejectionTime = GeoGPS.options.ejectionTime;
-            points.push (points [0]);
+            points_ret.push (points [0]);
             for (var i = 0; i < points.length - 1; i++) {
                 if (ejection !== null) {
                     if (distance (ejection, points [i + 1]) > ejectionDistance)  {
@@ -429,7 +431,7 @@ angular.module('resources.geogps', [])
                     }
                 } else {
                     if (distance (points [i], points [i + 1]) > ejectionDistance && ((points [i + 1].dt - points [i].dt) < ejectionTime)) {
-                        ejection = points [i];
+                        ejection = points [i + 1];
                         continue;
                     }
                 }
@@ -465,6 +467,11 @@ angular.module('resources.geogps', [])
                             insertPoints (i);
                         } else {
                             lastInsertPointIndex = i;
+                            var prevPoint = points_ret [points_ret.length - 1] || points [i];
+                            var newPoint = angular.copy (points [i]);
+                            copyPointParams (prevPoint, newPoint);
+                            newPoint.dt =  points [i].dt;
+                            points_ret.push (newPoint);
                         }
                         move_start = null;
                     }
@@ -707,7 +714,13 @@ angular.module('resources.geogps', [])
             }
         };
         GeoGPS.options = {
-            useServerFiltration: false,
+            useServerFiltration: true,
+            filter_shortTraveled: true,
+            filter_invalidPoints: true,
+            filter_ejection: true,
+            filter_clearStopPoints: true,
+            addPoint_23_59: true,
+            addPoint_00_00: true,
             stopTime: 3,
             minMoveDistance: 0.05,
             minMoveTime: 15,
@@ -731,13 +744,13 @@ angular.module('resources.geogps', [])
             ejectionTime: 20,
             updateValues: function (sys) {
                 if (system && system.car) {
-                    if (system.car.minMoveTime)
-                        this.minMoveTime = system.car.minMoveTime * 60;
-                    if (system.car.minMoveDistance)
-                        this.minMoveDistance = system.car.minMoveDistance;
-                    if (system.car.stop) {
-                        this.stopTime = system.car.stop | 0;
+                    for(var key in this) {
+                        if (key in sys.car)
+                            this [key] = sys.car [key];
                     }
+                    /*if (system.car.stop) {
+                        this.stopTime = system.car.stop;
+                    }*/
                 }
             }
         };
@@ -756,19 +769,21 @@ angular.module('resources.geogps', [])
             var system = System.cached(skey);
             GeoGPS.options.updateValues (system);
             //////  добавить точку в конец трека с временем 23:59:59 если выбран не текущий день
-            var addP = angular.copy(points [points.length - 1]);
-            var date = new Date();
-            var tz = (date).getTimezoneOffset() / 60;
-            var day = (new Date (addP.dt * 1000).valueOf() / 1000 / 3600) / 24;
-            var dayNow = date.valueOf() / 1000 / 3600 / 24;
-            if (Math.floor(day) != Math.floor(dayNow)) {
-                var oldValue = addP.dt;
-                var newValue = ~~(addP.dt / 3600);
-                newValue = ~~(newValue / 24);
-                newValue = (newValue * 24 + tz + 23) * 3600 + 3599;
-                addP.dt = newValue;
-                if (newValue < (oldValue + 3600)) {
-                    points.push (addP);
+            if (GeoGPS.options.addPoint_23_59) {
+                var addP = angular.copy(points [points.length - 1]);
+                var date = new Date();
+                var tz = (date).getTimezoneOffset() / 60;
+                var day = (new Date (addP.dt * 1000).valueOf() / 1000 / 3600) / 24;
+                var dayNow = date.valueOf() / 1000 / 3600 / 24;
+                if (Math.floor(day) != Math.floor(dayNow)) {
+                    var oldValue = addP.dt;
+                    var newValue = ~~(addP.dt / 3600);
+                    newValue = ~~(newValue / 24);
+                    newValue = (newValue * 24 + tz + 23) * 3600 + 3599;
+                    addP.dt = newValue;
+                    if (newValue < (oldValue + 3600)) {
+                        points.push (addP);
+                    }
                 }
             }
             ///////
@@ -778,12 +793,15 @@ angular.module('resources.geogps', [])
             } else {
                 //GeoGPS.isStop = isStop;
             }
-            points = removeInvalidPoints (points);
+            if (GeoGPS.options.filter_invalidPoints)
+                points = removeInvalidPoints (points);
             if (GeoGPS.options.correctFromHours > 0)
-                points = transferStopPoint (points, hoursFrom, GeoGPS.options.correctFromHours);
+                points = transferStopPoint (points, hoursFrom);
             points = removeLargeMoveInShortTime (points);
-            points = removeShortTrips (points);
-            clearStopPointsCoordinates (points);
+            if (GeoGPS.options.filter_shortTraveled)
+                points = removeShortTrips (points);
+            if (GeoGPS.options.filter_clearStopPoints)
+                clearStopPointsCoordinates (points);
             updatePointsFuel (points);
             var events = GeoGPS.getEventsFromPoints (points, 0, points.length, system);
             var bounds = GeoGPS.getBoundsFromPoints (points, 0, points.length);

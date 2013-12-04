@@ -1,0 +1,145 @@
+<style type="text/css">
+    strong {
+        color: green;
+    }
+    dt {
+        width: 70%;
+        display:inline-block;
+    }
+    dd {
+        width: 30%;
+        display:inline-block;
+    }
+    .clear {
+        clear: both;   
+    }
+</style>
+<h4><navtool></navtool> Концигуратор настроек фильтрации трэка</h4>
+
+<div style="width: 250px">
+    <label translate>System:</label>
+    <select class="form-control" ng-model="skey" ng-options="systems[s].title for s in account.account.skeys" ng-change="onSysSelect()">
+        <option value="" ng-show="!reportSettings.systemKey" translate>Select system</option>
+    </select>
+</div>
+<br>
+<div class="well well-small col-lg-4">
+    <h4>Фильтры</h4>
+    <dl class="">
+        <code>По умолчанию все фильтры включены.</code>
+        <code>Так что если нет галочки фильтр</code>
+        <code>всеравно может быть включен,</code>
+        <code>значение просто не записано в систему</code>
+        <code>(для исправления этого нужно ключить и выключить)</code>
+        <dt title="">Определение точек стоянок и остановок на сервере</dt><dd><input type="checkbox" ng-model="system.car.useServerFiltration" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
+        <dt>Короткие поездуи</dt><dd><input type="checkbox" ng-model="system.car.filter_shortTraveled" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
+        <dt title="С координатами 0, 0 либо с маленьким количеством спутников">Явно ложные точки</dt><dd><input type="checkbox" ng-model="system.car.filter_invalidPoints" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
+        <dt title="Точки переместившиеся на большое расстояние за короткое время">Выбросы</dt><dd><input type="checkbox" ng-model="system.car.filter_ejection" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
+        <dt title="Назначение координат первой точки стоянки всем остальным точкам">Очишение всех точек стоянки</dt><dd><input type="checkbox" ng-model="system.car.filter_clearStopPoints" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
+        <dt title="">Назначать первой тоске трека время 00:00</dt><dd><input type="checkbox" ng-model="system.car.addPoint_00_00" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
+        <dt title="Добавляемая точка является клоном последней точки только с измененным значением времени">Добавлять в конец трэка точку с временем 23:59</dt><dd><input type="checkbox" ng-model="system.car.addPoint_23_59" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
+        <dt title="0 что бы отключить">Перенос точки стоянки (120 ч)</dt><dd contenteditable="true" ng-model="system.car.correctFromHours" ng-change="system.$patch('car')"></dd>
+    </dl>
+</div>
+<div class="clear"></div>
+
+<div class="well well-small col-lg-4">
+    <h4>Определение состояния двигателя (заупущен или нет)</h4>
+    <button class="btn" ng-click="show_motor_onAlg = !show_motor_onAlg">Описание алгоритма :</button>
+    <pre ng-show="show_motor_onAlg">
+    Любой из пунктов:
+    1. Напряжение бортовой сети больше <strong>Напряжение 1</strong> и меньше <strong>Напряжение 2</strong>
+    2. Напряжение бортовой сети больше <strong>Напряжение 3</strong>
+    </pre>
+    <dl class="">
+        <dt><strong>Напряжение 1</strong> (13.1 V)</dt><dd contenteditable="true" ng-model="system.car.motorOn_min" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Напряжение 2</strong> (19 V)</dt><dd contenteditable="true" ng-model="system.car.motorOn_max" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Напряжение 3</strong> (26.2 V)</dt><dd contenteditable="true" ng-model="system.car.motorOn_min_2" ng-change="system.$patch('car')"></dd>
+    </dl>
+</div>
+
+<div class="well well-small col-lg-4">
+    <h4>Короткие поездки</h4>
+    <button class="btn" ng-click="show_shortTripAlg = !show_shortTripAlg">Описание алгоритма :</button>
+    <pre ng-show="show_shortTripAlg">
+    Отрезок трека удаляется если выаолнен любой из пунктов:
+    1. Время поездки меньше чем <strong>Время</strong>
+    2. Пройденная дистанция меньше чем <strong>Дистанция</strong>
+    </pre>
+    <dl class="">
+        <dt><strong>Время</strong> (15 сек)</dt><dd contenteditable="true" ng-model="system.car.minMoveTime" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Дистанция</strong> (0.05 км)</dt><dd contenteditable="true" ng-model="system.car.minMoveDistance" ng-change="system.$patch('car')"></dd>
+    </dl>
+</div>
+
+<div class="well well-small col-lg-4">
+    <h4>Ложные точки</h4>
+    <button class="btn" ng-click="show_shortTripAlg = !show_shortTripAlg">Описание алгоритма :</button>
+    <pre ng-show="show_shortTripAlg">
+    Отрезок трека удаляется если выполнен любой из пунктов:
+    1. Координаты точки равны 0, 0
+    2. Количество спутников меньше чем <strong>Минимальное количество спутников</strong>
+    </pre>
+    <dl class="">
+        <dt><strong>Минимальное количество спутников</strong> (4)</dt><dd contenteditable="true" ng-model="system.car.minSputniksCount" ng-change="system.$patch('car')"></dd>
+    </dl>
+</div>
+
+<div class="clear"></div>
+
+<div class="well well-small col-lg-4">
+    <h4>Выбросы</h4>
+    <button class="btn" ng-click="show_ejectionAlg = !show_ejectionAlg">Описание алгоритма :</button>
+    <pre ng-show="show_ejectionAlg">
+    Отрезок трека удаляется если находится точка которая переместила на расстояние больше чем <strong>Расстояние</strong> за премя меньше чем <strong>Интервал</strong> и следующие точки на расстоянии больше чем <strong>Расстояние</strong>
+    </pre>
+    <dl class="">
+        <dt><strong>Расстояние</strong> (0.5 км)</dt><dd contenteditable="true" ng-model="system.car.ejectionDistance" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Интервал</strong> (20 сек)</dt><dd contenteditable="true" ng-model="system.car.ejectionTime" ng-change="system.$patch('car')"></dd>
+    </dl>
+</div>
+
+<div class="clear"></div>
+
+<div ng-show="system.car.useServerFiltration" class="well well-small col-lg-4">
+    <h4>Фиксация точки стоянки при остановке</h4>
+    <button class="btn" ng-click="show_stopAlg = !show_stopAlg">Описание алгоритма :</button>
+    <pre ng-show="show_stopAlg">
+    1. Трекер передаёт координаты точки замедления скорости (первые координаты после остановки движущегося трекера являются самыми точными).
+    2. Если в течение <strong>Первый интервал</strong> после отправки точки замедления акселерометр не фиксирует сработок - трекер фиксирует точку замедления, как точку стоянки.
+    3. Если в течение <strong>Первый интервал</strong> после отправки точки замедления акселерометр фиксирует сработки, но через <strong>Первый интервал</strong> <strong>Двигатель выключент</strong> - трекер фиксирует точку замедления, как точку стоянки.
+    4. Если в течение <strong>Первый интервал</strong> сек после отправки точки замедления акселерометр фиксирует сработки, через <strong>Первый интервал</strong> <strong>Двигатель выключент</strong>, но трекер перемещается менее чем на <strong>Минимальное расстояние 1</strong> (программируется) - трекер фиксирует точку замедления, как точку стоянки.
+    5. Если в интервале <strong>Первый интервал</strong>...<strong>Второй интервал</strong> сек после отправки точки замедления акселерометр не фиксирует сработок - трекер фиксирует точку замедления, как точку стоянки.
+    6. Если в интервале <strong>Первый интервал</strong>...<strong>Второй интервал</strong> сек после отправки точки замедления акселерометр фиксирует сработки, но через <strong>Второй интервал</strong> <strong>Двигатель выключент</strong> - трекер фиксирует точку замедления, как точку стоянки.
+    7. Если в интервале <strong>Первый интервал</strong>...<strong>Второй интервал</strong> сек после отправки точки замедления акселерометр фиксирует сработки, через <strong>Второй интервал</strong> <strong>Двигатель выключент</strong>, но трекер перемещается менее чем на <strong>Минимальное расстояние 2</strong> - трекер фиксирует точку замедления, как точку стоянки.
+    </pre>
+    <dl class="">
+        <dt><strong>Первый интервал</strong> (60 с)</dt><dd contenteditable="true" ng-model="system.car.interval_0" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Второй интервал</strong> (120 с)</dt><dd contenteditable="true" ng-model="system.car.interval_1" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Третий интервал</strong> (180 с)</dt><dd contenteditable="true" ng-model="system.car.interval_2" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Минимальное расстояние</strong> 1 (0.01 км)</dt><dd contenteditable="true" ng-model="system.car.stopMovingMinDistance" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Минимальное расстояние</strong> 2 (0.02 км)</dt><dd contenteditable="true" ng-model="system.car.stopMovingMinDistance_2" ng-change="system.$patch('car')"></dd>
+    </dl>
+</div>
+
+<div ng-show="system.car.useServerFiltration" class="well well-small col-lg-4">
+    <h4>Регистрация начала движения</h4>
+    <button class="btn" ng-click="show_moveAlg = !show_moveAlg">Описание алгоритма :</button>
+    <pre ng-show="show_moveAlg">
+    Условия регистрации - любой из пунктов:
+    1. Перемещение со скоростью более <strong>Скорость 1</strong> без срабатывания акселерометра.
+    2. Перемещение на расстояние более чем на <strong>Расстояние 1</strong> без срабатывания акселерометра.
+    3. Срабатывание акселерометра и перемещение со скоростью более <strong>Скорость 2</strong>.
+    4. Срабатывание акселерометра и перемещение на расстояние более <strong>Расстояние 2</strong>.
+    5. <strong>Двигатель включен</strong>, срабатывание акселерометра и перемещение со скоростью более <strong>Скорость 3</strong>.
+    6. <strong>Двигатель включен</strong>, срабатывание акселерометра и перемещение на расстояние более <strong>Расстояние 3</strong>.
+    </pre>
+    <dl class="">
+        <dt><strong>Скорость</strong> 1 (60 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_out_accelerometer" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Расстояние</strong> 1 (1 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_out_accelerometer" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Скорость</strong> 2 (20 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_accelerometer" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Расстояние</strong> 2 (0.05 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_accelerometer" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Скорость</strong> 3 (5 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_motor_on" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Расстояние</strong> 3 (0.03 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_motor_on" ng-change="system.$patch('car')"></dd>
+    </dl>
+</div>
