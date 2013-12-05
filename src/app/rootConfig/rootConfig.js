@@ -60,6 +60,16 @@ angular.module('config.root', ['ngRoute', 'resources.account', '$strap.directive
         };
         $scope.onSysSelect = onSysSelect;
         onSysSelect ();
+        var localRaw = window.localStorage.getItem('lacalRaw');
+        if (!localRaw) {
+            GeoGPS.options.raw = false;
+        } else {
+            GeoGPS.options.raw = true;
+        }
+        
+        $scope.changeRaw = function () {
+            window.localStorage.setItem('lacalRaw', GeoGPS.options.raw);
+        };
         
         $scope.show_stopAlg = false;            //Описание алгоритма фиксации точки начала стоянки
         $scope.show_moveAlg = false;            //Описание алгоритма фиксации точки начала движения
