@@ -216,7 +216,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             // mapTypeIds.push('Quest');
 
             // Для установки максимального зума для целей отладки нужно выполнить в консоли: localStorage.setItem('map.maxZoom', 30)
-            var maxZoom = (window.localStorage.getItem('map.maxZoom') || '17') | 0; //TODO: window.localStorage.getItem('map.maxZoom') значение пустое и всегда возвращает значение по умолчанию а 16 мало для гугловских карт
+            var maxZoom = (window.localStorage.getItem('map.maxZoom') || '20') | 0; //TODO: window.localStorage.getItem('map.maxZoom') значение пустое и всегда возвращает значение по умолчанию а 16 мало для гугловских карт
 
             // var latlng = new google.maps.LatLng(48.397, 34.644);
             var myOptions = {
@@ -227,7 +227,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
                 },
                 scaleControl: true,
-                maxZoom: maxZoom,
+                maxZoom: maxZoom + 4,
                 draggableCursor: 'pointer',
                 zoom: prev_config.zoom
             };
@@ -328,6 +328,15 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
 
             google.maps.event.addListener(map, 'zoom_changed', function() {
+                var zoomLevel = map.getZoom();
+                if (zoomLevel >= 17) {
+                    console.log(zoomLevel);
+                    var saved = window.localStorage.getItem('mapZoomAlert');
+                    if (!saved) {
+                        window.localStorage.setItem('mapZoomAlert', true);
+                        alert("Из-за особенностей работы gps нельзя гарантировать точность отображения точек трэка при большем приближении");
+                    }
+                }
                 // console.log('zoom_changed');
                 //PathRebuild();    // TODO! Разная детализация трека, по аналогии со старым сайтом
             });
