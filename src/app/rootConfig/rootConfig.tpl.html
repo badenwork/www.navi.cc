@@ -85,6 +85,17 @@
     </dl>
 </div>
 
+<div class="well well-small col-lg-4">
+    <h4>Очищение точек стоянки</h4>
+    <button class="btn" ng-click="show_clearStopPointAlg = !show_clearStopPointAlg">Описание алгоритма :</button>
+    <pre ng-show="show_clearStopPointAlg">
+    Координаты первой точки стоянки копируются на все остальные до тех пор пока не находится точка на удалении больше чем <strong>Разброс координат вовремя стоянки (км)</strong> после чего уже берутся её координаты
+    </pre>
+    <dl class="">
+        <dt><strong>Разброс координат вовремя стоянки (км)</strong> (1 км)</dt><dd contenteditable="true" ng-model="system.car.stopDistance" ng-change="system.$patch('car')"></dd>
+    </dl>
+</div>
+
 <div class="clear"></div>
 
 <div class="well well-small col-lg-4">
