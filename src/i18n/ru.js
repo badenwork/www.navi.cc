@@ -49,6 +49,7 @@ angular.module('i18n.ru', ['pascalprecht.translate'])
             'AUTO_BOUND_TRACK': 'Автоматически центровать трек',
             'ANIMATION_DIR': 'Анимация направления движения',
             'STOP_NUMBERS': 'Нумерация остановок / стоянок',
+            'DISABLE_FILTERS': 'Отключить фильтры',
 
             // Страница настроек
             'add_system': 'Добавить трекер',

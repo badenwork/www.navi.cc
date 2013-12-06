@@ -48,6 +48,7 @@ angular.module('i18n.ua', ['pascalprecht.translate'])
             'AUTO_BOUND_TRACK': 'Автоматично центрувати трек',
             'ANIMATION_DIR': 'Анімація напрямку руху',
             'STOP_NUMBERS': 'Нумерація зупинок / стоянок',
+            'DISABLE_FILTERS': 'Відключити фільтри',
 
             // Config page
             'add_system': 'Add system (translate)',

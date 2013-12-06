@@ -47,6 +47,7 @@ angular.module('i18n.pl', ['pascalprecht.translate'])
             'AUTO_BOUND_TRACK': 'Automatycznie wyśrodkować utwór',
             'ANIMATION_DIR': 'Kierunek Animacja',
             'STOP_NUMBERS': 'Numeracja przystanków / parki',
+            'DISABLE_FILTERS': 'Wyłączyć filtry',
 
             // Config page
             'add_system': 'Add system (translate)',

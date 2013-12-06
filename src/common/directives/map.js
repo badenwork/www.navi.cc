@@ -227,7 +227,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
                 },
                 scaleControl: true,
-                maxZoom: maxZoom + 4,
+                maxZoom: maxZoom,
                 draggableCursor: 'pointer',
                 zoom: prev_config.zoom
             };
@@ -329,7 +329,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             google.maps.event.addListener(map, 'zoom_changed', function() {
                 var zoomLevel = map.getZoom();
-                if (zoomLevel >= 17) {
+                if (zoomLevel > 17) {
                     console.log(zoomLevel);
                     var saved = window.localStorage.getItem('mapZoomAlert');
                     if (!saved) {
@@ -938,7 +938,11 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 if (item) {
                     element.addClass('on');
                     element.removeClass('off');
+                    element.removeClass('hidden');
                 } else {
+                    if (item === null) {
+                        element.addClass('hidden');
+                    }
                     element.addClass('off');
                     element.removeClass('on');
                 }

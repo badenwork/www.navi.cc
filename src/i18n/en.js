@@ -48,6 +48,7 @@ angular.module('i18n.en', ['pascalprecht.translate'])
             'AUTO_BOUND_TRACK': 'Automatic bound track',
             'ANIMATION_DIR': 'Animation direction',
             'STOP_NUMBERS': 'Numbering of stops / parks',
+            'DISABLE_FILTERS': 'Disable filters',
 
             // Config page
             'add_system': 'Add system',
