@@ -81,6 +81,10 @@ angular.module('resources.geogps', [])
             days = {}; // Дни, в которые было движение
         GeoGPS.options = options;
         // var days = {};
+        var loadOptions = function () {
+            options.raw = window.localStorage.getItem('lacalRaw') == 'true' ? true : false;
+        };
+        loadOptions ();
 
         var parse_onebin = function(packet) {
             var fsource, dt, lat, lon, speed, course, sats, vout, vin, flags, reserve1, reserve2, lcrc, adc1, adc2, lsbs, altitude;
@@ -472,14 +476,16 @@ angular.module('resources.geogps', [])
             points_ret.push (points [0]);
             for (var i = 0; i < points.length - 1; i++) {
                 if (ejection !== null) {
-                    if (distance (ejection, points [i + 1]) > ejectionDistance)  {
+                    if (distance (ejection, points [i]) > ejectionDistance)  {
                         continue;
                     } else {
                         ejection = null;
                     }
                 } else {
                     if (distance (points [i], points [i + 1]) > ejectionDistance && ((points [i + 1].dt - points [i].dt) < ejectionTime)) {
-                        ejection = points [i + 1];
+                        //ejection = points [i + 1];
+                        console.log ("t_0 : ",  points [i].dt, "t_1 : ", points [i + 1].dt, "ejectionTime : ", ejectionTime, "ejectionDistance : ", ejectionDistance);
+                        console.log("test");
                         continue;
                     }
                 }
@@ -1112,7 +1118,8 @@ angular.module('resources.geogps', [])
         GeoGPS.getTrack = function(hourfrom, hourto) {
             //TODO: исправить очень опасно так как это работает только зимой после перехода на зимнее время
             // 1 час это смеещение изза перехода на зимнее время
-
+            loadOptions ();
+            console.log ("getTrack----> options : ", options);
             if(!options.raw){
                 hourfrom -= GeoGPS.options.correctFromHours + 1; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
             }

@@ -49,7 +49,7 @@ angular.module('config.root', ['ngRoute', 'resources.account', '$strap.directive
 
         $scope.account = account;
         $scope.systems = systems;
-        $scope.GeoGPS = GeoGPS;
+        $scope.options = GeoGPS.options;
         $scope.skey = $routeParams.skey;
         if (!$scope.skey)
             $scope.skey = account.account.skeys [0];
@@ -60,15 +60,9 @@ angular.module('config.root', ['ngRoute', 'resources.account', '$strap.directive
         };
         $scope.onSysSelect = onSysSelect;
         onSysSelect ();
-        var localRaw = window.localStorage.getItem('lacalRaw');
-        if (!localRaw) {
-            GeoGPS.options.raw = false;
-        } else {
-            GeoGPS.options.raw = true;
-        }
-        
         $scope.changeRaw = function () {
-            window.localStorage.setItem('lacalRaw', GeoGPS.options.raw);
+            window.localStorage.setItem('lacalRaw', $scope.raw);
+            console.log("test : ", $scope.raw);
         };
         
         $scope.show_stopAlg = false;            //Описание алгоритма фиксации точки начала стоянки

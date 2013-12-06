@@ -32,7 +32,7 @@
         <code>значение просто не записано в систему</code>
         <code>(для исправления этого нужно ключить и выключить)</code>
         <hr>
-        <dt title="Отключить все фильтры на этом компьютере для этого браузера"><strong>Отключить все фильтры</strong></dt><dd><input type="checkbox" ng-model="system.car.raw" class="ng-pristine ng-valid" ng-change="changeRaw()"></dd>
+        <dt title="Отключить все фильтры на этом компьютере для этого браузера"><strong>Отключить все фильтры</strong></dt><dd><input type="checkbox" ng-model="options.raw" class="ng-pristine ng-valid" ng-change="changeRaw()"></dd>
         <hr>
         <dt title="">Определение точек стоянок и остановок на сервере</dt><dd><input type="checkbox" ng-model="system.car.useServerFiltration" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
         <dt>Короткие поездуи</dt><dd><input type="checkbox" ng-model="system.car.filter_shortTraveled" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
