@@ -491,7 +491,7 @@ angular.module('resources.geogps', [])
                 } else {
                     var time = points [i + 1].dt - points [i].dt;
                     var maxMovedDistance = (points [i].speed + points [i + 1].speed) * ejectionMultiplier * (time / 3600);
-                    var dist = distance (points [i], points [i + 1])
+                    var dist = distance (points [i], points [i + 1]);
                     //if (distance (points [i], points [i + 1]) > ejectionDistance && ((points [i + 1].dt - points [i].dt) < ejectionTime)) {
                     if (dist > maxMovedDistance && time < ejectionTime && dist > ejectionDistance) {
                         ejection = points [i + 1];
