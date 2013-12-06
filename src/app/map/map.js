@@ -224,9 +224,13 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
         
         $scope.$watch ('mapconfig.disableFilters', function (disableFilters) {
             $scope.disableFilters = disableFilters;
-            $scope.isUpdate = true;
-            load_date();
-            gettrack();
+            if (angular.isUndefined ($scope.isUpdate))
+                $scope.isUpdate = false;
+            else {
+                $scope.isUpdate = true;
+                load_date();
+                gettrack();
+            }            
         });
 
         // $scope.$watch('map', function(map){

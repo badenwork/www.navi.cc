@@ -217,6 +217,12 @@ angular.module('resources.geogps', [])
         // Возвращает true если точка относится к стоянке
         var isStop = function(point) {
             if (options.useServerFiltration && !options.raw) {
+                if (point.type === POINTTYPE.STOP)
+                    return true;
+                else {
+                    console.log ("TYPE : ", point.type);
+                    return false;
+                }
                 return point.type === POINTTYPE.STOP;
             } else {
                 return $.inArray(point.fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
@@ -547,7 +553,7 @@ angular.module('resources.geogps', [])
                 } else {
                     if (move_start !== null) {
                         for (var k = move_start; k < i; k++) {
-                            moveDistance += distance (points [k], points [k + 1])
+                            moveDistance += distance (points [k], points [k + 1]);
                         }
                         if (minTripTime < (point.dt - points [move_start].dt) ||
                             minTripDistance < moveDistance) {
@@ -614,7 +620,7 @@ angular.module('resources.geogps', [])
             var condition_2 = !accelerometerOn && prevPoint && distance (prevPoint, point) > GeoGPS.options.moving_a_distance_with_out_accelerometer;  //Перемещение на расстояние более чем на 5000 метров (программируется) без срабатывания акселерометра
             if (condition_2) {
                 //console.log ("condition_2");
-                console.log("distance : ",distance (prevPoint, point)); 
+                //console.log("distance : ",distance (prevPoint, point)); 
                 return true;
             }
             var condition_3 = accelerometerOn && point.speed >  GeoGPS.options.moving_speed_with_accelerometer; //Срабатывание акселерометра и перемещение со скоростью более 20 км/час (программируется).
@@ -753,7 +759,6 @@ angular.module('resources.geogps', [])
             var interval_0 = [];
             var interval_1 = [];
             var interval_2 = [];
-
             for (var i = 0; i < points.length; i++) {
                 var point = points [i];
                 if (movePoint === null) {
@@ -762,12 +767,14 @@ angular.module('resources.geogps', [])
                         stopPoint = null;
                         setPointType (point, POINTTYPE.MOVE);
                         continue;
+                    } else {
+                        setPointType (point, POINTTYPE.STOP);
                     }
                 } else {
                     setPointType (point, POINTTYPE.MOVE);
                 }
                 if (slowingPoint === null && stopPoint === null) {
-                    if (isSlowingPoint (point)) {
+                    if (isSlowingPoint (point) || movePoint === null) {
                         slowingPoint = i;
                         interval_0 = [];
                         interval_1 = [];
@@ -795,12 +802,23 @@ angular.module('resources.geogps', [])
                         slowingPoint = null;
                     } else if (movePoint !== null) {
                         setPointType (point, POINTTYPE.MOVE);
+                    } else {
+                        setPointType (point, POINTTYPE.STOP);
                     }
                 } else if (movePoint === null) {
                     //copyPointParams (points [stopPoint], point);
                     setPointType (point, POINTTYPE.STOP);
                 }
             }
+            if (slowingPoint !== null) {
+                for (var k = slowingPoint; k < points.length; k++) {
+                    points [k].type = POINTTYPE.STOP;
+                }
+            }
+            /*for (var k = 0; k < points.length; k++) {
+                if (points [k].type == undefined)
+                    setPointType (points [k], POINTTYPE.STOP);
+            }*/
         };
 ////////////////////////////////////////////////////////////////////
         var bingpsparse_2 = function (array, hoursFrom) {
@@ -834,10 +852,7 @@ angular.module('resources.geogps', [])
             }
             ///////
             if (GeoGPS.options.useServerFiltration) {
-                //GeoGPS.isStop = isStop_2;
                 identifyPointsType (points);
-            } else {
-                //GeoGPS.isStop = isStop;
             }
             if (GeoGPS.options.filter_invalidPoints)
                 points = removeInvalidPoints (points);
