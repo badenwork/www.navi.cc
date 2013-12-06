@@ -50,7 +50,7 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
             angular.forEach(fordel, function(key){
                 delete that[key];
             });
-        }
+        };
 
         // Отправить на сервер измененное значение одного поля
         Model.prototype.$patch = function(field) {
