@@ -23,6 +23,7 @@
     </select>
 </div>
 <br>
+<button ng-click="resetSettings()" class="btn">Сбросить настройки</button>
 <div class="well well-small col-lg-4">
     <h4>Фильтры</h4>
     <dl class="">
@@ -70,7 +71,7 @@
     2. Пройденная дистанция меньше чем <strong>Дистанция</strong>
     </pre>
     <dl class="">
-        <dt><strong>Время</strong> (10 сек)</dt><dd contenteditable="true" ng-model="system.car.minMoveTime" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Время</strong> (8 сек)</dt><dd contenteditable="true" ng-model="system.car.minMoveTime" ng-change="system.$patch('car')"></dd>
         <dt><strong>Дистанция</strong> (0.05 км)</dt><dd contenteditable="true" ng-model="system.car.minMoveDistance" ng-change="system.$patch('car')"></dd>
     </dl>
 </div>

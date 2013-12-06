@@ -49,7 +49,7 @@ angular.module('resources.geogps', [])
                 stopDistance: 1,
                 stopTime: 3,
                 minMoveDistance: 0.05,
-                minMoveTime: 10,
+                minMoveTime: 8,
                 interval_0: 60,
                 interval_1: 120,
                 interval_2: 180,
@@ -76,12 +76,14 @@ angular.module('resources.geogps', [])
                                 if (sys.car [key] !== '') {
                                     if (sys.car [key] == 'true')
                                         this [key] = true;
-                                    else if (sys.car [key] == 'false')
+                                    else if (sys.car [key] == 'false') {
                                         this [key] = false;
-                                    else if (typeof (sys.car [key]) instanceof String)
+                                    } else if (typeof(sys.car [key]) == 'string') {
+                                        //console.log("value is string! key : ", key, " Value : ", sys.car [key]);
                                         this [key] = parseFloat(sys.car [key].replace(",", "."));
-                                    else
+                                    } else {
                                         this [key] = sys.car [key];
+                                    }
                                 }
                         }
                         console.log ("updateValues-------> options : ", options);
@@ -253,7 +255,7 @@ angular.module('resources.geogps', [])
                 if (!stopIndex)
                     stopIndex = points.length;
                 for (var i = startIndex; i < stopIndex; i++) {
-                    if (!isStop (points [i]))
+                    //if (!isStop (points [i]))
                         track.push (new google.maps.LatLng (points [i].lat, points [i].lon));
                 }
             }
@@ -461,12 +463,18 @@ angular.module('resources.geogps', [])
             var prevPoint = null;
             for (; i < points.length; i++) {
                 var point = points [i];
-                if (point.lat === 0 && point.lon === 0)
+                if (point.lat === 0 && point.lon === 0) {
+                    //console.log ("Точка с координатами 0,0");
                     continue;
-                if (!point.sats || point.sats < GeoGPS.options.minSputniksCount)
+                }
+                if (!point.sats || point.sats < GeoGPS.options.minSputniksCount) {
+                    //console.log("Маленькое количество спутников : ", point.sats);
                     continue;
-                if (prevPoint !== null && point.dt - prevPoint.dt < 0)
+                }
+                if (prevPoint !== null && point.dt - prevPoint.dt < 0) {
+                    //console.log("Нарушение хронологии");
                     continue;
+                }
                     prevPoint = point;
                 points_ret.push (point);
             }
@@ -520,6 +528,7 @@ angular.module('resources.geogps', [])
             var points_ret = [];
             var move_start = null;
             var lastInsertPointIndex = 0;
+            var moveDistance = 0;
             var i = 0;
             var insertPoints = function (pointIndex) {
                 for (var j = lastInsertPointIndex; j < pointIndex; j++) {
@@ -533,19 +542,24 @@ angular.module('resources.geogps', [])
                     if (move_start === null) {
                         insertPoints (i);
                         move_start = i;
+                        moveDistance = 0;
                     }
                 } else {
                     if (move_start !== null) {
-                        if (minTripTime < (point.dt - points [move_start].dt) &&
-                            minTripDistance < distance (point, points [move_start])) {
+                        for (var k = move_start; k < i; k++) {
+                            moveDistance += distance (points [k], points [k + 1])
+                        }
+                        if (minTripTime < (point.dt - points [move_start].dt) ||
+                            minTripDistance < moveDistance) {
                             insertPoints (i);
                         } else {
                             lastInsertPointIndex = i;
                             var prevPoint = points_ret [points_ret.length - 1] || points [i];
                             var newPoint = angular.copy (points [i]);
                             //copyPointParams (prevPoint, newPoint);
-                            //newPoint.dt =  points [i].dt;
+                            newPoint.dt =  points [i].dt;
                             points_ret.push (newPoint);
+                            //points_ret.push (point);
                         }
                         move_start = null;
                     }

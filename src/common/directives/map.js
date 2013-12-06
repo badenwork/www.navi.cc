@@ -427,7 +427,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
 
             var mouseMove = function(event){
 
-                if ((scope.track === null) || (scope.track.points.length === 0 )) return null;
+                if ((!scope.track) || (scope.track.points.length === 0 )) return null;
 
                 var point = {lat: event.latLng.lat(), lon: event.latLng.lng()};
                 // console.log('mousemove', event);

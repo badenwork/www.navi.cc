@@ -63,6 +63,15 @@ angular.module('config.root', ['ngRoute', 'resources.account', '$strap.directive
         $scope.changeRaw = function () {
             window.localStorage.setItem('lacalRaw', GeoGPS.options.raw);
         };
+        $scope.resetSettings = function () {
+            if ($scope.system && $scope.system.car) {
+                for(var key in GeoGPS.options) {
+                    if (key in $scope.system.car) {
+                        $scope.system.car [key] = '';
+                    }
+                }
+            }
+        };
         
         $scope.show_stopAlg = false;            //Описание алгоритма фиксации точки начала стоянки
         $scope.show_moveAlg = false;            //Описание алгоритма фиксации точки начала движения
