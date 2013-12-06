@@ -49,7 +49,7 @@ angular.module('resources.geogps', [])
                 stopDistance: 1,
                 stopTime: 3,
                 minMoveDistance: 0.05,
-                minMoveTime: 15,
+                minMoveTime: 10,
                 interval_0: 60,
                 interval_1: 120,
                 interval_2: 180,
@@ -59,7 +59,7 @@ angular.module('resources.geogps', [])
                 stopMovingMinDistance: 0.01,
                 stopMovingMinDistance_2: 0.02,
                 moving_speed_with_out_accelerometer: 60,
-                moving_a_distance_with_out_accelerometer: 1,
+                moving_a_distance_with_out_accelerometer: 5,
                 moving_speed_with_accelerometer: 20,
                 moving_a_distance_with_accelerometer: 0.05,
                 moving_speed_with_motor_on: 5,
@@ -73,8 +73,18 @@ angular.module('resources.geogps', [])
                     if (system && system.car) {
                         for(var key in this) {
                             if (key in sys.car)
-                                this [key] = sys.car [key];
+                                if (sys.car [key] !== '') {
+                                    if (sys.car [key] == 'true')
+                                        this [key] = true;
+                                    else if (sys.car [key] == 'false')
+                                        this [key] = false;
+                                    else if (typeof (sys.car [key]) instanceof String)
+                                        this [key] = parseFloat(sys.car [key].replace(",", "."));
+                                    else
+                                        this [key] = sys.car [key];
+                                }
                         }
+                        console.log ("updateValues-------> options : ", options);
                     }
                 }
             },
@@ -243,7 +253,8 @@ angular.module('resources.geogps', [])
                 if (!stopIndex)
                     stopIndex = points.length;
                 for (var i = startIndex; i < stopIndex; i++) {
-                    track.push (new google.maps.LatLng (points [i].lat, points [i].lon));
+                    if (!isStop (points [i]))
+                        track.push (new google.maps.LatLng (points [i].lat, points [i].lon));
                 }
             }
             return track;
@@ -586,9 +597,10 @@ angular.module('resources.geogps', [])
                 //console.log ("condition_1");
                 return true;
             }
-            var condition_2 = !accelerometerOn && prevPoint && distance (prevPoint, point) > GeoGPS.options.moving_a_distance_with_out_accelerometer;  //Перемещение на расстояние более чем на 1000 метров (программируется) без срабатывания акселерометра
+            var condition_2 = !accelerometerOn && prevPoint && distance (prevPoint, point) > GeoGPS.options.moving_a_distance_with_out_accelerometer;  //Перемещение на расстояние более чем на 5000 метров (программируется) без срабатывания акселерометра
             if (condition_2) {
                 //console.log ("condition_2");
+                console.log("distance : ",distance (prevPoint, point)); 
                 return true;
             }
             var condition_3 = accelerometerOn && point.speed >  GeoGPS.options.moving_speed_with_accelerometer; //Срабатывание акселерометра и перемещение со скоростью более 20 км/час (программируется).
@@ -788,8 +800,6 @@ angular.module('resources.geogps', [])
             if (points.length === 0) {
                 return;
             }
-            var system = System.cached(skey);
-            GeoGPS.options.updateValues (system);
             //////  добавить точку в конец трека с временем 23:59:59 если выбран не текущий день
             if (GeoGPS.options.addPoint_23_59) {
                 var addP = angular.copy(points [points.length - 1]);
@@ -1122,10 +1132,14 @@ angular.module('resources.geogps', [])
             return day in days;
         };
 
-        GeoGPS.getTrack = function(hourfrom, hourto) {
+        GeoGPS.getTrack = function(hourfrom, hourto, noUpdateOptions) {
             //TODO: исправить очень опасно так как это работает только зимой после перехода на зимнее время
             // 1 час это смеещение изза перехода на зимнее время
-            loadOptions ();
+            if (!noUpdateOptions) {
+                loadOptions ();
+                var system = System.cached(skey);
+                options.updateValues (system);
+            }
             console.log ("getTrack----> options : ", options);
             if(!options.raw){
                 hourfrom -= GeoGPS.options.correctFromHours + 1; //получаем данные на correctFromHours раньше чем запросили что бы получить корректные координаты стоянки
@@ -1169,7 +1183,7 @@ angular.module('resources.geogps', [])
                 if(options.raw){
                     defer.resolve(bingpsparse(uInt8Array, hourfrom, 0));
                 } else {
-                    defer.resolve(bingpsparse_2(uInt8Array, hourfrom));
+                    defer.resolve(bingpsparse_2(uInt8Array, hourfrom, noUpdateOptions));
                 }
             }).error(function(data, status) {
                 window.console.error('GeoGPS.getTrack.error', data, status);

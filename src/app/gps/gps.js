@@ -104,6 +104,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             autobounds: true, // Автоматическая центровка трека при загрузке
             animation: false, // Анимация направления трека
             numbers: true, // Нумерация стоянок/остановок
+            disableFilters: false, //Отключить фильтры
             centermarker: true
         };
 
@@ -171,12 +172,19 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             var sheet = new XLSX.document('exportgps', worksheets);
             $scope.exporturl = sheet.url();
         };
-
-        if ($scope.skey && ($scope.skey !== '') && ($scope.skey !== '+')) {
+        
+        var getTrack = function () {
             GeoGPS.select($scope.skey);
             // GeoGPS.setOptions({raw: true});
-            GeoGPS.getTrack(hourfrom, hourfrom + 23)
+            if ($scope.disableFilters)
+                GeoGPS.options.raw = true;
+            else 
+                GeoGPS.options.raw = false;
+            GeoGPS.getTrack(hourfrom, hourfrom + 23, $scope.disableFilters)
                 .then(function(data) {
+                    if ($scope.isUpdate) {
+                        data.update = true;
+                    }
                     $scope.track = data;
                     $scope.$broadcast('setTrack', data);
                     $scope.myPagingFunction();
@@ -190,7 +198,20 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             $scope.onMouseOver = function(g) {
                 $scope.center = g;
             };
+        };
+
+        if ($scope.skey && ($scope.skey !== '') && ($scope.skey !== '+')) {
+            getTrack ();  
         }
+        $scope.$watch ('mapconfig.disableFilters', function (disableFilters) {
+            $scope.disableFilters = disableFilters;
+            if (angular.isUndefined ($scope.isUpdate))
+                $scope.isUpdate = false;
+            else {
+                $scope.isUpdate = true;
+                getTrack ();
+            }
+        });
 
         var items = $scope.items = [];
         var ITEMS = 100; // По идее нужно вычислять в зависимости от высоты страницы

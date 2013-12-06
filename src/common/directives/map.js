@@ -938,7 +938,11 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 if (item) {
                     element.addClass('on');
                     element.removeClass('off');
+                    element.removeClass('hidden');
                 } else {
+                    if (item === null) {
+                        element.addClass('hidden');
+                    }
                     element.addClass('off');
                     element.removeClass('on');
                 }

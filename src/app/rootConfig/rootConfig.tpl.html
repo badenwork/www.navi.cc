@@ -35,8 +35,8 @@
         <dt title="Отключить все фильтры на этом компьютере для этого браузера"><strong>Отключить все фильтры</strong></dt><dd><input type="checkbox" ng-model="options.raw" class="ng-pristine ng-valid" ng-change="changeRaw()"></dd>
         <hr>
         <dt title="">Определение точек стоянок и остановок на сервере</dt><dd><input type="checkbox" ng-model="system.car.useServerFiltration" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
-        <dt>Короткие поездуи</dt><dd><input type="checkbox" ng-model="system.car.filter_shortTraveled" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
-        <dt title="С координатами 0, 0 либо с маленьким количеством спутников">Явно ложные точки</dt><dd><input type="checkbox" ng-model="system.car.filter_invalidPoints" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
+        <dt>Короткие поездки</dt><dd><input type="checkbox" ng-model="system.car.filter_shortTraveled" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
+        <dt title="С координатами 0, 0 либо с маленьким количеством спутников либо нарушающие хронологию во времени">Явно ложные точки</dt><dd><input type="checkbox" ng-model="system.car.filter_invalidPoints" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
         <dt title="Точки переместившиеся на большое расстояние за короткое время">Выбросы</dt><dd><input type="checkbox" ng-model="system.car.filter_ejection" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
         <dt title="Назначение координат первой точки стоянки всем остальным точкам">Очишение всех точек стоянки</dt><dd><input type="checkbox" ng-model="system.car.filter_clearStopPoints" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
         <dt title="">Назначать первой тоске трека время 00:00</dt><dd><input type="checkbox" ng-model="system.car.addPoint_00_00" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
@@ -70,7 +70,7 @@
     2. Пройденная дистанция меньше чем <strong>Дистанция</strong>
     </pre>
     <dl class="">
-        <dt><strong>Время</strong> (15 сек)</dt><dd contenteditable="true" ng-model="system.car.minMoveTime" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Время</strong> (10 сек)</dt><dd contenteditable="true" ng-model="system.car.minMoveTime" ng-change="system.$patch('car')"></dd>
         <dt><strong>Дистанция</strong> (0.05 км)</dt><dd contenteditable="true" ng-model="system.car.minMoveDistance" ng-change="system.$patch('car')"></dd>
     </dl>
 </div>
@@ -153,7 +153,7 @@
     </pre>
     <dl class="">
         <dt><strong>Скорость</strong> 1 (60 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_out_accelerometer" ng-change="system.$patch('car')"></dd>
-        <dt><strong>Расстояние</strong> 1 (1 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_out_accelerometer" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Расстояние</strong> 1 (5 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_out_accelerometer" ng-change="system.$patch('car')"></dd>
         <dt><strong>Скорость</strong> 2 (20 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_accelerometer" ng-change="system.$patch('car')"></dd>
         <dt><strong>Расстояние</strong> 2 (0.05 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_accelerometer" ng-change="system.$patch('car')"></dd>
         <dt><strong>Скорость</strong> 3 (5 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_motor_on" ng-change="system.$patch('car')"></dd>

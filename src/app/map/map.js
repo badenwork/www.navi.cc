@@ -119,8 +119,11 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
 
             var tz = (new Date()).getTimezoneOffset() / 60;
             var hourfrom = $scope.day * 24 + tz;
-
-            GeoGPS.getTrack(hourfrom, hourfrom + 23) // +23? не 24?
+            if ($scope.disableFilters)
+                GeoGPS.options.raw = true;
+            else
+                GeoGPS.options.raw = false;
+            GeoGPS.getTrack(hourfrom, hourfrom + 23, $scope.disableFilters) // +23? не 24?
             .then(function(data) {
                 data.update = !!$scope.isUpdate;
                 $scope.$broadcast('setTrack', data);
@@ -215,8 +218,16 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             autobounds: true, // Автоматическая центровка трека при загрузке
             animation: false, // Анимация направления трека
             numbers: true, // Нумерация стоянок/остановок
+            disableFilters: false, //Отключить фильтры
             centermarker: false // Не показывать маркер центра карты
         };
+        
+        $scope.$watch ('mapconfig.disableFilters', function (disableFilters) {
+            $scope.disableFilters = disableFilters;
+            $scope.isUpdate = true;
+            load_date();
+            gettrack();
+        });
 
         // $scope.$watch('map', function(map){
         //     if(!map) return;
