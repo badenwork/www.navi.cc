@@ -41,7 +41,7 @@
         <dt title="Назначение координат первой точки стоянки всем остальным точкам">Очишение всех точек стоянки</dt><dd><input type="checkbox" ng-model="system.car.filter_clearStopPoints" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
         <dt title="">Назначать первой тоске трека время 00:00</dt><dd><input type="checkbox" ng-model="system.car.addPoint_00_00" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
         <dt title="Добавляемая точка является клоном последней точки только с измененным значением времени">Добавлять в конец трэка точку с временем 23:59</dt><dd><input type="checkbox" ng-model="system.car.addPoint_23_59" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
-        <dt title="0 что бы отключить">Перенос точки стоянки (120 ч)</dt><dd contenteditable="true" ng-model="system.car.correctFromHours" ng-change="system.$patch('car')"></dd>
+        <dt title="0 что бы отключить! Время точкм переносится только если РАССТОЯНИЕ МЕЖДУ ЭТИМИ ТОЧКАМИ МАНЬШЕ МАКСИМАЛЬНОГО РАЗБРОСА ТОЧЕК ВО ВРЕМЯ СТОЯНКИ (по умолчанию 1 км)">Перенос точки стоянки (120 ч)</dt><dd contenteditable="true" ng-model="system.car.correctFromHours" ng-change="system.$patch('car')"></dd>
     </dl>
 </div>
 <div class="clear"></div>
@@ -79,9 +79,10 @@
     <h4>Ложные точки</h4>
     <button class="btn" ng-click="show_shortTripAlg = !show_shortTripAlg">Описание алгоритма :</button>
     <pre ng-show="show_shortTripAlg">
-    Отрезок трека удаляется если выполнен любой из пунктов:
+    Точка трека удаляется если выполнен любой из пунктов:
     1. Координаты точки равны 0, 0
     2. Количество спутников меньше чем <strong>Минимальное количество спутников</strong>
+    3. Время точки меньше времени предыдущей точки
     </pre>
     <dl class="">
         <dt><strong>Минимальное количество спутников</strong> (4)</dt><dd contenteditable="true" ng-model="system.car.minSputniksCount" ng-change="system.$patch('car')"></dd>
@@ -105,17 +106,19 @@
     <h4>Выбросы</h4>
     <button class="btn" ng-click="show_ejectionAlg = !show_ejectionAlg">Описание алгоритма :</button>
     <pre ng-show="show_ejectionAlg">
-    Отрезок трека удаляется если находится точка которая переместила на расстояние больше чем <strong>Расстояние</strong> за премя меньше чем <strong>Интервал</strong> и следующие точки на расстоянии больше чем <strong>Расстояние</strong>
+    Если находится точка которая переместилась относительно предыдущей точки на расстояние больше чем {(СУММА СКОРОСТЕЙ В ЭТОЙ И ПРЕДЫДУЩЕЙ ТОЧКАХ) УМНОЖЕНАЯ НА <strong>Множитель</strong> И УМНОЖЕННАЯ НА ПРОШЕДШЕЕ ВРЕМЯ} и больше чем <strong>Расстояние</strong>, за время меньшее чем <strong>Интервал</strong>
+    Тогда удаляется эта точка и все последующие на расстоянии от этой точки меньше чем <strong>Расстояние</strong>
     </pre>
     <dl class="">
+        <dt><strong>Множитель</strong> (3)</dt><dd contenteditable="true" ng-model="system.car.ejectionMultiplier" ng-change="system.$patch('car')"></dd>
         <dt><strong>Расстояние</strong> (0.5 км)</dt><dd contenteditable="true" ng-model="system.car.ejectionDistance" ng-change="system.$patch('car')"></dd>
-        <dt><strong>Интервал</strong> (20 сек)</dt><dd contenteditable="true" ng-model="system.car.ejectionTime" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Интервал</strong> (1200 сек)</dt><dd contenteditable="true" ng-model="system.car.ejectionTime" ng-change="system.$patch('car')"></dd>
     </dl>
 </div>
 
 <div class="clear"></div>
 
-<div ng-show="system.car.useServerFiltration" class="well well-small col-lg-4">
+<div class="well well-small col-lg-4">
     <h4>Фиксация точки стоянки при остановке</h4>
     <button class="btn" ng-click="show_stopAlg = !show_stopAlg">Описание алгоритма :</button>
     <pre ng-show="show_stopAlg">
@@ -136,7 +139,7 @@
     </dl>
 </div>
 
-<div ng-show="system.car.useServerFiltration" class="well well-small col-lg-4">
+<div class="well well-small col-lg-4">
     <h4>Регистрация начала движения</h4>
     <button class="btn" ng-click="show_moveAlg = !show_moveAlg">Описание алгоритма :</button>
     <pre ng-show="show_moveAlg">

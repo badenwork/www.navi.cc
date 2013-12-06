@@ -67,7 +67,8 @@ angular.module('resources.geogps', [])
                 correctFromHours: 120,
                 minSputniksCount: 4, //если меньше то удалить точку
                 ejectionDistance: 0.5,
-                ejectionTime: 20,
+                ejectionTime: 1200,
+                ejectionMultiplier: 3,
                 updateValues: function (sys) {
                     if (system && system.car) {
                         for(var key in this) {
@@ -203,7 +204,7 @@ angular.module('resources.geogps', [])
 
         // Возвращает true если точка относится к стоянке
         var isStop = function(point) {
-            if (GeoGPS.options.useServerFiltration) {
+            if (options.useServerFiltration && !options.raw) {
                 return point.type === POINTTYPE.STOP;
             } else {
                 return $.inArray(point.fsource, [FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW]) >= 0;
@@ -401,14 +402,12 @@ angular.module('resources.geogps', [])
                         stop_start = i;
                     } else {
                         if (distance (points [stop_start], point) < GeoGPS.options.stopDistance || i === points.length - 1) {
-                            point.lat = points[stop_start].lat;
-                            point.lon = points[stop_start].lon;
+                            copyPointParams (points [stop_start], point);
                         } else {
                             if (distance (points [i + 1], point) < GeoGPS.options.stopDistance) {
                                 stop_start = i;
                             } else {
-                                point.lat = points[stop_start].lat;
-                                point.lon = points[stop_start].lon;
+                                copyPointParams (points [stop_start], point);
                             }
                         }
                     }
@@ -424,7 +423,9 @@ angular.module('resources.geogps', [])
                     var hour = ~~ (points [i].dt / 3600);
                     if (hour > hoursFrom + GeoGPS.options.correctFromHours) {
                         if (stopPoint !== null) {
-                            copyPointParams (stopPoint, points [i]);
+                            if (distance (stopPoint, points [i]) < GeoGPS.options.stopDistance) {
+                                copyPointParams (stopPoint, points [i]);
+                            }
                             if (GeoGPS.options.addPoint_00_00) {
                                 points [i].dt = hour * 3600;
                             }
@@ -446,12 +447,16 @@ angular.module('resources.geogps', [])
         var removeInvalidPoints = function (points) {
             var points_ret = [];
             var i = 0;
+            var prevPoint = null;
             for (; i < points.length; i++) {
                 var point = points [i];
                 if (point.lat === 0 && point.lon === 0)
                     continue;
                 if (!point.sats || point.sats < GeoGPS.options.minSputniksCount)
                     continue;
+                if (prevPoint !== null && point.dt - prevPoint.dt < 0)
+                    continue;
+                    prevPoint = point;
                 points_ret.push (point);
             }
             return points_ret;
@@ -473,19 +478,23 @@ angular.module('resources.geogps', [])
             var ejection = null;
             var ejectionDistance = GeoGPS.options.ejectionDistance;
             var ejectionTime = GeoGPS.options.ejectionTime;
+            var ejectionMultiplier = 3;
+
             points_ret.push (points [0]);
             for (var i = 0; i < points.length - 1; i++) {
                 if (ejection !== null) {
-                    if (distance (ejection, points [i]) > ejectionDistance)  {
+                    if (distance (ejection, points [i + 1]) < ejectionDistance)  {
                         continue;
                     } else {
                         ejection = null;
                     }
                 } else {
-                    if (distance (points [i], points [i + 1]) > ejectionDistance && ((points [i + 1].dt - points [i].dt) < ejectionTime)) {
-                        //ejection = points [i + 1];
-                        console.log ("t_0 : ",  points [i].dt, "t_1 : ", points [i + 1].dt, "ejectionTime : ", ejectionTime, "ejectionDistance : ", ejectionDistance);
-                        console.log("test");
+                    var time = points [i + 1].dt - points [i].dt;
+                    var maxMovedDistance = (points [i].speed + points [i + 1].speed) * ejectionMultiplier * (time / 3600);
+                    var dist = distance (points [i], points [i + 1])
+                    //if (distance (points [i], points [i + 1]) > ejectionDistance && ((points [i + 1].dt - points [i].dt) < ejectionTime)) {
+                    if (dist > maxMovedDistance && time < ejectionTime && dist > ejectionDistance) {
+                        ejection = points [i + 1];
                         continue;
                     }
                 }
@@ -707,10 +716,8 @@ angular.module('resources.geogps', [])
             }
         };
         var copyPointParams = function (pointFrom, pointTo) {
-            if (distance (pointFrom, pointTo) < GeoGPS.options.stopDistance) {
-                pointTo.lat = pointFrom.lat;
-                pointTo.lon = pointFrom.lon;
-            }
+            pointTo.lat = pointFrom.lat;
+            pointTo.lon = pointFrom.lon;
         };
 
         var identifyPointsType = function (points) {
