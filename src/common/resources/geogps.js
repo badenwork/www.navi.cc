@@ -435,7 +435,7 @@ angular.module('resources.geogps', [])
             for (; i < points.length; i++) {
                     var hour = ~~ (points [i].dt / 3600);
                     if (hour >= hoursFrom + GeoGPS.options.correctFromHours) {
-                        break;if (stopPoint !== null) {
+                        if (stopPoint !== null) {
                             if (distance (stopPoint, points [i]) < GeoGPS.options.stopDistance) {
                                 copyPointParams (stopPoint, points [i]);
                             }
