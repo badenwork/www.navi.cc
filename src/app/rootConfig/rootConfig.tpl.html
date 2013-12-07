@@ -68,11 +68,11 @@
     <pre ng-show="show_shortTripAlg">
     Отрезок трека удаляется если выаолнен любой из пунктов:
     1. Время поездки меньше чем <strong>Время</strong>
-    2. Пройденная дистанция меньше чем <strong>Дистанция</strong>
+    2. Пройденная дистанция меньше чем <strong>Дистанция</strong> и расстояние от точки начала движения до точки остановки меньше чем <strong>Дистанция</strong> / 3
     </pre>
     <dl class="">
         <dt><strong>Время</strong> (8 сек)</dt><dd contenteditable="true" ng-model="system.car.minMoveTime" ng-change="system.$patch('car')"></dd>
-        <dt><strong>Дистанция</strong> (0.05 км)</dt><dd contenteditable="true" ng-model="system.car.minMoveDistance" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Дистанция</strong> (0.15 км)</dt><dd contenteditable="true" ng-model="system.car.minMoveDistance" ng-change="system.$patch('car')"></dd>
     </dl>
 </div>
 
@@ -111,7 +111,7 @@
     Тогда удаляется эта точка и все последующие на расстоянии от этой точки меньше чем <strong>Расстояние</strong>
     </pre>
     <dl class="">
-        <dt><strong>Множитель</strong> (3)</dt><dd contenteditable="true" ng-model="system.car.ejectionMultiplier" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Множитель</strong> (2)</dt><dd contenteditable="true" ng-model="system.car.ejectionMultiplier" ng-change="system.$patch('car')"></dd>
         <dt><strong>Расстояние</strong> (0.5 км)</dt><dd contenteditable="true" ng-model="system.car.ejectionDistance" ng-change="system.$patch('car')"></dd>
         <dt><strong>Интервал</strong> (1200 сек)</dt><dd contenteditable="true" ng-model="system.car.ejectionTime" ng-change="system.$patch('car')"></dd>
     </dl>
@@ -155,7 +155,7 @@
     <dl class="">
         <dt><strong>Скорость</strong> 1 (60 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_out_accelerometer" ng-change="system.$patch('car')"></dd>
         <dt><strong>Расстояние</strong> 1 (5 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_out_accelerometer" ng-change="system.$patch('car')"></dd>
-        <dt><strong>Скорость</strong> 2 (10 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_accelerometer" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Скорость</strong> 2 (15 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_accelerometer" ng-change="system.$patch('car')"></dd>
         <dt><strong>Расстояние</strong> 2 (0.05 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_accelerometer" ng-change="system.$patch('car')"></dd>
         <dt><strong>Скорость</strong> 3 (5 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_motor_on" ng-change="system.$patch('car')"></dd>
         <dt><strong>Расстояние</strong> 3 (0.03 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_motor_on" ng-change="system.$patch('car')"></dd>

@@ -48,7 +48,7 @@ angular.module('resources.geogps', [])
                 addPoint_00_00: true,
                 stopDistance: 1,
                 stopTime: 3,
-                minMoveDistance: 0.05,
+                minMoveDistance: 0.15,
                 minMoveTime: 8,
                 interval_0: 60,
                 interval_1: 120,
@@ -60,7 +60,7 @@ angular.module('resources.geogps', [])
                 stopMovingMinDistance_2: 0.02,
                 moving_speed_with_out_accelerometer: 60,
                 moving_a_distance_with_out_accelerometer: 5,
-                moving_speed_with_accelerometer: 10,
+                moving_speed_with_accelerometer: 15,
                 moving_a_distance_with_accelerometer: 0.05,
                 moving_speed_with_motor_on: 5,
                 moving_a_distance_with_motor_on: 0.03,
@@ -68,7 +68,7 @@ angular.module('resources.geogps', [])
                 minSputniksCount: 4, //если меньше то удалить точку
                 ejectionDistance: 0.5,
                 ejectionTime: 1200,
-                ejectionMultiplier: 3,
+                ejectionMultiplier: 2,
                 updateValues: function (sys) {
                     if (system && system.car) {
                         for(var key in this) {
@@ -497,7 +497,7 @@ angular.module('resources.geogps', [])
             var ejection = null;
             var ejectionDistance = GeoGPS.options.ejectionDistance;
             var ejectionTime = GeoGPS.options.ejectionTime;
-            var ejectionMultiplier = 3;
+            var ejectionMultiplier = GeoGPS.options.ejectionMultiplier;
 
             points_ret.push (points [0]);
             for (var i = 0; i < points.length - 1; i++) {
@@ -506,6 +506,7 @@ angular.module('resources.geogps', [])
                         continue;
                     } else {
                         ejection = null;
+                        continue;
                     }
                 } else {
                     var time = points [i + 1].dt - points [i].dt;
@@ -550,7 +551,7 @@ angular.module('resources.geogps', [])
                             moveDistance += distance (points [k], points [k + 1]);
                         }
                         if (minTripTime < (point.dt - points [move_start].dt) &&
-                            minTripDistance < moveDistance) {
+                            minTripDistance < moveDistance && distance (points [move_start], points [i]) > (minTripDistance / 3)) {
                             insertPoints (i);
                         } else {
                             lastInsertPointIndex = i;
@@ -619,7 +620,7 @@ angular.module('resources.geogps', [])
                 //console.log("distance : ",distance (prevPoint, point)); 
                 return true;
             }
-            var condition_3 = accelerometerOn && point.speed >  GeoGPS.options.moving_speed_with_accelerometer; //Срабатывание акселерометра и перемещение со скоростью более 10 км/час (программируется).
+            var condition_3 = accelerometerOn && point.speed >  GeoGPS.options.moving_speed_with_accelerometer; //Срабатывание акселерометра и перемещение со скоростью более 15 км/час (программируется).
             if (condition_3) {
                 //console.log ("condition_3");
                 //console.log("point : ", point, " Date : ", new Date (point.dt * 1000));
