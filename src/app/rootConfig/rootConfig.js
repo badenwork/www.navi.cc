@@ -70,6 +70,7 @@ angular.module('config.root', ['ngRoute', 'resources.account', '$strap.directive
                         $scope.system.car [key] = '';
                     }
                 }
+                $scope.system.$patch('car');
             }
         };
         
