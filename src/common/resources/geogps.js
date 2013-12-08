@@ -557,8 +557,9 @@ angular.module('resources.geogps', [])
                         var dist = distance (points [move_start], point);
                         if (minTripTime < (point.dt - points [move_start].dt) &&
                             minTripPointsCount < pointsCount &&
+                            tripDistance / 4 < dist &&
                             ((minTripDistance < tripDistance && minMoveDistance < dist) ||
-                            (minTripDistance > (tripDistance * 0.7) &&  minMoveDistance < dist))) {
+                            (minTripDistance > (tripDistance * 0.7) &&  (tripDistance / 1) < dist))) {
                             insertPoints (i);
                         } else {
                             lastInsertPointIndex = i;
