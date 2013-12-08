@@ -27,6 +27,50 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
     function($scope, $route, $routeParams, account, system, System, Tags) {
         $scope.system = system;
         $scope.skey = $routeParams.skey;
+        $scope.dynamicAddress = Math.floor (system.dynamic.latitude * 10000) / 10000 + ', ' + Math.floor (system.dynamic.longitude * 10000) / 10000;
+        
+        var geocoder = new google.maps.Geocoder();
+        var formatPosition = function () {
+                geocoder.geocode({
+                        'latLng': new google.maps.LatLng (system.dynamic.latitude, system.dynamic.longitude)
+                    },
+                    function (results, status) {
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            var address = '';
+                            var parts = results [0].address_components;
+                            var sep = "";
+                            var types = {
+                                country :'',                //страна
+                                locality:'',                //город
+                                //sublocality :'',
+                                street_number:'',           //номер дома
+                                //establishment:'',
+                                route:'',                   //улица
+                                /*postal_code:'',
+                                administrative_area_level_1:'',
+                                administrative_area_level_2:'',
+                                administrative_area_level_3:''*/
+                            };
+                            for (var i = parts.length - 1; i >= 0; --i) {
+                                if (parts [i].types[0] in types) {
+                                    address += sep + parts [i].long_name;
+                                    sep = ", ";
+                                }
+                            }
+                            $scope.$apply (function () {
+                                $scope.dynamicAddress = address;
+                            });
+                        } else {
+                            //повторно запросить
+                            setTimeout(function() {
+                                formatPosition ();
+                            }, 2000);
+                        }
+                    });
+        
+                
+        };
+        formatPosition ();
 
         $scope.tofuel = function() {
             return System.$fuel(system, system.dynamic.fuel);

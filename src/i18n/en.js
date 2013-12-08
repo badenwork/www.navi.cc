@@ -46,8 +46,8 @@ angular.module('i18n.en', ['pascalprecht.translate'])
             'points_in_track': 'Points in track: {{value}}',
 
             'AUTO_BOUND_TRACK': 'Automatic bound track',
-            'ANIMATION_DIR': 'Animation direction',
-            'STOP_NUMBERS': 'Numbering of stops / parks',
+            'ANIMATION_DIR': 'Motion animation',
+            'STOP_NUMBERS': 'Numbering of parking',
             'FILTERS_ON': 'Filters',
 
             // Config page

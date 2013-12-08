@@ -44,9 +44,9 @@ angular.module('i18n.pl', ['pascalprecht.translate'])
             'Show track': 'Pokaż utwór',
             'points_in_track': 'Punkty w utworu: {{value}}',
 
-            'AUTO_BOUND_TRACK': 'Automatycznie wyśrodkować utwór',
-            'ANIMATION_DIR': 'Kierunek Animacja',
-            'STOP_NUMBERS': 'Numeracja przystanków / parki',
+            'AUTO_BOUND_TRACK': 'Ścieżka wyrównania',
+            'ANIMATION_DIR': 'Animacja ruchu',
+            'STOP_NUMBERS': 'Numeracja parking',
             'FILTERS_ON': 'Filtry',
 
             // Config page

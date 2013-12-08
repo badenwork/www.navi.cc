@@ -46,9 +46,9 @@ angular.module('i18n.ru', ['pascalprecht.translate'])
             'points_in_track': 'Точек в треке: {{value}}',
 
             // Панель настроек карты
-            'AUTO_BOUND_TRACK': 'Автоматически центровать трек',
-            'ANIMATION_DIR': 'Анимация направления движения',
-            'STOP_NUMBERS': 'Нумерация остановок / стоянок',
+            'AUTO_BOUND_TRACK': 'Центровка трека',
+            'ANIMATION_DIR': 'Анимация движения',
+            'STOP_NUMBERS': 'Нумерация стоянок',
             'FILTERS_ON': 'Фильтры',
 
             // Страница настроек

@@ -32,7 +32,7 @@
             <dt>Уровень GPS</dt><dd>{{ system.dynamic.sats * 100 / 12 | number:0}}%</dd>
             <dt>Основное питание</dt><dd>{{ system.dynamic.vout }} В <a href="#/reports/{{skey}}/chart?chart=vout&from=0&to=0"><i class="icon-bar-chart"></i></a></dd>
             <dt>Резервное питание</dt><dd>{{ system.dynamic.vin | vin }} <a href="#/reports/{{skey}}/chart?chart=vin&from=0&to=0"><i class="icon-bar-chart"></i></a></dd>
-            <dt>Координаты</dt><dd><input class="clone" value="{{ system.dynamic.latitude | number:4 }}, {{ system.dynamic.longitude | number:4}}"/></dd>
+            <dt>Координаты</dt><dd>{{dynamicAddress}}</dd>
             <dt>Дата метки</dt><dd><datetime datetime="{{ system.dynamic.dt }}"></datetime></dd>
 <!--
             <dt>Высота над ур.моря</dt><dd>? м</dd>

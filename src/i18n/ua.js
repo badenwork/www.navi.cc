@@ -45,9 +45,9 @@ angular.module('i18n.ua', ['pascalprecht.translate'])
             'Show track': 'Показати трек',
             'points_in_track': 'Точок в треку: {{value}}',
 
-            'AUTO_BOUND_TRACK': 'Автоматично центрувати трек',
-            'ANIMATION_DIR': 'Анімація напрямку руху',
-            'STOP_NUMBERS': 'Нумерація зупинок / стоянок',
+            'AUTO_BOUND_TRACK': 'Центровка треку',
+            'ANIMATION_DIR': 'Анімація руху',
+            'STOP_NUMBERS': 'Нумерація стоянок',
             'FILTERS_ON': 'Фільтри',
 
             // Config page

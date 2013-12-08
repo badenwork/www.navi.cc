@@ -555,14 +555,22 @@ angular.module('resources.geogps', [])
                             pointsCount++;
                         }
                         var dist = distance (points [move_start], point);
-                        if (minTripTime < (point.dt - points [move_start].dt) &&
-                            minTripPointsCount < pointsCount &&
-                            tripDistance / 4 < dist &&
-                            ((minTripDistance < tripDistance && minMoveDistance < dist) ||
-                            (minTripDistance > (tripDistance * 0.7) &&  (tripDistance / 1) < dist))) {
+                        var condition_1 = minTripTime < (point.dt - points [move_start].dt);
+                        var condition_2 = minTripPointsCount < pointsCount;
+                        var condition_3 = (tripDistance / 2 < dist || minTripDistance < tripDistance);
+                        var condition_4 = (minTripDistance < tripDistance && minMoveDistance < dist);
+                        var condition_5 = ((tripDistance * 0.6) < dist) && minMoveDistance < dist;
+                        
+                        if (condition_1 &&
+                            condition_2 &&
+                            condition_3 &&
+                            (condition_4 ||
+                            condition_5)
+                           ) {
+                            //console.log ("1 : ", condition_1, " 2 : ", condition_2, " 3 : ", condition_3, " 4 : ", condition_4, " 5 : ", condition_5);
                             insertPoints (i);
                         } else {
-                            lastInsertPointIndex = i;
+                            lastInsertPointIndex = i + 1;
                             var prevPoint = points_ret [points_ret.length - 1] || points [i];
                             var newPoint = angular.copy (points [i]);
                             //copyPointParams (prevPoint, newPoint);
@@ -572,6 +580,8 @@ angular.module('resources.geogps', [])
                             //points_ret.push (point);
                         }
                         move_start = null;
+                    } else {
+                        insertPoints (i);
                     }
                 }
             }
