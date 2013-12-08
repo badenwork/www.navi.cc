@@ -61,7 +61,6 @@
         <dt><strong>Напряжение 3</strong> (26.2 V)</dt><dd contenteditable="true" ng-model="system.car.motorOn_min_2" ng-change="system.$patch('car')"></dd>
     </dl>
 </div>
-
 <div class="well well-small col-lg-4">
     <h4>Короткие поездки</h4>
     <button class="btn" ng-click="show_shortTripAlg = !show_shortTripAlg">Описание алгоритма :</button>
@@ -69,10 +68,12 @@
     Отрезок трека удаляется если выаолнен любой из пунктов:
     1. Время поездки меньше чем <strong>Время</strong>
     2. Пройденная дистанция меньше чем <strong>Дистанция</strong> и расстояние от точки начала движения до точки остановки меньше чем <strong>Дистанция</strong> / 3
+    3. Количество точек в поездке меньше чем <strong>Количество точек</strong>
     </pre>
     <dl class="">
         <dt><strong>Время</strong> (8 сек)</dt><dd contenteditable="true" ng-model="system.car.minMoveTime" ng-change="system.$patch('car')"></dd>
         <dt><strong>Дистанция</strong> (0.15 км)</dt><dd contenteditable="true" ng-model="system.car.minMoveDistance" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Количество точек</strong> (3)</dt><dd contenteditable="true" ng-model="system.car.minTripPointsCount" ng-change="system.$patch('car')"></dd>
     </dl>
 </div>
 
@@ -117,6 +118,7 @@
     </dl>
 </div>
 
+
 <div class="clear"></div>
 
 <div class="well well-small col-lg-4">
@@ -154,7 +156,7 @@
     </pre>
     <dl class="">
         <dt><strong>Скорость</strong> 1 (60 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_out_accelerometer" ng-change="system.$patch('car')"></dd>
-        <dt><strong>Расстояние</strong> 1 (5 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_out_accelerometer" ng-change="system.$patch('car')"></dd>
+        <dt><strong>Расстояние</strong> 1 (1 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_out_accelerometer" ng-change="system.$patch('car')"></dd>
         <dt><strong>Скорость</strong> 2 (15 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_accelerometer" ng-change="system.$patch('car')"></dd>
         <dt><strong>Расстояние</strong> 2 (0.05 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_accelerometer" ng-change="system.$patch('car')"></dd>
         <dt><strong>Скорость</strong> 3 (5 км/ч)</dt><dd contenteditable="true" ng-model="system.car.moving_speed_with_motor_on" ng-change="system.$patch('car')"></dd>

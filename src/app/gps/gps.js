@@ -104,7 +104,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             autobounds: true, // Автоматическая центровка трека при загрузке
             animation: false, // Анимация направления трека
             numbers: true, // Нумерация стоянок/остановок
-            disableFilters: false, //Отключить фильтры
+            filtersOn: true, //Отключить фильтры
             centermarker: true
         };
 
@@ -184,6 +184,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
                 .then(function(data) {
                     if ($scope.isUpdate) {
                         data.update = true;
+                        $scope.isUpdate = false;
                     }
                     $scope.track = data;
                     $scope.$broadcast('setTrack', data);
@@ -203,8 +204,8 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         if ($scope.skey && ($scope.skey !== '') && ($scope.skey !== '+')) {
             getTrack ();  
         }
-        $scope.$watch ('mapconfig.disableFilters', function (disableFilters) {
-            $scope.disableFilters = disableFilters;
+        $scope.$watch ('mapconfig.filtersOn', function (filtersOn) {
+            $scope.disableFilters = !filtersOn;
             if (angular.isUndefined ($scope.isUpdate))
                 $scope.isUpdate = false;
             else {

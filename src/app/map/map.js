@@ -125,7 +125,11 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 GeoGPS.options.raw = false;
             GeoGPS.getTrack(hourfrom, hourfrom + 23, $scope.disableFilters) // +23? не 24?
             .then(function(data) {
-                data.update = !!$scope.isUpdate;
+                if ($scope.isUpdate) {
+                    data.update = true;
+                    $scope.isUpdate = false;
+                }
+                
                 $scope.$broadcast('setTrack', data);
                 $scope.track = data;
                 $scope.points = data.track.length;
@@ -218,12 +222,12 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             autobounds: true, // Автоматическая центровка трека при загрузке
             animation: false, // Анимация направления трека
             numbers: true, // Нумерация стоянок/остановок
-            disableFilters: false, //Отключить фильтры
+            filtersOn: true, //фильтры
             centermarker: false // Не показывать маркер центра карты
         };
         
-        $scope.$watch ('mapconfig.disableFilters', function (disableFilters) {
-            $scope.disableFilters = disableFilters;
+        $scope.$watch ('mapconfig.filtersOn', function (filtersOn) {
+            $scope.disableFilters = !filtersOn;
             if (angular.isUndefined ($scope.isUpdate))
                 $scope.isUpdate = false;
             else {

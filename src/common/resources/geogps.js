@@ -39,7 +39,7 @@ angular.module('resources.geogps', [])
             system = null,
             options = {
                 raw: false,
-                useServerFiltration: true,
+                useServerFiltration: false,
                 filter_shortTraveled: true,
                 filter_invalidPoints: true,
                 filter_ejection: true,
@@ -50,6 +50,7 @@ angular.module('resources.geogps', [])
                 stopTime: 3,
                 minMoveDistance: 0.15,
                 minMoveTime: 8,
+                minTripPointsCount: 3,
                 interval_0: 60,
                 interval_1: 120,
                 interval_2: 180,
@@ -59,7 +60,7 @@ angular.module('resources.geogps', [])
                 stopMovingMinDistance: 0.01,
                 stopMovingMinDistance_2: 0.02,
                 moving_speed_with_out_accelerometer: 60,
-                moving_a_distance_with_out_accelerometer: 5,
+                moving_a_distance_with_out_accelerometer: 1,
                 moving_speed_with_accelerometer: 15,
                 moving_a_distance_with_accelerometer: 0.05,
                 moving_speed_with_motor_on: 5,
@@ -526,10 +527,11 @@ angular.module('resources.geogps', [])
         var removeShortTrips = function (points) {
             var minTripTime = GeoGPS.options.minMoveTime;
             var minTripDistance = GeoGPS.options.minMoveDistance;
+            var minMoveDistance = minTripDistance / 5;
+            var minTripPointsCount = GeoGPS.options.minTripPointsCount;
             var points_ret = [];
             var move_start = null;
             var lastInsertPointIndex = 0;
-            var moveDistance = 0;
             var i = 0;
             var insertPoints = function (pointIndex) {
                 for (var j = lastInsertPointIndex; j < pointIndex; j++) {
@@ -543,15 +545,20 @@ angular.module('resources.geogps', [])
                     if (move_start === null) {
                         insertPoints (i);
                         move_start = i;
-                        moveDistance = 0;
                     }
                 } else {
                     if (move_start !== null) {
+                        var tripDistance = 0;
+                        var pointsCount = 0;
                         for (var k = move_start; k < i; k++) {
-                            moveDistance += distance (points [k], points [k + 1]);
+                            tripDistance += distance (points [k], points [k + 1]);
+                            pointsCount++;
                         }
+                        var dist = distance (points [move_start], point);
                         if (minTripTime < (point.dt - points [move_start].dt) &&
-                            minTripDistance < moveDistance && distance (points [move_start], points [i]) > (minTripDistance / 3)) {
+                            minTripPointsCount < pointsCount &&
+                            ((minTripDistance < tripDistance && minMoveDistance < dist) ||
+                            (minTripDistance > (tripDistance * 0.7) &&  minMoveDistance < dist))) {
                             insertPoints (i);
                         } else {
                             lastInsertPointIndex = i;
@@ -559,6 +566,7 @@ angular.module('resources.geogps', [])
                             var newPoint = angular.copy (points [i]);
                             //copyPointParams (prevPoint, newPoint);
                             newPoint.dt =  points [i].dt;
+                            newPoint.type = point.type;
                             points_ret.push (newPoint);
                             //points_ret.push (point);
                         }
@@ -744,11 +752,6 @@ angular.module('resources.geogps', [])
         var setPointType = function (point, type) {
             point.type = type;
         };
-        var setPointsType = function (points, indexStart, indexStop, type) {
-            for (var i = indexStart; i < indexStop; i++) {
-                setPointType (points [i], type);
-            }
-        };
         var copyPointParams = function (pointFrom, pointTo) {
             pointTo.lat = pointFrom.lat;
             pointTo.lon = pointFrom.lon;
@@ -764,13 +767,11 @@ angular.module('resources.geogps', [])
             for (var i = 0; i < points.length; i++) {
                 var point = points [i];
                 if (movePoint === null) {
-                    if (slowingPoint === null && isStartMoving (points, i)) {
+                    if (slowingPoint === null &&  isStartMoving (points, i)) {
                         movePoint = i;
                         stopPoint = null;
                         setPointType (point, POINTTYPE.MOVE);
                         continue;
-                    } else {
-                        setPointType (point, POINTTYPE.STOP);
                     }
                 } else {
                     setPointType (point, POINTTYPE.MOVE);
@@ -787,36 +788,38 @@ angular.module('resources.geogps', [])
                 if (stopPoint === null) {
                     if (slowingPoint !== null) {
                         var etalonStopPoint = points [slowingPoint];
-                        if (addPointToInterval (etalonStopPoint, interval_0, interval_1, interval_2)) {
+                        /*if (isStop_fsource (point.fsource)) {
+                            stopPoint = i;
+                            setPointType (point, POINTTYPE.STOP);
+                            movePoint = null;
+                            slowingPoint = null;
+                        }
+                        continue;*/
+                        if (addPointToInterval (etalonStopPoint, point, interval_0, interval_1, interval_2)) {
                             continue;
                         }
                         if (isStopMoving (etalonStopPoint, interval_0, interval_1, interval_2)) {
                             stopPoint = i;
-                            /*for (var j = slowingPoint + 1; j <= stopPoint; j++) {
-                                copyPointParams (etalonStopPoint, points [j]);
+                            /*for (var k = slowingPoint; k <= stopPoint; k++) {
+                                setPointType (points [k], POINTTYPE.STOP);
                             }*/
-                            if (movePoint !== null) {
-                                setPointsType (points, movePoint, slowingPoint, POINTTYPE.MOVE);
-                                setPointsType (points, slowingPoint, stopPoint, POINTTYPE.STOP);
-                                movePoint = null;
-                            }
+                            movePoint = null;
+                        } else {
+                           for (var k = slowingPoint; k <= stopPoint; k++) {
+                                setPointType (points [k], POINTTYPE.MOVE);
+                            } 
                         }
                         slowingPoint = null;
-                    } else if (movePoint !== null) {
-                        setPointType (point, POINTTYPE.MOVE);
-                    } else {
-                        setPointType (point, POINTTYPE.STOP);
                     }
                 } else if (movePoint === null) {
-                    //copyPointParams (points [stopPoint], point);
                     setPointType (point, POINTTYPE.STOP);
                 }
             }
-            if (slowingPoint !== null) {
+            /*if (slowingPoint !== null) {
                 for (var k = slowingPoint; k < points.length; k++) {
                     points [k].type = POINTTYPE.STOP;
                 }
-            }
+            }*/
             /*for (var k = 0; k < points.length; k++) {
                 if (points [k].type == undefined)
                     setPointType (points [k], POINTTYPE.STOP);
@@ -867,6 +870,9 @@ angular.module('resources.geogps', [])
             if (GeoGPS.options.filter_clearStopPoints)
                 clearStopPointsCoordinates (points);
             updatePointsFuel (points);
+            /*for (var j = 0; j < points.length; j++) {
+                console.log ("point is stop : ", isStop(points [j]));   
+            }*/
             var events = GeoGPS.getEventsFromPoints (points, 0, points.length, system);
             var bounds = GeoGPS.getBoundsFromPoints (points, 0, points.length);
             var track = GeoGPS.getTrackFromPoints (points, 0, points.length);
@@ -1214,7 +1220,7 @@ angular.module('resources.geogps', [])
                 if(options.raw){
                     defer.resolve(bingpsparse(uInt8Array, hourfrom, 0));
                 } else {
-                    defer.resolve(bingpsparse_2(uInt8Array, hourfrom, noUpdateOptions));
+                    defer.resolve(bingpsparse_2(uInt8Array, hourfrom));
                 }
             }).error(function(data, status) {
                 window.console.error('GeoGPS.getTrack.error', data, status);
