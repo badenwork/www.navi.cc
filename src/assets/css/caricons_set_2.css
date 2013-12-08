@@ -1,0 +1,201 @@
+@font-face {
+	font-family: 'caricons_set_2';
+	src:url('../font/caricons_set_2.eot');
+	src:url('../font/caricons_set_2.eot?#iefix') format('embedded-opentype'),
+		url('../font/caricons_set_2.ttf') format('truetype'),
+		url('../font/caricons_set_2.woff') format('woff'),
+		url('../font/caricons_set_2.svg#caricons_set_2') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="caricon_set_2-"], [class*=" caricon_set_2-"] {
+	font-family: 'caricons_set_2';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+    
+    display: inline-block;
+    text-decoration: inherit;
+    width: 1em;
+    margin-right: .2em;
+    margin-top: 50%;
+    text-align: center;
+    font-size: 1.2%;
+    /* opacity: .8; */
+     
+    /* fix buttons height, for twitter bootstrap */
+    line-height: 1.3em;
+    
+    /* Animation center compensation - margins should be symmetric */
+    /* remove if not needed */
+    margin-left: .2em;
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.caricon_set_2-truck:before {
+	content: "\e600";
+}
+.caricon_set_2-icon_765:before {
+	content: "\e604";
+}
+.caricon_set_2-icon_1609:before {
+	content: "\e605";
+}
+.caricon_set_2-icon_15944:before {
+	content: "\e606";
+}
+.caricon_set_2-icon_8622:before {
+	content: "\e608";
+}
+.caricon_set_2-icon_609:before {
+	content: "\e609";
+}
+.caricon_set_2-icon_12525:before {
+	content: "\e60a";
+}
+.caricon_set_2-icon_23424:before {
+	content: "\e60b";
+}
+.caricon_set_2-icon_16784:before {
+	content: "\e60c";
+}
+.caricon_set_2-icon_22821:before {
+	content: "\e60d";
+}
+.caricon_set_2-icon_13135:before {
+	content: "\e60e";
+}
+.caricon_set_2-icon_11868:before {
+	content: "\e60f";
+}
+.caricon_set_2-icon_7504:before {
+	content: "\e610";
+}
+.caricon_set_2-icon_1892:before {
+	content: "\e611";
+}
+.caricon_set_2-icon_12844:before {
+	content: "\e613";
+}
+.caricon_set_2-icon_12241:before {
+	content: "\e615";
+}
+.caricon_set_2-icon_17587:before {
+	content: "\e616";
+}
+.caricon_set_2-icon_23115:before {
+	content: "\e617";
+}
+.caricon_set_2-icon_2558:before {
+	content: "\e61b";
+}
+.caricon_set_2-icon_4865:before {
+	content: "\e61c";
+}
+.caricon_set_2-icon_26574:before {
+	content: "\e61d";
+}
+.caricon_set_2-icon_1192:before {
+	content: "\e61e";
+}
+.caricon_set_2-icon_19523:before {
+	content: "\e61f";
+}
+.caricon_set_2-icon_2690:before {
+	content: "\e620";
+}
+.caricon_set_2-icon_14692:before {
+	content: "\e621";
+}
+.caricon_set_2-icon_1340:before {
+	content: "\e622";
+}
+.caricon_set_2-icon_4506:before {
+	content: "\e626";
+}
+.caricon_set_2-icon_18560:before {
+	content: "\e627";
+}
+.caricon_set_2-icon_11427:before {
+	content: "\e628";
+}
+.caricon_set_2-icon_22186:before {
+	content: "\e629";
+}
+.caricon_set_2-icon_7883:before {
+	content: "\e62a";
+}
+.caricon_set_2-icon_18512:before {
+	content: "\e62b";
+}
+.caricon_set_2-icon_20591:before {
+	content: "\e62c";
+}
+.caricon_set_2-icon_118682:before {
+	content: "\e62d";
+}
+.caricon_set_2-icon_17054:before {
+	content: "\e62e";
+}
+.caricon_set_2-icon_18540:before {
+	content: "\e630";
+}
+.caricon_set_2-noun_project_22186:before {
+	content: "\e631";
+}
+.caricon_set_2-noun_project_10661:before {
+	content: "\e632";
+}
+.caricon_set_2-icon_9258:before {
+	content: "\e601";
+}
+.caricon_set_2-icon_7727:before {
+	content: "\e602";
+}
+.caricon_set_2-icon_24929:before {
+	content: "\e603";
+}
+.caricon_set_2-icon_26574:before {
+	content: "\e607";
+}
+.caricon_set_2-icon_10144:before {
+	content: "\e612";
+}
+.caricon_set_2-icon_13082:before {
+	content: "\e618";
+}
+.caricon_set_2-icon_1360:before {
+	content: "\e619";
+}
+.caricon_set_2-icon_17187:before {
+	content: "\e61a";
+}
+.caricon_set_2-icon_21007:before {
+	content: "\e623";
+}
+.caricon_set_2-icon_22277:before {
+	content: "\e624";
+}
+.caricon_set_2-icon_19359:before {
+	content: "\e625";
+}
+.caricon_set_2-icon_17004:before {
+	content: "\e62f";
+}
+.caricon_set_2-icon_1514:before {
+	content: "\e633";
+}
+.caricon_set_2-icon_23560:before {
+	content: "\e634";
+}
+.caricon_set_2-icon_4699:before {
+	content: "\e635";
+}
+.caricon_set_2-icon_5375:before {
+	content: "\e636";
+}
