@@ -86,8 +86,7 @@ angular.module('resources.geogps2', [])
             url: SERVER.api + '/geos/' + encodeURIComponent(that.skey),
             params: {
                 from: hourfrom,
-                to: hourto,
-                rand: (Math.random() * 1e18) | 0
+                to: hourto
             }
         }).success(function(data) {
             defer.resolve(that);

@@ -41,6 +41,9 @@ angular.module('admin.gpspurge', ['ngRoute', 'app.services.imeicheck', 'resource
 
         $scope.trackers = [];
 
+        $scope.collect = {
+            gps: true, logs: true
+        };
 
         $scope.hwids = function(hwid) {
             return System.hwids[hwid] || '?';
@@ -110,11 +113,17 @@ angular.module('admin.gpspurge', ['ngRoute', 'app.services.imeicheck', 'resource
         };
 
         $scope.onPurgeAll = function(){
-            $scope.onPurgeRange(new Date(0), new Date(1e13));
-            $scope.onPurgeLogs();
+            $scope.purge_all = false; $scope.purge_range = false;
+            if($scope.collect.gps) $scope.onPurgeGPS(new Date(0), new Date(1e13));
+            if($scope.collect.logs) $scope.onPurgeLogs(new Date(0), new Date(1e13));
+        };
+        $scope.onPurgeRange = function(dateFrom, dateTo){
+            $scope.purge_all = false; $scope.purge_range = false;
+            if($scope.collect.gps) $scope.onPurgeGPS(dateFrom, dateTo);
+            if($scope.collect.logs) $scope.onPurgeLogs(dateFrom, dateTo);
         };
 
-        $scope.onPurgeRange = function(dateFrom, dateTo){
+        $scope.onPurgeGPS = function(dateFrom, dateTo){
             window.window.console.log('onPurgeRange', dateFrom, dateTo);
             angular.forEach($scope.trackers, function(value){
                 var skey = System.imei2key(value.imei);
@@ -129,28 +138,35 @@ angular.module('admin.gpspurge', ['ngRoute', 'app.services.imeicheck', 'resource
                 }, function(data){
                     console.log('GeoGPS2 del fail', data);
                     value.msg +='Точки не удалены. ';
+                    if(data && data.error === "NOADMIN"){
+                        value.msg += 'Требуются права администратора. ';
+                    }
                 });
             });
         };
 
-        $scope.onPurgeLogs = function(){
+        $scope.onPurgeLogs = function(dateFrom, dateTo){
             window.window.console.log('onPurgeLogs');
             // Logs()
             angular.forEach($scope.trackers, function(value){
                 var skey = System.imei2key(value.imei);
+                var hourFrom = (dateFrom / 1000 / 3600) | 0;
+                var hourTo = (dateTo / 1000 / 3600) | 0;
                 window.window.console.log('onPurgeLogs', value);
-                Logs.del(skey, 'all')
+                Logs.del_by_range(skey, hourFrom * 3600, hourTo * 3600)
                 .then(function(data){
                     console.log('Del ok', data);
                     value.msg += 'События удалены. ';
                     value.success = true;
                 }, function(data){
                     console.log('Del fail', data);
-                    value.msg += 'События не удалены. ';
+                    value.msg += 'События не удалены.';
+                    if(data && data.error === "NOADMIN"){
+                        value.msg += 'Требуются права администратора. ';
+                    }
                 });
             });
         };
-
     }
 ]);
 

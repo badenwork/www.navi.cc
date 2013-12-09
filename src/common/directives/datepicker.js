@@ -228,36 +228,36 @@ angular.module('directives.datepicker', ['i18n'])
 
                     '<div ng-show="hourToDiv" class="input-daterange-hours"><div>'+
                         '<div class="btn-group">'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'00\')">00</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'01\')">01</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'02\')">02</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'03\')">03</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'04\')">04</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'05\')">05</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'00\')">01</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'01\')">02</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'02\')">03</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'03\')">04</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'04\')">05</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'05\')">06</button>'+
                         '</div>'+
                         '<div class="btn-group">'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'06\')">06</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'07\')">07</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'08\')">08</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'09\')">09</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'10\')">10</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'11\')">11</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'06\')">07</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'07\')">08</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'08\')">09</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'09\')">10</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'10\')">11</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'11\')">12</button>'+
                         '</div>'+
                         '<div class="btn-group">'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'12\')">12</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'13\')">13</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'14\')">14</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'15\')">15</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'16\')">16</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'17\')">17</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'12\')">13</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'13\')">14</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'14\')">15</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'15\')">16</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'16\')">17</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'17\')">18</button>'+
                         '</div>'+
                         '<div class="btn-group">'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'18\')">18</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'19\')">19</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'20\')">20</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'21\')">21</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'22\')">22</button>'+
-                            '<button class="btn btn-primary" ng-click="hourToDo(\'23\')">23</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'18\')">19</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'19\')">20</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'20\')">21</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'21\')">22</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'22\')">23</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'23\')">24</button>'+
                         '</div>'+
                     '</div></div>'+
                 '</div>',

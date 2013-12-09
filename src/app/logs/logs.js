@@ -52,8 +52,8 @@ angular.module('logs', ['ngRoute', 'resources.account', 'resources.system', 'res
     }
 ])
 
-.controller('LogsViewCtrl', ['$scope', '$location', '$route', '$routeParams', 'account', 'systems', 'logs',
-    function($scope, $location, $route, $routeParams, account, systems, logs) {
+.controller('LogsViewCtrl', ['$scope', '$location', '$route', '$routeParams', 'account', 'systems', 'logs', 'Logs',
+    function($scope, $location, $route, $routeParams, account, systems, logs, Logs) {
         'use strict';
         $scope.account = account.account;
         $scope.systems = systems;
@@ -74,6 +74,22 @@ angular.module('logs', ['ngRoute', 'resources.account', 'resources.system', 'res
 
         $scope.onReload = function() {
             $route.reload();
+        };
+
+        $scope.onRemove = function(lkey, i){
+            window.console.log('Log remove', lkey, i, $scope.logs);
+            Logs.del_by_key(lkey)
+            .then(function(data){
+                console.log('Del ok', data);
+                $scope.logs.splice(i, 1);
+            }, function(data){
+                console.log('Del fail', data);
+            });
+
+        };
+
+        $scope.isAdmin = function(){
+            return $.inArray('admin', account.account.groups) >= 0;
         };
     }
 ]);

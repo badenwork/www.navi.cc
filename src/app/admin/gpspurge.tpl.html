@@ -79,27 +79,29 @@
         }
     </style>
 
-    <div class="text-center">
-        <button class="btn btn-danger" ng-click="purge_waring = !purge_waring; purge_range = false; purge_logs = false">
+    <div class="row">
+        <div class="col-lg-3">
+        <button class="btn btn-danger" ng-click="purge_all = !purge_all; purge_range = false">
             <i class="icon-trash icon-2x"></i><br />
-            Очистить все данные<br />
-            Удаляет все точки и события.
+            Удалить все данные
         </button>
+        </div>
 
-        <button class="btn btn-warning" ng-click="purge_range = !purge_range; purge_waring = false; purge_logs = false">
+        <div class="col-lg-3">
+        <button class="btn btn-warning" ng-click="purge_range = !purge_range; purge_all = false">
             <i class="icon-time icon-2x"></i><br />
-            Удалить GPS-данные<br />
-            за определенный интервал
+            Удалить за интервал
         </button>
+        </div>
 
-        <button class="btn btn-warning" ng-click="purge_logs = !purge_logs; purge_waring = false; purge_waring = false">
-            <i class="icon-th-list icon-2x"></i><br />
-            Удалить все события.<br />
-            Удаляет только события.
-        </button>
+        <div class="col-lg-3">
+            <!-- <h5>Что удалить:</h5> -->
+            <p><label><input type="checkbox" ng-model="collect.gps"> Удалить точки GPS</label></p>
+            <p><label><input type="checkbox" ng-model="collect.logs"> Удалить события</label></p>
+        </div>
     </div>
 
-    <div ng-show="purge_waring" class="well">
+    <div ng-show="purge_all" class="well">
         <div class="alert alert-danger">
             Внимание!!!<br>
             Все данные для выбранных трекеров будут удалены. Вы уверены что хотите удалить эти данные?
@@ -109,7 +111,6 @@
     </div>
 
     <div ng-show="purge_range" class="well">
-
         <h4>Укажите интервал для удаления</h4>
         <datepicker date-from="dateFrom" date-to="dateTo" range="range" on-change="changeDate()" style="display:inline-block"></datepicker>
         <br><br>
@@ -121,15 +122,6 @@
         <br>
         <button class="btn btn-danger" ng-click="onPurgeRange(dateFrom, dateTo)"><i class="icon-trash icon-large"></i> Да, я не тормоз! Удалить все за выбранный период.</button>
 
-    </div>
-
-    <div ng-show="purge_logs" class="well">
-        <div class="alert alert-danger">
-            Внимание!!!<br>
-            Все события для выбранных трекеров будут удалены. Вы уверены что хотите удалить эти данные?
-        </div>
-        <br>
-        <button class="btn btn-danger" ng-click="onPurgeLogs()"><i class="icon-trash icon-large"></i> Да, я не тормоз! Удалить все.</button>
     </div>
 
 </div>
