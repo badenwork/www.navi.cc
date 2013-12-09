@@ -50,7 +50,7 @@ angular.module('resources.geogps', [])
                 stopDistance: 1,
                 stopTime: 3,
                 minMoveDistance: 0.15,
-                minMoveTime: 10,
+                minMoveTime: 7,
                 minTripPointsCount: 3,
                 minStopTime: 8,
                 interval_0: 60,
@@ -571,7 +571,7 @@ angular.module('resources.geogps', [])
             var minTripDistance = GeoGPS.options.minMoveDistance;
             var minTripPointsCount = GeoGPS.options.minTripPointsCount;
             var minMoveDistance = minTripDistance / 10;
-            var tripFactor = 0.1;
+            var tripFactor = 0.4;
             var minStopTime = GeoGPS.options.stopTime * 60;
             var points_ret = [];
             var move_start = null;
