@@ -129,7 +129,6 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                     data.update = true;
                     $scope.isUpdate = false;
                 }
-                
                 $scope.$broadcast('setTrack', data);
                 $scope.track = data;
                 $scope.points = data.track.length;
@@ -152,10 +151,10 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
 
         var updateTrack = function () {
             //console.log("updateTrack");
-            
+
             load_date();
             if (dayIsNow ($scope.day)) {
-                $scope.isUpdate = true; 
+                $scope.isUpdate = true;
             } else {
                 $scope.isUpdate = false;
             }

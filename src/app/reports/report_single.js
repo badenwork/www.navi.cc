@@ -41,7 +41,7 @@ angular.module('singleReport', ['ngRoute', 'resources.reports', '$strap.directiv
                 autobounds: true, // Автоматическая центровка трека при загрузке
                 animation: false, // Анимация направления трека
                 numbers: null, // Нумерация стоянок/остановок
-                disableFilters: null, //Отключить фильтры
+                filtersOn: null,
                 centermarker: true
             };
         $scope.track = null;

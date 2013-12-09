@@ -1,6 +1,6 @@
 /* global angular:true */
 
-angular.module('admin', ['ngRoute', 'admin.systems'])
+angular.module('admin', ['ngRoute', 'admin.systems', 'admin.gpspurge'])
 
 .factory('AdminUsers', [
     'SERVER', '$http', '$q',

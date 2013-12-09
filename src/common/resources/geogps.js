@@ -157,6 +157,12 @@ angular.module('resources.geogps', [])
             } else if (packet[1] == 0xF5) {
                 // fsource,                # B: Тип точки   Причина фиксации точки
                 fsource = packet[2];
+
+                // if(fsource >= 128) {
+                //     console.log('skip', fsource);
+                //     return null;
+                // }
+
                 // sats,                   # B: Кол-во спутников 3..12
                 sats = packet[3];
                 // dt,                     # I: Дата+время
@@ -195,7 +201,10 @@ angular.module('resources.geogps', [])
                 // 0                       # D15: Локальная CRC (пока не используется)
                 lcrc = packet[31];
 
-                if ((Math.abs(lat) >= 90) || (Math.abs(lon) >= 180)) return null;
+                if ((Math.abs(lat) >= 90) || (Math.abs(lon) >= 180)) {
+                    console.log('skip', new Date(dt*1000), lat, lon, fsource);
+                    return null;
+                }
 
                 return {
                     'dt': dt,
@@ -561,11 +570,14 @@ angular.module('resources.geogps', [])
             var minTripTime = GeoGPS.options.minMoveTime;
             var minTripDistance = GeoGPS.options.minMoveDistance;
             var minTripPointsCount = GeoGPS.options.minTripPointsCount;
-            var minMoveDistance = minTripDistance / 5;
-            var tripFactor = 0.3;
+            var minMoveDistance = minTripDistance / 10;
+            var tripFactor = 0.1;
+            var minStopTime = GeoGPS.options.stopTime * 60;
             var points_ret = [];
             var move_start = null;
             var stop_end = null;
+            var stop_start = null;
+            var prevStopTime = null;
             var lastInsertPointIndex = 0;
             var i = 0;
             var insertPoints = function (pointIndex) {
@@ -580,12 +592,27 @@ angular.module('resources.geogps', [])
                     if (move_start === null) {
                         insertPoints (i);
                         move_start = i;
+                        if (stop_start !== null) {
+                            prevStopTime = point.dt - points [stop_start].dt;
+                        }
                     }
                 } else {
+                    if (stop_start === null) {
+                        stop_start = i;
+                        prevStopTime = null;
+                    }
                     if (move_start !== null) {
                         var tripDistance = 0;
                         var pointsCount = 0;
                         var maxDistance = 0;
+                        var nextStopTime = 0;
+                        for (var s = i; s < points.length; s++) {
+                            nextStopTime = points [s].dt; 
+                            if (!isStop (points [s])) {
+                                break;
+                            }
+                        }
+                        nextStopTime = nextStopTime - point.dt;
                         var startPointIndex = (stop_end !== null) ? stop_end : move_start;
                         var startPoint = (stop_end !== null) ? points [stop_end] : points [move_start];
                         for (var k = startPointIndex; k <= i; k++) {
@@ -601,16 +628,18 @@ angular.module('resources.geogps', [])
                         var condition_3 = (tripDistance / 2 < dist || minTripDistance < tripDistance);
                         var condition_4 = (minTripDistance < tripDistance && minMoveDistance < dist) || (((tripDistance * 0.6) < dist) && minMoveDistance < dist);
                         var condition_5 = (minTripDistance < maxDistance || (dist > (tripDistance * tripFactor)));
+                        var condition_6 = !(prevStopTime * 0.5 > minStopTime && nextStopTime * 0.5 > minStopTime && (tripDistance * 0.8) < minTripDistance);
                         
                         if (condition_1 &&
                             condition_2 &&
                             condition_3 &&
                             condition_4 &&
-                            condition_5
+                            condition_5 &&
+                            condition_6
                            ) {
-                            //console.log ("1 : ", condition_1, " 2 : ", condition_2, " 3 : ", condition_3, " 4 : ", condition_4, " 5 : ", condition_5);
                             insertPoints (i);
                         } else {
+                            //console.log ("1 : ", condition_1, " 2 : ", condition_2, " 3 : ", condition_3, " 4 : ", condition_4, " 5 : ", condition_5);
                             lastInsertPointIndex = i + 1;
                             var prevPoint = points_ret [points_ret.length - 1] || points [i];
                             var newPoint = angular.copy (points [i]);
@@ -923,6 +952,10 @@ angular.module('resources.geogps', [])
                 points = removeShortTrips (points);
             if (GeoGPS.options.filter_clearStopPoints)
                 clearStopPointsCoordinates (points);
+            if (GeoGPS.options.filter_shortTraveled)
+                points = removeShortTrips (points);
+            if (GeoGPS.options.filter_clearStopPoints)
+                clearStopPointsCoordinates (points);
             updatePointsFuel (points);
             /*for (var j = 0; j < points.length; j++) {
                 console.log ("point is stop : ", isStop(points [j]));   
@@ -978,6 +1011,9 @@ angular.module('resources.geogps', [])
                     point.fuel = fuelscale(point.fuel);
                 }
                 if (point) {
+                    if(prevpoint && (point.dt > prevpoint.dt)) {
+                        console.log('revert', new Date(dt * 1000));
+                    }
                     var gpoint = new google.maps.LatLng(point.lat, point.lon);
                     var hour = ~~ (point.dt / 3600);
                     if(!options.raw){// этот блок находит координату последней стоянки и позаоляет перенести координаты стоянки на следующие сутки (подразумевается что запрос бинарных данных был сделан с учетом предыдущих correctFromHours часов)
@@ -1214,7 +1250,7 @@ angular.module('resources.geogps', [])
                         // console.log('hour', hour, '->', date.toDateString(), dayhour, dateepoch);
                     }
                 }
-                defer.resolve();
+                defer.resolve(data);
             });
             return defer.promise;
         };

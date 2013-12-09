@@ -15,12 +15,15 @@
     </tr>
     </thead>
     <tbody>
-    <tr bindonce ng-repeat="l in logs">
-        <td><datetime datetime="{{l.dt}}"></datetime></td>
-        <td bo-html="l.text">
-    </tr>
-    <tr ng-show="!logs.length">
-        <td colspan="7">{{ comment }}</td>
-    </tr>
+        <tr bindonce ng-repeat="l in logs">
+            <td><datetime datetime="{{l.dt}}"></datetime></td>
+            <td bo-html="l.text">
+            <td ng-if="isAdmin()">
+                <i class="icon-remove icon-large" ng-click="onRemove(l.id, $index)"></i>
+            </td>
+        </tr>
+        <tr ng-show="!logs.length">
+            <td colspan="7">{{ comment }}</td>
+        </tr>
     </tbody>
 </table>
