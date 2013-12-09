@@ -602,11 +602,11 @@ angular.module('resources.geogps', [])
                         var condition_4 = (minTripDistance < tripDistance && minMoveDistance < dist) || (((tripDistance * 0.6) < dist) && minMoveDistance < dist);
                         var condition_5 = minTripDistance < tripDistance && (minTripDistance < maxDistance || (dist > (tripDistance * tripFactor)));
                         
-                        if (condition_1
-                            && condition_2
-                            && condition_3
-                            && condition_4
-                            && condition_5
+                        if (condition_1 &&
+                            condition_2 &&
+                            condition_3 &&
+                            condition_4 &&
+                            condition_5
                            ) {
                             //console.log ("1 : ", condition_1, " 2 : ", condition_2, " 3 : ", condition_3, " 4 : ", condition_4, " 5 : ", condition_5);
                             insertPoints (i);
