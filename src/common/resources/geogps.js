@@ -152,6 +152,12 @@ angular.module('resources.geogps', [])
             } else if (packet[1] == 0xF5) {
                 // fsource,                # B: Тип точки   Причина фиксации точки
                 fsource = packet[2];
+
+                // if(fsource >= 128) {
+                //     console.log('skip', fsource);
+                //     return null;
+                // }
+
                 // sats,                   # B: Кол-во спутников 3..12
                 sats = packet[3];
                 // dt,                     # I: Дата+время
@@ -190,7 +196,10 @@ angular.module('resources.geogps', [])
                 // 0                       # D15: Локальная CRC (пока не используется)
                 lcrc = packet[31];
 
-                if ((Math.abs(lat) >= 90) || (Math.abs(lon) >= 180)) return null;
+                if ((Math.abs(lat) >= 90) || (Math.abs(lon) >= 180)) {
+                    console.log('skip', new Date(dt*1000), lat, lon, fsource);
+                    return null;
+                }
 
                 return {
                     'dt': dt,
@@ -513,7 +522,7 @@ angular.module('resources.geogps', [])
             }
             return points_ret;
         };
-        
+
         var removeShortTrips = function (points) {
             var minTripTime = GeoGPS.options.minMoveTime;
             var minTripDistance = GeoGPS.options.minMoveDistance;
@@ -600,7 +609,7 @@ angular.module('resources.geogps', [])
             var condition_2 = !accelerometerOn && prevPoint && distance (prevPoint, point) > GeoGPS.options.moving_a_distance_with_out_accelerometer;  //Перемещение на расстояние более чем на 5000 метров (программируется) без срабатывания акселерометра
             if (condition_2) {
                 //console.log ("condition_2");
-                console.log("distance : ",distance (prevPoint, point)); 
+                console.log("distance : ",distance (prevPoint, point));
                 return true;
             }
             var condition_3 = accelerometerOn && point.speed >  GeoGPS.options.moving_speed_with_accelerometer; //Срабатывание акселерометра и перемещение со скоростью более 20 км/час (программируется).
@@ -887,6 +896,9 @@ angular.module('resources.geogps', [])
                     point.fuel = fuelscale(point.fuel);
                 }
                 if (point) {
+                    if(prevpoint && (point.dt > prevpoint.dt)) {
+                        console.log('revert', new Date(dt * 1000));
+                    }
                     var gpoint = new google.maps.LatLng(point.lat, point.lon);
                     var hour = ~~ (point.dt / 3600);
                     if(!options.raw){// этот блок находит координату последней стоянки и позаоляет перенести координаты стоянки на следующие сутки (подразумевается что запрос бинарных данных был сделан с учетом предыдущих correctFromHours часов)
@@ -1123,7 +1135,7 @@ angular.module('resources.geogps', [])
                         // console.log('hour', hour, '->', date.toDateString(), dayhour, dateepoch);
                     }
                 }
-                defer.resolve();
+                defer.resolve(data);
             });
             return defer.promise;
         };

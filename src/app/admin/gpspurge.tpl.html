@@ -1,0 +1,137 @@
+<ol class="breadcrumb">
+    <navtool></navtool>
+  <li><a href="#/admin">Администрирование</a></li>
+  <li><a href="#/admin/systems">Трекеры</a></li>
+  <li class="active">Очистка</li>
+</ol>
+
+
+<div class="container">
+<div class="row">
+
+    <div class="col-lg-6">
+        <h4>Вы можете указать IMEI трекера для удаления данных</h4>
+        <form name="ImeiForm">
+            <div class="input-group">
+                <span class="btn input-group-addon"><i class="icon-search"></i></span>
+                <input type="text" class="form-control" placeholder="Введите IMEI" name="imeiName" ng-model="imei" imeicheck/>
+                <span class="btn input-group-addon" ng-click="addOne(imei)"><i class="icon-plus-sign"></i> Добавить</span>
+            </div>
+            <div class="valid" ng-show="ImeiForm.imeiName.$invalid">
+                <span>Введенный IMEI не верный</span>
+                <!-- <span ng-show="ImeiForm.imeiName.$valid">Введенный IMEI верный</span> -->
+            </div>
+        </form>
+
+        <style>
+            form[name="ImeiForm"] div.valid {
+                padding: 8px;
+            }
+            form[name="ImeiForm"].ng-pristine div.valid {
+                display: none;
+            }
+            form[name="ImeiForm"].ng-valid div.valid {
+                background-color: lightgreen;
+            }
+            form[name="ImeiForm"].ng-invalid div.valid {
+                background-color: pink;
+            }
+        </style>
+    </div>
+    <div class="col-lg-6">
+        <h4>Или загрузите список IMEI из файла</h4>
+        <fileload ng-model="files" ng-change="onFromFiles()"></fileload>
+    </div>
+</div>
+
+
+<div ng-show="trackers.length > 0">
+
+    <h4>Список трекеров на удаление <button class="btn btn-sm btn-default" ng-click="trackers = []">Очистить список.</button></h4>
+    <table class="gprpurge table table-condensed">
+        <thead><tr>
+            <th>№</th>
+            <th>IMEI</th>
+            <th>Данных, часов</th>
+            <th>Начало</th>
+            <th>Конец</th>
+            <th>Примечения</th>
+            <th>Исключить</th>
+        </tr></thead>
+        <tbody>
+            <tr ng-repeat="(key, value) in trackers" ng-class="{true: 'success'}[value.success]">
+                <td>{{ $index+1 }}</td>
+                <td><input class="clone" value="{{ value.imei }}"/></td>
+                <td ng-if="!value.valid" colspan="3" style="color: red">Трекер не найден или нет данных</td>
+                <td ng-if="value.valid">{{ value.hours }}</td>
+                <td ng-if="value.valid"><datetime seconds="false" datetime="{{ value.min }}"></datetime></td>
+                <td ng-if="value.valid"><datetime seconds="false" datetime="{{ value.max }}"></datetime></td>
+                <td>{{ value.msg }}</td>
+                <td><span title="Исключить из списка очистки" ng-click="onRemove(key)"><i class="icon-remove icon-large"></i></span></td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <style>
+        table.gprpurge tr.success * {
+            text-decoration: line-through !important;
+        }
+    </style>
+
+    <div class="text-center">
+        <button class="btn btn-danger" ng-click="purge_waring = !purge_waring; purge_range = false; purge_logs = false">
+            <i class="icon-trash icon-2x"></i><br />
+            Очистить все данные<br />
+            Удаляет все точки и события.
+        </button>
+
+        <button class="btn btn-warning" ng-click="purge_range = !purge_range; purge_waring = false; purge_logs = false">
+            <i class="icon-time icon-2x"></i><br />
+            Удалить GPS-данные<br />
+            за определенный интервал
+        </button>
+
+        <button class="btn btn-warning" ng-click="purge_logs = !purge_logs; purge_waring = false; purge_waring = false">
+            <i class="icon-th-list icon-2x"></i><br />
+            Удалить все события.<br />
+            Удаляет только события.
+        </button>
+    </div>
+
+    <div ng-show="purge_waring" class="well">
+        <div class="alert alert-danger">
+            Внимание!!!<br>
+            Все данные для выбранных трекеров будут удалены. Вы уверены что хотите удалить эти данные?
+        </div>
+        <br>
+        <button class="btn btn-danger" ng-click="onPurgeAll()"><i class="icon-trash icon-large"></i> Да, я не тормоз! Удалить все.</button>
+    </div>
+
+    <div ng-show="purge_range" class="well">
+
+        <h4>Укажите интервал для удаления</h4>
+        <datepicker date-from="dateFrom" date-to="dateTo" range="range" on-change="changeDate()" style="display:inline-block"></datepicker>
+        <br><br>
+        <div class="alert alert-danger">
+            Внимание!!!<br>
+            Все данные за интервал <strong>{{ format(dateFrom) }} -&gt; {{ format(dateTo) }}</strong> для выбранных трекеров будут удалены. <br>
+            Вы уверены что хотите удалить эти данные?
+        </div>
+        <br>
+        <button class="btn btn-danger" ng-click="onPurgeRange(dateFrom, dateTo)"><i class="icon-trash icon-large"></i> Да, я не тормоз! Удалить все за выбранный период.</button>
+
+    </div>
+
+    <div ng-show="purge_logs" class="well">
+        <div class="alert alert-danger">
+            Внимание!!!<br>
+            Все события для выбранных трекеров будут удалены. Вы уверены что хотите удалить эти данные?
+        </div>
+        <br>
+        <button class="btn btn-danger" ng-click="onPurgeLogs()"><i class="icon-trash icon-large"></i> Да, я не тормоз! Удалить все.</button>
+    </div>
+
+</div>
+
+</div>

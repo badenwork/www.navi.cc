@@ -19,13 +19,15 @@ angular.module('admin.systems', ['ngRoute'])
     }
 ])
 
-.controller('AdminSystemsViewCtrl', ['$scope', 'systems',
-    function($scope, systems) {
+.controller('AdminSystemsViewCtrl', ['$scope', 'systems', 'System',
+    function($scope, systems, System) {
         'use strict';
         $scope.systems = systems;
         console.log('systems=', systems);
 
-
+        $scope.hwids = function(hwid) {
+            return System.hwids[hwid] || '?';
+        };
     }
 ])
 

@@ -165,7 +165,10 @@ module.exports = (grunt) ->
         dest: "temp/components/bootstrap/" # destination directory or file
         replacements: [
           from: "1200px;"
-          to: "1001px;"
+          to:   "1001px;"
+        ,
+          from: "1140px"
+          to:   "940px"
         ]
 
     less:

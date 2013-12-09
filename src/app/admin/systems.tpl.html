@@ -4,17 +4,27 @@
   <li class="active">Трекеры</li>
 </ol>
 
+<div class="input-group">
+    <span class="btn input-group-addon"><i class="icon-search"></i></span>
+    <input type="text" class="form-control" placeholder="Поиск" ng-model="find.imei" />
+</div>
+
 <table class="table table-condensed table-hover table-striped">
     <thead><tr>
         <th>№п.п</th>
         <th>IMEI</th>
         <th>Зарегестрирован</th>
+        <th>Модель</th>
+        <th>Версия прошивки</th>
     </tr></thead>
     <tbody>
         <tr ng-repeat="(key, value) in systems.systems">
             <td>{{ $index + 1 }}</td>
             <td><input class="clone" value="{{ value.imei }}"/></td>
             <td><datetime seconds="false" datetime="{{ value.date }}"></datetime></td>
+            <td>{{ hwids(value.hwid) }}</td>
+            <td>{{ value.swid }}</td>
+            <td><a href="#/admin/systems/purge/{{ value.id }}"><span class="icon-wrench"></span></a></td>
         </tr>
     </tbody>
 </table>

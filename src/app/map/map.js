@@ -125,6 +125,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 GeoGPS.options.raw = false;
             GeoGPS.getTrack(hourfrom, hourfrom + 23, $scope.disableFilters) // +23? не 24?
             .then(function(data) {
+                if(!data) return;
                 data.update = !!$scope.isUpdate;
                 $scope.$broadcast('setTrack', data);
                 $scope.track = data;
@@ -148,10 +149,10 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
 
         var updateTrack = function () {
             //console.log("updateTrack");
-            
+
             load_date();
             if (dayIsNow ($scope.day)) {
-                $scope.isUpdate = true; 
+                $scope.isUpdate = true;
             } else {
                 $scope.isUpdate = false;
             }
@@ -221,7 +222,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             disableFilters: false, //Отключить фильтры
             centermarker: false // Не показывать маркер центра карты
         };
-        
+
         $scope.$watch ('mapconfig.disableFilters', function (disableFilters) {
             $scope.disableFilters = disableFilters;
             $scope.isUpdate = true;

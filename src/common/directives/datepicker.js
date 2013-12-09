@@ -1,3 +1,4 @@
+/* global angular:true, moment:true, d3:true */
 
 angular.module('directives.datepicker', ['i18n'])
 
@@ -7,7 +8,7 @@ angular.module('directives.datepicker', ['i18n'])
 
         var link = function(scope, element){
             // console.log('datepicker scope=', scope);
-            
+
             var intervalpicker = element.find('#intervalpicker');
             intervalpicker.intervalpicker({
                 defaultStart: scope.timeFrom,
@@ -25,7 +26,8 @@ angular.module('directives.datepicker', ['i18n'])
                     // var date = parseDate(element.find('.inputDate').val());
                     var date = datepicker.datepicker('getDate');
                     scope.dateFrom = date;
-                    scope.dateTo = date;
+                    scope.dateTo = moment(date).add('seconds', 24*60*60-1).toDate();
+                    scope.hfrom = '00'; scope.hto = '23';
                 });
                 // scope.onChange({foo:'bar'});
             });
@@ -48,7 +50,8 @@ angular.module('directives.datepicker', ['i18n'])
                     var start = element.find('input[name="start"]').datepicker('getDate');
                     scope.dateFrom = start;
                     var stop = element.find('input[name="stop"]').datepicker('getDate');
-                    scope.dateTo = stop;
+                    scope.dateTo = moment(stop).add('seconds', 24*60*60-1).toDate();
+                    scope.hfrom = '00'; scope.hto = '23';
 
                     // scope.onChange({start: start, stop: stop});
                     // dp.datepicker('setDate', start);
@@ -57,16 +60,16 @@ angular.module('directives.datepicker', ['i18n'])
             });
 
 
-            scope.selectday = function(day){
-                console.log('selectday', day);
-            };
+            // scope.selectday = function(day){
+                // console.log('selectday', day);
+            // };
 
             scope.toggleRange = function(){
                 scope.range = true;
 
                 var date = datepicker.datepicker('getDate');
                 scope.dateFrom = date;
-                scope.dateTo = date;
+                scope.dateTo = moment(date).add('seconds', 24*60*60-1).toDate();
                 // element.find('input[name="start"]').datepicker('setDate', date);
                 // element.find('input[name="stop"]').datepicker('setDate', date);
             };
@@ -78,9 +81,52 @@ angular.module('directives.datepicker', ['i18n'])
                 // scope.dateFrom = start;
                 dp.datepicker('setDate', start);
                 if(scope.dateFrom != scope.dateTo){
-                    scope.dateTo = start;
+                    scope.dateTo = moment(start).add('seconds', 24*60*60-1).toDate();
                     // scope.onChange();
                 }
+            };
+
+            scope.hourFromDiv = false;
+            scope.hfrom = '00';
+            scope.hourFrom = function(){
+                // console.log('Hour from');
+                scope.hourFromDiv = true;
+            };
+            scope.hourFromDo = function(h){
+                // console.log('Hour from do', h);
+                scope.hourFromDiv = false;
+                scope.hfrom = h;
+
+                var start = element.find('input[name="start"]').datepicker('getDate');
+                // scope.dateFrom = start;
+                var format = d3.time.format('%d/%m/%Y');
+                var day = format.parse(format(moment(start).toDate()));
+                scope.dateFrom = moment(day).add('hours', h*1).toDate();
+
+                // scope.dateFrom = format.parse(format(moment(start).add('hours', (h*1)).toDate()));
+                // var stop = element.find('input[name="stop"]').datepicker('getDate');
+                // scope.dateTo = stop;
+            };
+
+            scope.hourToDiv = false;
+            scope.hto = '23';
+            scope.hourTo = function(){
+                scope.hourToDiv = true;
+            };
+            scope.hourToDo = function(h){
+                // console.log('Hour to', h);
+                scope.hourToDiv = false;
+                scope.hto = h;
+
+                var stop = element.find('input[name="stop"]').datepicker('getDate');
+                // scope.dateTo = start;
+                var format = d3.time.format('%d/%m/%Y');
+                var day = format.parse(format(moment(stop).toDate()));
+                scope.dateTo = moment(day).add('hours', h*1).add('seconds', 60*60-1).toDate();
+
+                // scope.dateFrom = format.parse(format(moment(start).add('hours', (h*1)).toDate()));
+                // var stop = element.find('input[name="stop"]').datepicker('getDate');
+                // scope.dateTo = stop;
             };
 
             scope.$watch('dateFrom', function(){
@@ -100,16 +146,18 @@ angular.module('directives.datepicker', ['i18n'])
                 var format = d3.time.format('%d/%m/%Y');
                 var prev = format.parse(format(moment(scope.dateFrom).subtract('days', 1).toDate()));
                 scope.dateFrom = prev;
-                scope.dateTo = prev;
-                console.log('prevDay', scope.dateFrom, prev);
+                scope.dateTo = moment(prev).add('seconds', 24*60*60-1).toDate();
+                scope.hfrom = '00'; scope.hto = '23';
+                // console.log('prevDay', scope.dateFrom, prev);
             };
 
             scope.nextDay = function(){
                 var format = d3.time.format('%d/%m/%Y');
                 var next = format.parse(format(moment(scope.dateFrom).add('days', 1).toDate()));
                 scope.dateFrom = next;
-                scope.dateTo = next;
-                console.log('nextDay', scope.dateFrom, next);
+                scope.dateTo = moment(next).add('seconds', 24*60*60-1).toDate();
+                scope.hfrom = '00'; scope.hto = '23';
+                // console.log('nextDay', scope.dateFrom, next);
             };
 
         };
@@ -126,7 +174,7 @@ angular.module('directives.datepicker', ['i18n'])
             },
             // template: '<svg width='500px' height='250px' class='chart'></svg>',
             template:
-                '<div>'+
+                '<div style="position:relative; z-index: 10000;">'+
                     '<div class="btn-group" ng-hide="range">'+
                         '<button class="btn btn-primary" ng-click="prevDay()">&lt;</button>'+
                         '<input  class="btn btn-primary inputDate" />'+
@@ -137,9 +185,81 @@ angular.module('directives.datepicker', ['i18n'])
 
                     '<div class="btn-group input-daterange" ng-show="range">'+
                         '<input class="btn btn-primary" name="start" />'+
+                        '<button class="btn btn-primary" ng-click="hourFrom()">{{ hfrom }}:00</button>'+
                         '<button class="btn btn-primary" ng-class="" ng-click="toggleSingle()">&hellip;</button>'+
                         '<input class="btn btn-primary" name="stop" />'+
+                        '<button class="btn btn-primary" ng-click="hourTo()">{{ hto }}:59</button>'+
                     '</div>'+
+
+                    '<div ng-show="hourFromDiv" class="input-daterange-hours"><div>'+
+                        '<div class="btn-group">'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'00\')">00</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'01\')">01</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'02\')">02</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'03\')">03</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'04\')">04</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'05\')">05</button>'+
+                        '</div>'+
+                        '<div class="btn-group">'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'06\')">06</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'07\')">07</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'08\')">08</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'09\')">09</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'10\')">10</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'11\')">11</button>'+
+                        '</div>'+
+                        '<div class="btn-group">'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'12\')">12</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'13\')">13</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'14\')">14</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'15\')">15</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'16\')">16</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'17\')">17</button>'+
+                        '</div>'+
+                        '<div class="btn-group">'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'18\')">18</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'19\')">19</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'20\')">20</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'21\')">21</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'22\')">22</button>'+
+                            '<button class="btn btn-primary" ng-click="hourFromDo(\'23\')">23</button>'+
+                        '</div>'+
+                    '</div></div>'+
+
+                    '<div ng-show="hourToDiv" class="input-daterange-hours"><div>'+
+                        '<div class="btn-group">'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'00\')">00</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'01\')">01</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'02\')">02</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'03\')">03</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'04\')">04</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'05\')">05</button>'+
+                        '</div>'+
+                        '<div class="btn-group">'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'06\')">06</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'07\')">07</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'08\')">08</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'09\')">09</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'10\')">10</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'11\')">11</button>'+
+                        '</div>'+
+                        '<div class="btn-group">'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'12\')">12</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'13\')">13</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'14\')">14</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'15\')">15</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'16\')">16</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'17\')">17</button>'+
+                        '</div>'+
+                        '<div class="btn-group">'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'18\')">18</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'19\')">19</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'20\')">20</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'21\')">21</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'22\')">22</button>'+
+                            '<button class="btn btn-primary" ng-click="hourToDo(\'23\')">23</button>'+
+                        '</div>'+
+                    '</div></div>'+
                 '</div>',
 
             replace: true,
