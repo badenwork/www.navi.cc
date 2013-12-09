@@ -629,13 +629,15 @@ angular.module('resources.geogps', [])
                         var condition_4 = (minTripDistance < tripDistance && minMoveDistance < dist) || (((tripDistance * 0.6) < dist) && minMoveDistance < dist);
                         var condition_5 = (minTripDistance < maxDistance || (dist > (tripDistance * tripFactor)));
                         var condition_6 = !(prevStopTime * 0.5 > minStopTime && nextStopTime * 0.5 > minStopTime && (tripDistance * 0.8) < minTripDistance);
+                        //var condition_7 = !(prevStopTime * 0.5 > minStopTime && nextStopTime * 0.5 > minStopTime && minTripPointsCount * 5 > pointsCount);
                         
                         if (condition_1 &&
                             condition_2 &&
                             condition_3 &&
                             condition_4 &&
                             condition_5 &&
-                            condition_6
+                            condition_6 //&&
+                            //condition_7
                            ) {
                             insertPoints (i);
                         } else {
@@ -956,6 +958,10 @@ angular.module('resources.geogps', [])
                 points = removeShortTrips (points);
             if (GeoGPS.options.filter_clearStopPoints)
                 clearStopPointsCoordinates (points);
+            if (GeoGPS.options.filter_shortTraveled)
+                points = removeShortTrips (points);
+            /*if (GeoGPS.options.filter_clearStopPoints)
+                clearStopPointsCoordinates (points);*/
             updatePointsFuel (points);
             /*for (var j = 0; j < points.length; j++) {
                 console.log ("point is stop : ", isStop(points [j]));   
