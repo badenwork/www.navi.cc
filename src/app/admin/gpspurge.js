@@ -10,35 +10,37 @@ angular.module('admin.gpspurge', ['ngRoute', 'app.services.imeicheck', 'resource
             templateUrl: 'templates/admin/gpspurge.tpl.html',
             controller: 'AdminSystemsPurgeViewCtrl',
             resolve: {
-                system: ['System', '$route',
-                    function(System, $route) {
-                        var skey = $route.current.params.skey;
-                        window.console.log('key=', skey);
+                // system: ['System', '$route',
+                //     function(System, $route) {
+                //         var skey = $route.current.params.skey;
+                //         window.console.log('key=', skey);
 
-                        return System.get($route.current.params.skey);
-                    }
-                ],
+                //         return System.get($route.current.params.skey);
+                //     }
+                // ],
 
-                hours: ['GeoGPS2', '$route', function(GeoGPS2, $route){
-                    var skey = $route.current.params.skey;
-                    return GeoGPS2.getHours(skey, 0, 1000000);
-                }]
+                // hours: ['GeoGPS2', '$route', function(GeoGPS2, $route){
+                //     var skey = $route.current.params.skey;
+                //     return GeoGPS2.getHours(skey, 0, 1000000);
+                // }]
 
             }
         });
     }
 ])
 
-.controller('AdminSystemsPurgeViewCtrl', ['$scope', 'system', 'hours', 'System', 'imeicheck', 'GeoGPS2', 'Logs',
-    function($scope, system, hours, System, imeicheck, GeoGPS2, Logs) {
+// .controller('AdminSystemsPurgeViewCtrl', ['$scope', 'system', 'hours', 'System', 'imeicheck', 'GeoGPS2', 'Logs',
+//     function($scope, system, hours, System, imeicheck, GeoGPS2, Logs) {
+.controller('AdminSystemsPurgeViewCtrl', ['$scope', 'System', 'imeicheck', 'GeoGPS2', 'Logs',
+    function($scope, System, imeicheck, GeoGPS2, Logs) {
         'use strict';
-        $scope.system = system;
-        $scope.hours = hours;
+        // $scope.system = system;
+        // $scope.hours = hours;
+        // window.console.log('system=', system);
+        // window.console.log('hours=', hours);
 
         $scope.trackers = [];
 
-        window.console.log('system=', system);
-        window.console.log('hours=', hours);
 
         $scope.hwids = function(hwid) {
             return System.hwids[hwid] || '?';
