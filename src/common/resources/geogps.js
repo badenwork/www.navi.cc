@@ -560,10 +560,12 @@ angular.module('resources.geogps', [])
         var removeShortTrips = function (points) {
             var minTripTime = GeoGPS.options.minMoveTime;
             var minTripDistance = GeoGPS.options.minMoveDistance;
-            var minMoveDistance = minTripDistance / 5;
             var minTripPointsCount = GeoGPS.options.minTripPointsCount;
+            var minMoveDistance = minTripDistance / 5;
+            var tripFactor = 0.3;
             var points_ret = [];
             var move_start = null;
+            var stop_end = null;
             var lastInsertPointIndex = 0;
             var i = 0;
             var insertPoints = function (pointIndex) {
@@ -583,22 +585,28 @@ angular.module('resources.geogps', [])
                     if (move_start !== null) {
                         var tripDistance = 0;
                         var pointsCount = 0;
-                        for (var k = move_start; k < i; k++) {
+                        var maxDistance = 0;
+                        var startPointIndex = (stop_end !== null) ? stop_end : move_start;
+                        var startPoint = (stop_end !== null) ? points [stop_end] : points [move_start];
+                        for (var k = startPointIndex; k <= i; k++) {
+                            var d = distance (startPoint, points [k + 1]);
+                            if (d > maxDistance)
+                                maxDistance = d;
                             tripDistance += distance (points [k], points [k + 1]);
                             pointsCount++;
                         }
-                        var dist = distance (points [move_start], point);
-                        var condition_1 = minTripTime < (point.dt - points [move_start].dt);
+                        var dist = distance (startPoint, point);
+                        var condition_1 = minTripTime < (point.dt - startPoint.dt);
                         var condition_2 = minTripPointsCount < pointsCount;
                         var condition_3 = (tripDistance / 2 < dist || minTripDistance < tripDistance);
-                        var condition_4 = (minTripDistance < tripDistance && minMoveDistance < dist);
-                        var condition_5 = ((tripDistance * 0.6) < dist) && minMoveDistance < dist;
+                        var condition_4 = (minTripDistance < tripDistance && minMoveDistance < dist) || (((tripDistance * 0.6) < dist) && minMoveDistance < dist);
+                        var condition_5 = minTripDistance < tripDistance && (minTripDistance < maxDistance || (dist > (tripDistance * tripFactor)));
                         
-                        if (condition_1 &&
-                            condition_2 &&
-                            condition_3 &&
-                            (condition_4 ||
-                            condition_5)
+                        if (condition_1
+                            && condition_2
+                            && condition_3
+                            && condition_4
+                            && condition_5
                            ) {
                             //console.log ("1 : ", condition_1, " 2 : ", condition_2, " 3 : ", condition_3, " 4 : ", condition_4, " 5 : ", condition_5);
                             insertPoints (i);
