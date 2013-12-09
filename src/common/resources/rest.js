@@ -29,6 +29,29 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
             this.$name = name;
         };
 
+        // Заменяет данные.
+        // TODO! Уверен, это можно было сделать проще.
+        Model.prototype.$replace = function(data) {
+            angular.extend(this, data);
+            var fordel = [];
+            angular.forEach(this, function(item, key){
+                if(key === 'id') return;        // Защищенное поле
+                if(key === '$name') return;     // Защищенное поле
+                if(data.hasOwnProperty(key)){   // Замена поля
+                    angular.copy(data.key, item.key);
+                } else {
+                    fordel.push(key);
+                }
+                // console.log('item ', item, ' key', key);
+            });
+            // console.log('for del', fordel);
+            // console.log('this=', this);
+            var that = this;
+            angular.forEach(fordel, function(key){
+                delete that[key];
+            });
+        };
+
         // Отправить на сервер измененное значение одного поля
         Model.prototype.$patch = function(field) {
             var defer = $q.defer();
@@ -57,14 +80,13 @@ angular.module('resources.rest', ['services.connect', 'ngResource'])
             this.$name = name;
         };
 
-
         // TODO: Метод не вызывает $update
         Models.prototype.$add = function(data) {
             // var model = new Model(that.name, data);
             var id = data.id;
             // removeSysErrors(data);              // Не удачное решение. REST - это не только System
             if (this.hasOwnProperty(id)) {
-                angular.extend(this[id], data);
+                this[id].$replace(data);
             } else {
                 this[id] = new Model(this.$name, data);
             }

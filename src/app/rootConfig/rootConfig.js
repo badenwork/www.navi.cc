@@ -78,6 +78,7 @@ angular.module('config.root', ['ngRoute', 'resources.account', '$strap.directive
         $scope.show_moveAlg = false;            //Описание алгоритма фиксации точки начала движения
         $scope.show_motor_onAlg = false;        //Описание алгоритма принятия решения о том что двигатель запущен
         $scope.show_shortTripAlg = false;       //Описание алгоритма удаления коротких поездок
+        $scope.show_shortStopsAlg = false;      //Описание алгоритма удаления коротких остановок
         $scope.show_ejectionAlg = false;        //Описание алгоритма удаления выбросов
         $scope.show_clearStopPointAlg = false;  //Описание алгоритма очищения точек стоянки
 }]);

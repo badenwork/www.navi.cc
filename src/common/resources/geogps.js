@@ -44,13 +44,15 @@ angular.module('resources.geogps', [])
                 filter_invalidPoints: true,
                 filter_ejection: true,
                 filter_clearStopPoints: true,
+                filter_shortStops: true,
                 addPoint_23_59: true,
                 addPoint_00_00: true,
                 stopDistance: 1,
                 stopTime: 3,
                 minMoveDistance: 0.15,
-                minMoveTime: 8,
+                minMoveTime: 10,
                 minTripPointsCount: 3,
+                minStopTime: 8,
                 interval_0: 60,
                 interval_1: 120,
                 interval_2: 180,
@@ -524,6 +526,37 @@ angular.module('resources.geogps', [])
             return points_ret;
         };
         
+        var removeShortStops = function (points) {
+            var minStopTime = GeoGPS.options.minStopTime;
+            var points_ret = [];
+            var stop_start = null;
+            var insertPoints = function (start_index, stop_index) {
+                for (var j = start_index; j < stop_index; j++) {
+                    points_ret.push (points [j]);
+                }
+            };
+            for (var i = 0; i < points.length; i++) {
+                if (isStop (points [i])) {
+                    if (stop_start === null)
+                        stop_start = i;
+                } else {
+                    if (stop_start !== null) {
+                        var stopTime = points [i].dt - points [stop_start].dt;
+                        if (stopTime > minStopTime) {
+                            insertPoints (stop_start, i);
+                        }
+                        stop_start = null;
+                    }
+                    points_ret.push (points [i]);
+                }
+            }
+            if (stop_start !== null) {
+                insertPoints (stop_start, points.length);
+            }
+            
+            return points_ret;
+        };
+        
         var removeShortTrips = function (points) {
             var minTripTime = GeoGPS.options.minMoveTime;
             var minTripDistance = GeoGPS.options.minMoveDistance;
@@ -876,6 +909,8 @@ angular.module('resources.geogps', [])
                 points = transferStopPoint (points, hoursFrom);
             if (GeoGPS.options.filter_ejection)
                 points = removeLargeMoveInShortTime (points);
+            if (GeoGPS.options.filter_shortStops)
+                points = removeShortStops (points);
             if (GeoGPS.options.filter_shortTraveled)
                 points = removeShortTrips (points);
             if (GeoGPS.options.filter_clearStopPoints)

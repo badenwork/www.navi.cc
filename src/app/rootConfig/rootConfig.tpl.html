@@ -42,6 +42,7 @@
         <dt title="Назначение координат первой точки стоянки всем остальным точкам">Очишение всех точек стоянки</dt><dd><input type="checkbox" ng-model="system.car.filter_clearStopPoints" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
         <dt title="">Назначать первой тоске трека время 00:00</dt><dd><input type="checkbox" ng-model="system.car.addPoint_00_00" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
         <dt title="Добавляемая точка является клоном последней точки только с измененным значением времени">Добавлять в конец трэка точку с временем 23:59</dt><dd><input type="checkbox" ng-model="system.car.addPoint_23_59" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
+        <dt>Короткие остановки</dt><dd><input type="checkbox" ng-model="system.car.filter_shortStops" class="ng-pristine ng-valid" ng-change="system.$patch('car')"></dd>
         <dt title="0 что бы отключить! Время точкм переносится только если РАССТОЯНИЕ МЕЖДУ ЭТИМИ ТОЧКАМИ МАНЬШЕ МАКСИМАЛЬНОГО РАЗБРОСА ТОЧЕК ВО ВРЕМЯ СТОЯНКИ (по умолчанию 1 км)">Перенос точки стоянки (120 ч)</dt><dd contenteditable="true" ng-model="system.car.correctFromHours" ng-change="system.$patch('car')"></dd>
     </dl>
 </div>
@@ -74,6 +75,17 @@
         <dt><strong>Время</strong> (8 сек)</dt><dd contenteditable="true" ng-model="system.car.minMoveTime" ng-change="system.$patch('car')"></dd>
         <dt><strong>Дистанция</strong> (0.15 км)</dt><dd contenteditable="true" ng-model="system.car.minMoveDistance" ng-change="system.$patch('car')"></dd>
         <dt><strong>Количество точек</strong> (3)</dt><dd contenteditable="true" ng-model="system.car.minTripPointsCount" ng-change="system.$patch('car')"></dd>
+    </dl>
+</div>
+<div class="well well-small col-lg-4">
+    <h4>Короткие остановки</h4>
+    <button class="btn" ng-click="show_shortStopsAlg = !show_shortStopsAlg">Описание алгоритма :</button>
+    <pre ng-show="show_shortStopsAlg">
+    Отрезок трека удаляется если выаолнен любой из пунктов:
+    1. Время остановки меньше чем <strong>Время</strong>
+    </pre>
+    <dl class="">
+        <dt><strong>Время</strong> (10 сек)</dt><dd contenteditable="true" ng-model="system.car.minStopTime" ng-change="system.$patch('car')"></dd>
     </dl>
 </div>
 
