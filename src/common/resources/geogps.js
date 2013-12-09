@@ -600,7 +600,7 @@ angular.module('resources.geogps', [])
                         var condition_2 = minTripPointsCount < pointsCount;
                         var condition_3 = (tripDistance / 2 < dist || minTripDistance < tripDistance);
                         var condition_4 = (minTripDistance < tripDistance && minMoveDistance < dist) || (((tripDistance * 0.6) < dist) && minMoveDistance < dist);
-                        var condition_5 = minTripDistance < tripDistance && (minTripDistance < maxDistance || (dist > (tripDistance * tripFactor)));
+                        var condition_5 = (minTripDistance < maxDistance || (dist > (tripDistance * tripFactor)));
                         
                         if (condition_1 &&
                             condition_2 &&

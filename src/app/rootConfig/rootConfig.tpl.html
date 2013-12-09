@@ -15,7 +15,10 @@
     }
 </style>
 <h4><navtool></navtool> Концигуратор настроек фильтрации трэка</h4>
-
+<!--<div ng-class="['alert', 'alert-'+notification.type]">
+    <button class="close" ng-click="removeNotification(notification)">x</button>
+    {{'test'}}
+</div>-->
 <div style="width: 250px">
     <label translate>System:</label>
     <select class="form-control" ng-model="skey" ng-options="systems[s].title for s in account.account.skeys" ng-change="onSysSelect()">
@@ -175,3 +178,4 @@
         <dt><strong>Расстояние</strong> 3 (0.03 км)</dt><dd contenteditable="true" ng-model="system.car.moving_a_distance_with_motor_on" ng-change="system.$patch('car')"></dd>
     </dl>
 </div>
+
