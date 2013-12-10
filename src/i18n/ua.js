@@ -52,7 +52,7 @@ angular.module('i18n.ua', ['pascalprecht.translate'])
 
             // Config page
             'add_system': 'Add system (translate)',
-            'system_not_found': 'Система не знайдена. Можливі причини:\n1.Система ще не виходила на зв\'язок.\n2.Перевірте правильність введення IMEI.',
+            'system_not_found': 'Трекер не знайден. Можливі причини:\n1.Трекер ще не виходив на зв\'язок.\n2.Перевірте правильність введення IMEI.',
 
             // params
             'contenteditableTitle': 'Для зміни опису помістіть курсор в полі',
@@ -63,7 +63,7 @@ angular.module('i18n.ua', ['pascalprecht.translate'])
             'event': 'Подія',
             'Start date:': 'Дата початку:',
             'Stop date:': 'Дата закінчення:',
-            'System:': 'Система:',
+            'System:': 'Трекер:',
             'Select system': 'Виберіть систему',
             'Template': 'Шаблон',
             'All reports': 'Усі звіти',

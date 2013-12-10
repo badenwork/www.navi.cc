@@ -594,20 +594,25 @@ angular.module('resources.geogps', [])
                         move_start = i;
                         if (stop_start !== null) {
                             prevStopTime = point.dt - points [stop_start].dt;
+                            stop_end = i - 1;  
+                        } else {
+                            stop_end = null;
                         }
                     }
                 } else {
                     if (stop_start === null) {
                         stop_start = i;
                         prevStopTime = null;
-                    }
+                    } 
                     if (move_start !== null) {
                         var tripDistance = 0;
                         var pointsCount = 0;
                         var maxDistance = 0;
                         var nextStopTime = 0;
+                        var nextMoveStartIndex = i;
                         for (var s = i; s < points.length; s++) {
-                            nextStopTime = points [s].dt; 
+                            nextStopTime = points [s].dt;
+                            nextMoveStartIndex = s;
                             if (!isStop (points [s])) {
                                 break;
                             }
@@ -615,19 +620,23 @@ angular.module('resources.geogps', [])
                         nextStopTime = nextStopTime - point.dt;
                         var startPointIndex = (stop_end !== null) ? stop_end : move_start;
                         var startPoint = (stop_end !== null) ? points [stop_end] : points [move_start];
-                        for (var k = startPointIndex; k <= i; k++) {
+                        pointsCount = i - move_start;
+                        stop_end = null;
+                        for (var k = startPointIndex; k < i; k++) {
                             var d = distance (startPoint, points [k + 1]);
                             if (d > maxDistance)
                                 maxDistance = d;
                             tripDistance += distance (points [k], points [k + 1]);
-                            pointsCount++;
                         }
-                        var dist = distance (startPoint, point);
-                        var condition_1 = minTripTime < (point.dt - startPoint.dt);
+                            
+                        var dist = distance (startPoint, points [i]);
+                        var distToNextMove = distance (startPoint, points [nextMoveStartIndex]);
+                        var condition_1 = minTripTime < (point.dt - points [move_start].dt);
                         var condition_2 = minTripPointsCount < pointsCount;
                         var condition_3 = (tripDistance / 2 < dist || minTripDistance < tripDistance);
                         var condition_4 = (minTripDistance < tripDistance && minMoveDistance < dist) || (((tripDistance * 0.6) < dist) && minMoveDistance < dist);
-                        var condition_5 = (minTripDistance < maxDistance || (dist > (tripDistance * tripFactor)));
+                        var condition_5 = !(distToNextMove < dist && tripDistance > minTripDistance && distToNextMove < minTripDistance * tripFactor);
+                            //!(tripDistance < minTripDistance && (distToNextMove < (maxDistance * 0.1)));// 2 < maxDistance || (dist > tripDistance * tripFactor));
                         var condition_6 = !(prevStopTime * 0.5 > minStopTime && nextStopTime * 0.5 > minStopTime && (tripDistance * 0.8) < minTripDistance);
                         //var condition_7 = !(prevStopTime * 0.5 > minStopTime && nextStopTime * 0.5 > minStopTime && minTripPointsCount * 5 > pointsCount);
                         
@@ -636,11 +645,14 @@ angular.module('resources.geogps', [])
                             condition_3 &&
                             condition_4 &&
                             condition_5 &&
-                            condition_6 //&&
-                            //condition_7
+                            condition_6 &&
+                            //condition_7 &&
+                            true
                            ) {
                             insertPoints (i);
                         } else {
+                            //if (!condition_5)
+                                //console.log("maxDistance : ", maxDistance);
                             //console.log ("1 : ", condition_1, " 2 : ", condition_2, " 3 : ", condition_3, " 4 : ", condition_4, " 5 : ", condition_5);
                             lastInsertPointIndex = i + 1;
                             var prevPoint = points_ret [points_ret.length - 1] || points [i];
@@ -944,12 +956,18 @@ angular.module('resources.geogps', [])
             }
             if (GeoGPS.options.filter_invalidPoints)
                 points = removeInvalidPoints (points);
+            if (GeoGPS.options.filter_shortStops)
+                points = removeShortStops (points);
+            if (GeoGPS.options.filter_clearStopPoints)
+                clearStopPointsCoordinates (points);
+            if (GeoGPS.options.filter_shortTraveled)
+                points = removeShortTrips (points);
             if (GeoGPS.options.correctFromHours > 0)
                 points = transferStopPoint (points, hoursFrom);
             if (GeoGPS.options.filter_ejection)
                 points = removeLargeMoveInShortTime (points);
-            if (GeoGPS.options.filter_shortStops)
-                points = removeShortStops (points);
+            if (GeoGPS.options.filter_clearStopPoints)
+                clearStopPointsCoordinates (points);
             if (GeoGPS.options.filter_shortTraveled)
                 points = removeShortTrips (points);
             if (GeoGPS.options.filter_clearStopPoints)
