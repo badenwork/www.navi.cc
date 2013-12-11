@@ -27,8 +27,12 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
     function($scope, $route, $routeParams, account, system, System, Tags) {
         $scope.system = system;
         $scope.skey = $routeParams.skey;
-        $scope.dynamicAddress = Math.floor (system.dynamic.latitude * 10000) / 10000 + ', ' + Math.floor (system.dynamic.longitude * 10000) / 10000;
-        
+        if(system.dynamic && system.dynamic.latitude && system.dynamic.longitude) {
+            $scope.dynamicAddress = Math.floor (system.dynamic.latitude * 10000) / 10000 + ', ' + Math.floor (system.dynamic.longitude * 10000) / 10000;
+        } else {
+            $scope.dynamicAddress = '?';
+        }
+
         var geocoder = new google.maps.Geocoder();
         var formatPosition = function () {
                 geocoder.geocode({
@@ -67,8 +71,8 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
                             }, 2000);
                         }
                     });
-        
-                
+
+
         };
         formatPosition ();
 
@@ -102,7 +106,7 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
                 class: i
             };
         });
-        
+
 
         $scope.changeIcon = function() {
             var options = {};
