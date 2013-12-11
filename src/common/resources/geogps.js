@@ -202,7 +202,7 @@ angular.module('resources.geogps', [])
                 lcrc = packet[31];
 
                 if ((Math.abs(lat) >= 90) || (Math.abs(lon) >= 180)) {
-                    console.log('skip', new Date(dt*1000), lat, lon, fsource);
+                    //console.log('skip', new Date(dt*1000), lat, lon, fsource);
                     return null;
                 }
 

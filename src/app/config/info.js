@@ -1,9 +1,10 @@
-/* global angular:true, $:true */
+/* global angular:true, $:true, google:true */
 
 angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', 'app.filters', 'config.system.params.master', 'config.system.params.fuel', 'services.tags'])
 
 .config(['$routeProvider',
     function($routeProvider) {
+        'use strict';
         $routeProvider.when('/config/:skey/info', {
             templateUrl: 'templates/config/info.tpl.html',
             controller: 'ConfigInfoCtrl',
@@ -25,12 +26,18 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
 
 .controller('ConfigInfoCtrl', ['$scope', '$route', '$routeParams', 'account', 'system', 'System', 'Tags',
     function($scope, $route, $routeParams, account, system, System, Tags) {
+        'use strict';
         $scope.system = system;
         $scope.skey = $routeParams.skey;
-        $scope.dynamicAddress = Math.floor (system.dynamic.latitude * 10000) / 10000 + ', ' + Math.floor (system.dynamic.longitude * 10000) / 10000;
-        
+        if(system.dynamic && system.dynamic.latitude && system.dynamic.longitude) {
+            $scope.dynamicAddress = Math.floor (system.dynamic.latitude * 10000) / 10000 + ', ' + Math.floor (system.dynamic.longitude * 10000) / 10000;
+        } else {
+            $scope.dynamicAddress = '?';
+        }
+
         var geocoder = new google.maps.Geocoder();
         var formatPosition = function () {
+            if(system.dynamic && system.dynamic.latitude && system.dynamic.longitude) {
                 geocoder.geocode({
                         'latLng': new google.maps.LatLng (system.dynamic.latitude, system.dynamic.longitude)
                     },
@@ -38,7 +45,7 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
                         if (status == google.maps.GeocoderStatus.OK) {
                             var address = '';
                             var parts = results [0].address_components;
-                            var sep = "";
+                            var sep = '';
                             var types = {
                                 country :'',                //страна
                                 locality:'',                //город
@@ -54,7 +61,7 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
                             for (var i = parts.length - 1; i >= 0; --i) {
                                 if (parts [i].types[0] in types) {
                                     address += sep + parts [i].long_name;
-                                    sep = ", ";
+                                    sep = ', ';
                                 }
                             }
                             $scope.$apply (function () {
@@ -66,9 +73,8 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
                                 formatPosition ();
                             }, 2000);
                         }
-                    });
-        
-                
+                });
+            }
         };
         formatPosition ();
 
@@ -102,7 +108,7 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
                 class: i
             };
         });
-        
+
 
         $scope.changeIcon = function() {
             var options = {};

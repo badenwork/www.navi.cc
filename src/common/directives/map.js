@@ -501,7 +501,6 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     }],
                     map: map
                 });
-
     // console.log('data=', angular.copy(data));
                 if (data.select) {
                     var start = data.select.start_index;
@@ -518,7 +517,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     });
                     map.fitBounds(bounds);
                     if (data.select.type !== 'MOVE') {
-                        map.setZoom(16);
+                        map.setZoom(17);
                     }
 
                     if (select) {
@@ -540,6 +539,9 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                         map.fitBounds(data.bounds);
                     }
                 }
+                if (map.zoom > 17) {
+                        map.setZoom(17);
+                    }
                 eventmarker.setData(data.events);
             };
             
@@ -624,23 +626,36 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             //         '<input type='text' class='form-control' google-maps-search='bounds'>'
             //     '</div>'
             // '</div>'
+            localStorage.setItem('notShowMapAlert', false);
             scope.doNotShowMapAlert = function () {
                 localStorage.setItem('notShowMapAlert', true);
             };
             scope.mapAlertIsShow = false;
             scope.hideMapAlert = function () {
-                scope.$apply(function(){
-                        scope.mapAlertIsShow = false;
-                    });
+                safeApply(scope,function(){
+                    scope.mapAlertIsShow = false;
+                });
             };
             scope.showMapAlert = function () {
                 var notShowMapAlert = localStorage.getItem('notShowMapAlert');
-                if (!notShowMapAlert) {
-                    scope.$apply(function(){
+                if (notShowMapAlert !== 'true') {
+                    safeApply(scope,function(){
                         scope.mapAlertIsShow = true;
                     });
                 }
             };
+            checkZoomLevel (map);
+        };
+        
+        var safeApply = function(scope,fn) {
+          var phase = scope.$root.$$phase;
+          if(phase == '$apply' || phase == '$digest') {
+            if(fn && (typeof(fn) === 'function')) {
+              fn();
+            }
+          } else {
+            scope.$apply(fn);
+          }
         };
 
         return {
@@ -995,7 +1010,8 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             restrict: 'EA',
             // require: '^gmap',
             transclude: true,
-            template: '<div ng-show="isShow" class="map-alert"><div class="map-alert-close-button" ng-click="close()">x</div><div class="map-alert-message" translate>Из-за особенностей работы gps погрешность построения точек трека при большом приближении увеличивается.</div><div class="map-alert-doNotShow-button"><button ng-click="notShow()" class="btn" translate>Больше не показывать</button></div></div>',
+            template: '<div ng-show="isShow" class="map-alert"><div class="map-alert-body"><i class="map-alert-close-button icon-remove" ng-click="notShow()"></i><div class="map-alert-message" translate>Из-за особенностей работы гражданской GPS, при большом масштабе увеличиваются погрешности отображения треков.</div><div style="clear:both;"></div></div></div>',
+            //<div class="map-alert-doNotShow-button"><button ng-click="notShow()" class="btn" translate>Больше не показывать</button></div></div>',
             replace: true,
             scope: {
                 isShow: '=',
