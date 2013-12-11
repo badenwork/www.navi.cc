@@ -535,6 +535,10 @@ angular.module('resources.geogps', [])
             return points_ret;
         };
         
+        var copyPointType = function (pointFrom, pointTo) {
+            pointTo.fsource = pointFrom.fsource;
+        };
+        
         var removeShortStops = function (points) {
             var minStopTime = GeoGPS.options.minStopTime;
             var points_ret = [];
@@ -553,6 +557,11 @@ angular.module('resources.geogps', [])
                         var stopTime = points [i].dt - points [stop_start].dt;
                         if (stopTime > minStopTime) {
                             insertPoints (stop_start, i);
+                        } else {
+                            var newPoint = angular.copy (points [stop_start]);
+                            var typePoint_index = (stop_start > 0) ? stop_start - 1 : i;
+                            copyPointType (points [typePoint_index], newPoint);
+                            points_ret.push (newPoint);
                         }
                         stop_start = null;
                     }
@@ -594,7 +603,7 @@ angular.module('resources.geogps', [])
                         move_start = i;
                         if (stop_start !== null) {
                             prevStopTime = point.dt - points [stop_start].dt;
-                            stop_end = i - 1;  
+                            stop_end = i - 1;
                         } else {
                             stop_end = null;
                         }
@@ -622,6 +631,7 @@ angular.module('resources.geogps', [])
                         var startPoint = (stop_end !== null) ? points [stop_end] : points [move_start];
                         pointsCount = i - move_start;
                         stop_end = null;
+                        stop_start = null;
                         for (var k = startPointIndex; k < i; k++) {
                             var d = distance (startPoint, points [k + 1]);
                             if (d > maxDistance)
@@ -632,7 +642,7 @@ angular.module('resources.geogps', [])
                         var dist = distance (startPoint, points [i]);
                         var distToNextMove = distance (startPoint, points [nextMoveStartIndex]);
                         var condition_1 = minTripTime < (point.dt - points [move_start].dt);
-                        var condition_2 = minTripPointsCount < pointsCount;
+                        var condition_2 = minTripPointsCount <= pointsCount;
                         var condition_3 = (tripDistance / 2 < dist || minTripDistance < tripDistance);
                         var condition_4 = (minTripDistance < tripDistance && minMoveDistance < dist) || (((tripDistance * 0.6) < dist) && minMoveDistance < dist);
                         var condition_5 = !(distToNextMove < dist && tripDistance > minTripDistance && distToNextMove < minTripDistance * tripFactor);

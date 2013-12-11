@@ -326,9 +326,17 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             google.maps.event.addListener(map, 'mousemove', function(ev){mouseMove(ev);});
             // google.maps.event.addListener(map, 'click', function(){pointmarkers.hideInfo();});
 
-
+            var checkZoomLevel = function (_map) {
+                var zoomLevel = _map.getZoom();
+                if (zoomLevel > 17) {
+                    scope.showMapAlert ();
+                } else {
+                    scope.hideMapAlert ();   
+                }
+            };
             google.maps.event.addListener(map, 'zoom_changed', function() {
-                var zoomLevel = map.getZoom();
+                checkZoomLevel (map);
+                /*var zoomLevel = map.getZoom();
                 if (zoomLevel > 17) {
                     console.log(zoomLevel);
                     var saved = window.localStorage.getItem('mapZoomAlert');
@@ -336,7 +344,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                         window.localStorage.setItem('mapZoomAlert', true);
                         alert("Из-за особенностей работы gps нельзя гарантировать точность отображения точек трэка при большем приближении");
                     }
-                }
+                }*/
                 // console.log('zoom_changed');
                 //PathRebuild();    // TODO! Разная детализация трека, по аналогии со старым сайтом
             });
@@ -550,6 +558,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     return;
                 }
                 showTrack(data);
+                checkZoomLevel (map);
             };
             
              scope.$on('setTrack', function(event, data) { 
@@ -615,6 +624,23 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             //         '<input type='text' class='form-control' google-maps-search='bounds'>'
             //     '</div>'
             // '</div>'
+            scope.doNotShowMapAlert = function () {
+                localStorage.setItem('notShowMapAlert', true);
+            };
+            scope.mapAlertIsShow = false;
+            scope.hideMapAlert = function () {
+                scope.$apply(function(){
+                        scope.mapAlertIsShow = false;
+                    });
+            };
+            scope.showMapAlert = function () {
+                var notShowMapAlert = localStorage.getItem('notShowMapAlert');
+                if (!notShowMapAlert) {
+                    scope.$apply(function(){
+                        scope.mapAlertIsShow = true;
+                    });
+                }
+            };
         };
 
         return {
@@ -624,6 +650,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 '<div class="gmap">'+
                     '<div class="gmap-container"></div>'+
                     '<gmap-search map="map"></gmap-search>'+
+                    '<map-alert is-show="mapAlertIsShow" do-not-show="doNotShowMapAlert()"></map-alert>'+
                     '<gmap-tool-bar map="map" config="config" on-hide="hideTrack()"></gmap-tool-bar>'+
                 '</div>',
             replace: true,
@@ -949,6 +976,34 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             });
         }
     };
-});
+})
+
+.directive('mapAlert', [
+    function() {
+        // 'use strict';
+        var link = function(scope, element) {
+            //console.log('mapAlert:link', scope);
+            scope.close = function () {
+                scope.isShow = false;
+            };
+            scope.notShow = function () {
+                scope.close ();
+                scope.doNotShow ();
+            };
+        };
+        return {
+            restrict: 'EA',
+            // require: '^gmap',
+            transclude: true,
+            template: '<div ng-show="isShow" class="map-alert"><div class="map-alert-close-button" ng-click="close()">x</div><div class="map-alert-message" translate>Из-за особенностей работы gps погрешность построения точек трека при большом приближении увеличивается.</div><div class="map-alert-doNotShow-button"><button ng-click="notShow()" class="btn" translate>Больше не показывать</button></div></div>',
+            replace: true,
+            scope: {
+                isShow: '=',
+                doNotShow: '&'
+            },
+            link: link
+        };
+    }
+]);
 
 })();
