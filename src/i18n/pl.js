@@ -51,7 +51,7 @@ angular.module('i18n.pl', ['pascalprecht.translate'])
 
             // Config page
             'add_system': 'Add system (translate)',
-            'system_not_found': 'System nie zostanie znaleziony. Możliwa przyczyna:\n1.system wciąż nie komunikować.\n2.Sprawdzić prawidłowe IMEI wejściowego.',
+            'system_not_found': 'Tracker nie zostanie znaleziony. Możliwa przyczyna:\n1.tracker wciąż nie komunikować.\n2.Sprawdzić prawidłowe IMEI wejściowego.',
 
             // params
             'contenteditableTitle': 'Aby zmienić opis, umieść kursor w polu',
@@ -62,7 +62,7 @@ angular.module('i18n.pl', ['pascalprecht.translate'])
             'event': 'Wydarzenie',
             'Start date:': 'Data rozpoczęcia:',
             'Stop date:': 'Data przydatności:',
-            'System:': 'System:',
+            'System:': 'Tracker:',
             'Select system': 'Wybór systemu',
             'Template': 'Szablon',
             'All reports': 'Wszystkie raporty',

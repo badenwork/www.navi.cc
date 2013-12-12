@@ -267,6 +267,41 @@ div.mapcalendar {
 
 }
 
+.map-alert{
+    position: absolute;
+    bottom: 15px;
+    opacity: 0.9;
+    width: 100%;
+    &:hover{
+        opacity: 1.0;
+    }
+    .map-alert-body{
+        margin-right:10px;
+        background-color: #d9edf7;
+        border-color: #bce8f1;
+        box-shadow: -1px 0 8px rgba(0, 0, 0, 0.2);
+        padding: 5px 2px 2px 5px;
+        float:right;
+        display:inline;
+        max-width:50%;
+        padding:8px;
+        //width:50%;
+        .map-alert-message{
+            display:inline;
+        }
+        .map-alert-close-button{
+            float:right;
+            cursor: pointer;
+            padding:3px 5px 3px 5px;
+            margin: -5px -5px 0 0;
+        }
+        .map-alert-doNotShow-button{
+            float:right;
+            margin-right:30px;
+            margin-bottom:5px;
+        }
+    }
+}
 
 .map-toolbar{
     position: absolute;

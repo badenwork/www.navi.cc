@@ -125,6 +125,10 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
                 GeoGPS.options.raw = false;
             GeoGPS.getTrack(hourfrom, hourfrom + 23, $scope.disableFilters) // +23? не 24?
             .then(function(data) {
+                if (!data) {
+                    $scope.$broadcast('setTrack', data);
+                    return;
+                }
                 if ($scope.isUpdate) {
                     data.update = true;
                     $scope.isUpdate = false;

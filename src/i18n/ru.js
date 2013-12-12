@@ -53,7 +53,7 @@ angular.module('i18n.ru', ['pascalprecht.translate'])
 
             // Страница настроек
             'add_system': 'Добавить трекер',
-            'system_not_found': 'Система не найдена. Возможные причины: \n1. Система еще не выходила на связь.\n2. Проверте правильность ввода IMEI.',
+            'system_not_found': 'Трекер не найден. Возможные причины: \n1. Трекер еще не выходил на связь.\n2. Проверте правильность ввода IMEI.',
 
             // Страница params
             'contenteditableTitle': 'Для изменения описания поместите курсор в поле',
@@ -64,7 +64,7 @@ angular.module('i18n.ru', ['pascalprecht.translate'])
             'event': 'Событие',
             'Start date:': 'Дата начала:',
             'Stop date:': 'Дата окончания:',
-            'System:': 'Система:',
+            'System:': 'Трекер:',
             'Select system': 'Выберите систему',
             'Template': 'Шаблон',
             'All reports': 'Все отчеты',

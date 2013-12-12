@@ -52,7 +52,7 @@ angular.module('i18n.en', ['pascalprecht.translate'])
 
             // Config page
             'add_system': 'Add system',
-            'system_not_found': 'The system is not found. Possible cause:\n1. The system still does not communicate.\n2. Check the correct input IMEI.',
+            'system_not_found': 'The tracker is not found. Possible cause:\n1. The tracker still does not communicate.\n2. Check the correct input IMEI.',
 
             // params
             'contenteditableTitle': 'To change the description, place the cursor in the field',
@@ -63,7 +63,7 @@ angular.module('i18n.en', ['pascalprecht.translate'])
             'event': 'Event',
             'Start date:': 'Start date:',
             'Stop date:': 'Stop date:',
-            'System:': 'System:',
+            'System:': 'Tracker:',
             'Select system': 'Select the system',
             'Template': 'Template',
             'All reports': 'All reports',
