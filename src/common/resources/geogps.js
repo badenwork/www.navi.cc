@@ -98,7 +98,15 @@ angular.module('resources.geogps', [])
         GeoGPS.options = options;
         // var days = {};
         var loadOptions = function () {
-            options.raw = window.localStorage.getItem('lacalRaw') == 'true' ? true : false;
+            var localRaw = window.localStorage.getItem('lacalRaw');
+            if (localRaw === 'true')
+                options.raw = true;
+            var sessionRaw = sessionStorage.getItem('sessionRaw');
+            console.log ("sessionRaw : ", sessionRaw);
+            if (sessionRaw === 'true')
+                options.raw = true;
+            else if (sessionRaw === 'false')
+                options.raw = false;
         };
         loadOptions ();
 

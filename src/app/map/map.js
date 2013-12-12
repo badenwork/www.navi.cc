@@ -220,17 +220,21 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             $location.search(params);
             $location.replace();
         };
-
+        $scope.disableFilters = sessionStorage.getItem('sessionRaw') === 'true';
         $scope.mapconfig = {
             autobounds: true, // Автоматическая центровка трека при загрузке
             animation: false, // Анимация направления трека
             numbers: true, // Нумерация стоянок/остановок
-            filtersOn: true, //фильтры
+            filtersOn: !$scope.disableFilters, //фильтры
             centermarker: false // Не показывать маркер центра карты
         };
         
         $scope.$watch ('mapconfig.filtersOn', function (filtersOn) {
             $scope.disableFilters = !filtersOn;
+            if ($scope.disableFilters)
+                sessionStorage.setItem('sessionRaw', true);
+            else
+                sessionStorage.removeItem('sessionRaw');
             if (angular.isUndefined ($scope.isUpdate))
                 $scope.isUpdate = false;
             else {
