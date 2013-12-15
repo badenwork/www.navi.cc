@@ -98,7 +98,15 @@ angular.module('resources.geogps', [])
         GeoGPS.options = options;
         // var days = {};
         var loadOptions = function () {
-            options.raw = window.localStorage.getItem('lacalRaw') == 'true' ? true : false;
+            var localRaw = window.localStorage.getItem('lacalRaw');
+            if (localRaw === 'true')
+                options.raw = true;
+            var sessionRaw = sessionStorage.getItem('sessionRaw');
+            console.log ("sessionRaw : ", sessionRaw);
+            if (sessionRaw === 'true')
+                options.raw = true;
+            else if (sessionRaw === 'false')
+                options.raw = false;
         };
         loadOptions ();
 
@@ -1044,9 +1052,9 @@ angular.module('resources.geogps', [])
                     point.fuel = fuelscale(point.fuel);
                 }
                 if (point) {
-                    // console.log('point', new Date(point.dt * 1000));
-                    if(prevpoint && (point.dt > prevpoint.dt)) {
-                        console.log('revert', new Date(dt * 1000));
+                    if(prevpoint && (point.dt <= prevpoint.dt)) {
+                        continue;
+                        //console.log('revert', new Date(dt * 1000));
                     }
                     var gpoint = new google.maps.LatLng(point.lat, point.lon);
                     var hour = ~~ (point.dt / 3600);
@@ -1076,7 +1084,7 @@ angular.module('resources.geogps', [])
                             continue;
                         }
                     }
-
+                    prevpoint = point;
                     // if(prevpoint){
                     //     var d = distance(point, prevpoint);
                     //     if(d > 4.0){
@@ -1211,7 +1219,7 @@ angular.module('resources.geogps', [])
                     });
                 }
             }
-
+            //console.log ("points.length : ", points.length);
             // for(var i = 0; i < ranges.length; i++){
             //     var r = ranges[i];
             //     r.start = points[r.start_index];

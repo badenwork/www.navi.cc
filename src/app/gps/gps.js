@@ -99,12 +99,13 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             lat: 1.0,
             lon: 1.0
         }];
-
+        $scope.disableFilters = sessionStorage.getItem('sessionRaw') === 'true';
+        console.log ("disableFilters : ", $scope.disableFilters);
         $scope.mapconfig = {
             autobounds: true, // Автоматическая центровка трека при загрузке
             animation: false, // Анимация направления трека
             numbers: true, // Нумерация стоянок/остановок
-            filtersOn: true, //Отключить фильтры
+            filtersOn: !$scope.disableFilters, //Отключить фильтры
             centermarker: true
         };
 
@@ -206,6 +207,10 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         }
         $scope.$watch ('mapconfig.filtersOn', function (filtersOn) {
             $scope.disableFilters = !filtersOn;
+            if ($scope.disableFilters)
+                sessionStorage.setItem('sessionRaw', true);
+            else
+                sessionStorage.removeItem('sessionRaw');
             if (angular.isUndefined ($scope.isUpdate))
                 $scope.isUpdate = false;
             else {
