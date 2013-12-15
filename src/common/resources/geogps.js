@@ -534,11 +534,11 @@ angular.module('resources.geogps', [])
             }
             return points_ret;
         };
-        
+
         var copyPointType = function (pointFrom, pointTo) {
             pointTo.fsource = pointFrom.fsource;
         };
-        
+
         var removeShortStops = function (points) {
             var minStopTime = GeoGPS.options.minStopTime;
             var points_ret = [];
@@ -571,10 +571,10 @@ angular.module('resources.geogps', [])
             if (stop_start !== null) {
                 insertPoints (stop_start, points.length);
             }
-            
+
             return points_ret;
         };
-        
+
         var removeShortTrips = function (points) {
             var minTripTime = GeoGPS.options.minMoveTime;
             var minTripDistance = GeoGPS.options.minMoveDistance;
@@ -612,7 +612,7 @@ angular.module('resources.geogps', [])
                     if (stop_start === null) {
                         stop_start = i;
                         prevStopTime = null;
-                    } 
+                    }
                     if (move_start !== null) {
                         var tripDistance = 0;
                         var pointsCount = 0;
@@ -638,7 +638,7 @@ angular.module('resources.geogps', [])
                                 maxDistance = d;
                             tripDistance += distance (points [k], points [k + 1]);
                         }
-                            
+
                         var dist = distance (startPoint, points [i]);
                         var distToNextMove = distance (startPoint, points [nextMoveStartIndex]);
                         var condition_1 = minTripTime < (point.dt - points [move_start].dt);
@@ -649,7 +649,7 @@ angular.module('resources.geogps', [])
                             //!(tripDistance < minTripDistance && (distToNextMove < (maxDistance * 0.1)));// 2 < maxDistance || (dist > tripDistance * tripFactor));
                         var condition_6 = !(prevStopTime * 0.5 > minStopTime && nextStopTime * 0.5 > minStopTime && (tripDistance * 0.8) < minTripDistance);
                         //var condition_7 = !(prevStopTime * 0.5 > minStopTime && nextStopTime * 0.5 > minStopTime && minTripPointsCount * 5 > pointsCount);
-                        
+
                         if (condition_1 &&
                             condition_2 &&
                             condition_3 &&
@@ -719,7 +719,7 @@ angular.module('resources.geogps', [])
             var prevPoint = points [index - 1] || null;
             var accelerometerOn = isAccelerometerOn (point);
             var motorOn = isMotorOn (point);
-                
+
             var condition_1 = !accelerometerOn && point.speed > GeoGPS.options.moving_speed_with_out_accelerometer; //Перемещение со скоростью более 60 км/час (программируется) без срабатывания акселерометра
             if (condition_1) {
                 //console.log ("condition_1");
@@ -730,7 +730,7 @@ angular.module('resources.geogps', [])
             if (condition_2) {
                 //console.log ("condition_2");
                 //console.log("point : ", point, " Date : ", new Date (point.dt * 1000));
-                //console.log("distance : ",distance (prevPoint, point)); 
+                //console.log("distance : ",distance (prevPoint, point));
                 return true;
             }
             var condition_3 = accelerometerOn && point.speed >  GeoGPS.options.moving_speed_with_accelerometer; //Срабатывание акселерометра и перемещение со скоростью более 15 км/час (программируется).
@@ -912,7 +912,7 @@ angular.module('resources.geogps', [])
                         } else {
                            for (var k = slowingPoint; k <= stopPoint; k++) {
                                 setPointType (points [k], POINTTYPE.MOVE);
-                            } 
+                            }
                         }
                         slowingPoint = null;
                     }
@@ -992,7 +992,7 @@ angular.module('resources.geogps', [])
                 clearStopPointsCoordinates (points);*/
             updatePointsFuel (points);
             /*for (var j = 0; j < points.length; j++) {
-                console.log ("point is stop : ", isStop(points [j]));   
+                console.log ("point is stop : ", isStop(points [j]));
             }*/
             var events = GeoGPS.getEventsFromPoints (points, 0, points.length, system);
             var bounds = GeoGPS.getBoundsFromPoints (points, 0, points.length);
@@ -1040,11 +1040,11 @@ angular.module('resources.geogps', [])
 
             for (var i = 0; i < array.length; i += 32) {
                 var point = parse_onebin(array.subarray(i, i + 32));
-                // console.log('point', point);
                 if(point !== null && point.fuel) {
                     point.fuel = fuelscale(point.fuel);
                 }
                 if (point) {
+                    // console.log('point', new Date(point.dt * 1000));
                     if(prevpoint && (point.dt > prevpoint.dt)) {
                         console.log('revert', new Date(dt * 1000));
                     }
