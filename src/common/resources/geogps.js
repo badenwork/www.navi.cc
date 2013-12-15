@@ -491,7 +491,7 @@ angular.module('resources.geogps', [])
                     //console.log("Маленькое количество спутников : ", point.sats);
                     continue;
                 }
-                if (prevPoint !== null && point.dt - prevPoint.dt < 0) {
+                if (prevPoint !== null && point.dt - prevPoint.dt <= 0) {
                     //console.log("Нарушение хронологии");
                     continue;
                 }
