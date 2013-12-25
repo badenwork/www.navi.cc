@@ -51,7 +51,7 @@ angular.module('resources.geogps', [])
                 stopTime: 3,
                 minMoveDistance: 0.15,
                 minMoveTime: 7,
-                minTripPointsCount: 3,
+                minTripPointsCount: 2,
                 minStopTime: 8,
                 interval_0: 60,
                 interval_1: 120,
@@ -551,9 +551,12 @@ angular.module('resources.geogps', [])
             var minStopTime = GeoGPS.options.minStopTime;
             var points_ret = [];
             var stop_start = null;
-            var insertPoints = function (start_index, stop_index) {
+            var insertPoints = function (start_index, stop_index, setFsource) {
                 for (var j = start_index; j < stop_index; j++) {
-                    points_ret.push (points [j]);
+                    if (setFsource) {
+                        points [j].fsource = setFsource;
+                    }
+                    points_ret.push (points [j]); 
                 }
             };
             for (var i = 0; i < points.length; i++) {
@@ -566,10 +569,11 @@ angular.module('resources.geogps', [])
                         if (stopTime > minStopTime) {
                             insertPoints (stop_start, i);
                         } else {
-                            var newPoint = angular.copy (points [stop_start]);
-                            var typePoint_index = (stop_start > 0) ? stop_start - 1 : i;
-                            copyPointType (points [typePoint_index], newPoint);
-                            points_ret.push (newPoint);
+                            insertPoints (stop_start, i, FSOURCE.TIMEMOVE);
+                            //var newPoint = points [stop_start];
+                            //var typePoint_index = (stop_start > 0) ? stop_start - 1 : i;
+                            //copyPointType (points [typePoint_index], newPoint);
+                            //points_ret.push (newPoint);
                         }
                         stop_start = null;
                     }
@@ -660,17 +664,15 @@ angular.module('resources.geogps', [])
 
                         if (condition_1 &&
                             condition_2 &&
-                            condition_3 &&
-                            condition_4 &&
-                            condition_5 &&
+                            //condition_3 &&
+                            //condition_4 &&
+                            //condition_5 &&
                             condition_6 &&
                             //condition_7 &&
                             true
                            ) {
                             insertPoints (i);
                         } else {
-                            //if (!condition_5)
-                                //console.log("maxDistance : ", maxDistance);
                             //console.log ("1 : ", condition_1, " 2 : ", condition_2, " 3 : ", condition_3, " 4 : ", condition_4, " 5 : ", condition_5);
                             lastInsertPointIndex = i + 1;
                             var prevPoint = points_ret [points_ret.length - 1] || points [i];
