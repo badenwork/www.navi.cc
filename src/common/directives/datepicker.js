@@ -28,6 +28,8 @@ angular.module('directives.datepicker', ['i18n'])
                     scope.dateFrom = date;
                     scope.dateTo = moment(date).add('seconds', 24*60*60-1).toDate();
                     scope.hfrom = '00'; scope.hto = '23';
+                    scope.timeFrom = 0;
+                    scope.timeTo = 23;
                 });
                 // scope.onChange({foo:'bar'});
             });
@@ -52,6 +54,8 @@ angular.module('directives.datepicker', ['i18n'])
                     var stop = element.find('input[name="stop"]').datepicker('getDate');
                     scope.dateTo = moment(stop).add('seconds', 24*60*60-1).toDate();
                     scope.hfrom = '00'; scope.hto = '23';
+                    scope.timeFrom = 0;
+                    scope.timeTo = 23;
 
                     // scope.onChange({start: start, stop: stop});
                     // dp.datepicker('setDate', start);
@@ -88,6 +92,8 @@ angular.module('directives.datepicker', ['i18n'])
 
             scope.hourFromDiv = false;
             scope.hfrom = '00';
+            scope.timeFrom = 0;
+            scope.timeTo = 23;
             scope.hourFrom = function(){
                 // console.log('Hour from');
                 scope.hourFromDiv = true;
@@ -96,6 +102,7 @@ angular.module('directives.datepicker', ['i18n'])
                 // console.log('Hour from do', h);
                 scope.hourFromDiv = false;
                 scope.hfrom = h;
+                scope.timeFrom = parseInt (h);
 
                 var start = element.find('input[name="start"]').datepicker('getDate');
                 // scope.dateFrom = start;
@@ -117,6 +124,7 @@ angular.module('directives.datepicker', ['i18n'])
                 // console.log('Hour to', h);
                 scope.hourToDiv = false;
                 scope.hto = h;
+                scope.timeTo = parseInt (h);
 
                 var stop = element.find('input[name="stop"]').datepicker('getDate');
                 // scope.dateTo = start;
@@ -148,6 +156,8 @@ angular.module('directives.datepicker', ['i18n'])
                 scope.dateFrom = prev;
                 scope.dateTo = moment(prev).add('seconds', 24*60*60-1).toDate();
                 scope.hfrom = '00'; scope.hto = '23';
+                scope.timeFrom = 0;
+                scope.timeTo = 23;
                 // console.log('prevDay', scope.dateFrom, prev);
             };
 
@@ -157,6 +167,8 @@ angular.module('directives.datepicker', ['i18n'])
                 scope.dateFrom = next;
                 scope.dateTo = moment(next).add('seconds', 24*60*60-1).toDate();
                 scope.hfrom = '00'; scope.hto = '23';
+                scope.timeFrom = 0;
+                scope.timeTo = 23;
                 // console.log('nextDay', scope.dateFrom, next);
             };
 
@@ -166,6 +178,7 @@ angular.module('directives.datepicker', ['i18n'])
             scope: {
                 dateFrom: '=',
                 dateTo: '=',
+                hoursFrom: '=',
                 range: '=',
                 timeFrom: '=',
                 timeTo: '=',
@@ -179,7 +192,7 @@ angular.module('directives.datepicker', ['i18n'])
                         '<button class="btn btn-primary" ng-click="prevDay()">&lt;</button>'+
                         '<input  class="btn btn-primary inputDate" />'+
                         '<button class="btn btn-primary" ng-click="nextDay()">&gt;</button>'+
-                        '<button id="intervalpicker" ng-show="intervalPicker" class="btn btn-primary">{{timeFrom + " - " + timeTo}}</button>'+
+                        //'<button id="intervalpicker" ng-show="intervalPicker" class="btn btn-primary">{{timeFrom + " - " + timeTo}}</button>'+
                         '<button class="btn btn-primary" ng-click="toggleRange()">&hellip;</button>'+
                     '</div>'+
 

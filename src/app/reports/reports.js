@@ -70,7 +70,7 @@ angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.accoun
                 stop: new Date(),
                 range: false,
                 timeStart: 0,
-                timeStop: 24
+                timeStop: 23
             },
             systemKey: $routeParams.skey,
             template: Templates.templates [0]
@@ -99,6 +99,10 @@ angular.module('reports', ['ngRoute', 'directives.datepicker', 'resources.accoun
                 return;
             var hStart = Reports.dateToHours ($scope.reportSettings.interval.start);
             var hStop = Reports.dateToHours ($scope.reportSettings.interval.stop) + 23;
+            if ($scope.reportSettings.interval.range) {
+                hStart += $scope.reportSettings.interval.timeStart;
+                hStop += $scope.reportSettings.interval.timeStop - 23;
+            }
             var report = Reports.getEmptySingleReport ($scope.reportSettings.systemKey, hStart, hStop, Templates.templateToReadonleTemplate ($scope.reportSettings.template));
             report.system = systems [$scope.reportSettings.systemKey];
             report.systemName = report.system.title;
