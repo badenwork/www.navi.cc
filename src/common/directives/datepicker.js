@@ -102,7 +102,7 @@ angular.module('directives.datepicker', ['i18n'])
                 // console.log('Hour from do', h);
                 scope.hourFromDiv = false;
                 scope.hfrom = h;
-                scope.timeFrom = parseInt (h);
+                scope.timeFrom = parseInt (h, 10);
 
                 var start = element.find('input[name="start"]').datepicker('getDate');
                 // scope.dateFrom = start;
@@ -124,7 +124,7 @@ angular.module('directives.datepicker', ['i18n'])
                 // console.log('Hour to', h);
                 scope.hourToDiv = false;
                 scope.hto = h;
-                scope.timeTo = parseInt (h);
+                scope.timeTo = parseInt (h, 10);
 
                 var stop = element.find('input[name="stop"]').datepicker('getDate');
                 // scope.dateTo = start;
