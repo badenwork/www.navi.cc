@@ -653,21 +653,20 @@ angular.module('resources.geogps', [])
 
                         var dist = distance (startPoint, points [i]);
                         var distToNextMove = distance (startPoint, points [nextMoveStartIndex]);
-                        var condition_1 = minTripTime < (point.dt - points [move_start].dt);
+                        //var condition_1 = minTripTime < (point.dt - points [move_start].dt);
                         var condition_2 = minTripPointsCount <= pointsCount;
-                        var condition_3 = (tripDistance / 2 < dist || minTripDistance < tripDistance);
-                        var condition_4 = (minTripDistance < tripDistance && minMoveDistance < dist) || (((tripDistance * 0.6) < dist) && minMoveDistance < dist);
-                        var condition_5 = !(distToNextMove < dist && tripDistance > minTripDistance && distToNextMove < minTripDistance * tripFactor);
-                            //!(tripDistance < minTripDistance && (distToNextMove < (maxDistance * 0.1)));// 2 < maxDistance || (dist > tripDistance * tripFactor));
-                        var condition_6 = !(prevStopTime * 0.5 > minStopTime && nextStopTime * 0.5 > minStopTime && (tripDistance * 0.8) < minTripDistance);
+                        //var condition_3 = (tripDistance / 2 < dist || minTripDistance < tripDistance);
+                        //var condition_4 = (minTripDistance < tripDistance && minMoveDistance < dist) || (((tripDistance * 0.6) < dist) && minMoveDistance < dist);
+                        //var condition_5 = !(distToNextMove < dist && tripDistance > minTripDistance && distToNextMove < minTripDistance * tripFactor);
+                        //var condition_6 = !(prevStopTime * 0.5 > minStopTime && nextStopTime * 0.5 > minStopTime && (tripDistance * 0.8) < minTripDistance);
                         //var condition_7 = !(prevStopTime * 0.5 > minStopTime && nextStopTime * 0.5 > minStopTime && minTripPointsCount * 5 > pointsCount);
 
-                        if (condition_1 &&
+                        if (//condition_1 &&
                             condition_2 &&
                             //condition_3 &&
                             //condition_4 &&
                             //condition_5 &&
-                            condition_6 &&
+                            //condition_6 &&
                             //condition_7 &&
                             true
                            ) {
@@ -986,20 +985,6 @@ angular.module('resources.geogps', [])
                 points = transferStopPoint (points, hoursFrom);
             if (GeoGPS.options.filter_ejection)
                 points = removeLargeMoveInShortTime (points);
-            if (GeoGPS.options.filter_clearStopPoints)
-                clearStopPointsCoordinates (points);
-            if (GeoGPS.options.filter_shortTraveled)
-                points = removeShortTrips (points);
-            if (GeoGPS.options.filter_clearStopPoints)
-                clearStopPointsCoordinates (points);
-            if (GeoGPS.options.filter_shortTraveled)
-                points = removeShortTrips (points);
-            if (GeoGPS.options.filter_clearStopPoints)
-                clearStopPointsCoordinates (points);
-            if (GeoGPS.options.filter_shortTraveled)
-                points = removeShortTrips (points);
-            /*if (GeoGPS.options.filter_clearStopPoints)
-                clearStopPointsCoordinates (points);*/
             updatePointsFuel (points);
             /*for (var j = 0; j < points.length; j++) {
                 console.log ("point is stop : ", isStop(points [j]));
