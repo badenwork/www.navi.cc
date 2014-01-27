@@ -15,8 +15,8 @@
             <dt>Телефон SIM-карты</dt><dd><input class="clone" value="{{ system.phone || '?'}}"/></dd>
             <dt>Зарегестрирован</dt><dd><datetime seconds="false" datetime="{{ system.date }}"></datetime></dd>
             <dt>Версия ПО</dt><dd>{{ system.swid || '?' }}<!--i class="icon-question-sign cmd" title="Проверить доступность обновления"></i--></dd>
-            <dt>Расширеный режим</dt><dd><input type="checkbox" class="btn btn-primary" ng-model="system.params.notranslate" ng-change="system.$patch('params')" title="Старый сайт не будет получать данные."></dd>
-        </dl>
+<!--             <dt>Расширеный режим</dt><dd><input type="checkbox" class="btn btn-primary" ng-model="system.params.notranslate" ng-change="system.$patch('params')" title="Старый сайт не будет получать данные."></dd>
+ -->        </dl>
 
         <!--button class="btn btn-small" ng-click="new()">Добавить произвольное поле</button-->
     </div>
