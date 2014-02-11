@@ -54,6 +54,19 @@ angular.module('config.system.params.fuel', ['ngRoute', 'app.filters', 'directiv
             $scope.valid = null;
         }, true);
 
+        console.log('====== system=', system);
+        if(system.params){
+            if(!system.params.fuelR1) {
+                system.params.fuelR1 = 22;
+            }
+            if(!system.params.fuelR2) {
+                system.params.fuelR2 = 10;
+            }
+        }
+
+        //$scope.$watch('system.params.fuelR1', function(fuelR1) {
+        //});
+
         $scope.onAdd = function() {
             var liters = 0,
                 voltage = 0,
