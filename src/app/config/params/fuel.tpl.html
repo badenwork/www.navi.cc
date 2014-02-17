@@ -27,5 +27,9 @@
     <div class="col-lg-8">
         <chart data="system.params.fuel"></chart>
     </div>
+    <div style="margin:15px;width:300px">
+        <dt>Изменение уровня топлива считающееся сливом (л)</dt><dd contenteditable="true" ng-model="system.car.fDDifference" ng-change="system.$patch('car')"></dd>
+        <dt>Изменение уровня топлива считающееся заправкой (л)</dt><dd contenteditable="true" ng-model="system.car.reDifference" ng-change="system.$patch('car')"></dd> 
+    </div>
 </div>
 
