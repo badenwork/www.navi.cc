@@ -344,7 +344,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     startIntervalFuel += points [i].fuel;
                 }
                 startIntervalFuel /= pointsCount;
-                for (var i = range.stop_index; i > range.stop_index - pointsCount; i--) {
+                for (i = range.stop_index; i > range.stop_index - pointsCount; i--) {
                     endIntervalFuel += points [i].fuel;
                 }
                 endIntervalFuel /= pointsCount;
