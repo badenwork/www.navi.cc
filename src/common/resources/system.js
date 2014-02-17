@@ -14,12 +14,9 @@ angular.module('resources.system', ['services.connect'])
         // В цепи измерения делитель: 22k/10k
         // В перспективе значение должно быть привязано к hwid
         // Systems.$fuel = function(system, value){
-        var fuelscale = function(fuel) {
-            var r1 = 22,
-                r2 = 10,
-                vdd = 3.3;
-                // vmin = fuel[0].voltage, // Предполагается что функция неубывающая.
-                // vmax = fuel[fuel.length - 1].voltage;
+        var fuelscale = function(fuel, r1, r2, vdd) {
+
+            // console.log('========fuelscale r1=', r1, 'r2=', r2, 'vdd=', vdd);
 
             var scale = d3.scale.linear()
                 .domain(fuel.map(function(d) {
@@ -33,19 +30,32 @@ angular.module('resources.system', ['services.connect'])
             return scale;
         };
 
-        var fuel = function(fuel, value) {
-            return fuelscale(fuel)(value);
-        };
+        // var fuel = function(fuel, value) {
+        //     return fuelscale(fuel)(value);
+        // };
 
-        Systems.$fuelscale = function(id) {
-            var system = this.cached(id);
+        var fuelfoo = function(system) {
+            var r1 = 22,
+                r2 = 10,
+                vdd = 3.3;
             if (system && system.params && system.params.fuel) {
-                return fuelscale(system.params.fuel);
+                if(system.params.fuelR1) {
+                    r1 = system.params.fuelR1 * 1.0;
+                }
+                if(system.params.fuelR2) {
+                    r2 = system.params.fuelR2 * 1.0;
+                }
+                return fuelscale(system.params.fuel, r1, r2, vdd);
             } else {
                 return function() {
                     return 0;
                 };
             }
+        };
+
+        Systems.$fuelscale = function(id) {
+            var system = this.cached(id);
+            return fuelfoo(system);
         };
 
         var removeSysErrors = function(sys) {
@@ -67,7 +77,10 @@ angular.module('resources.system', ['services.connect'])
 
         Systems.$update = function() {
             if (this.dynamic && this.dynamic.fuel) {
-                this.dynamic.fuel = fuel(this.params.fuel, this.dynamic.fuel);
+                var f = fuelfoo(this);
+                // this.dynamic.fuel = fuel(this.params.fuel, this.dynamic.fuel);
+                this.dynamic.fuel = f(this.dynamic.fuel);
+                // console.log('===== this.dynamic.fuel =', this.dynamic.fuel);
             }
             removeSysErrors(this);
         };
