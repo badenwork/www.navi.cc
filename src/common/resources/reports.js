@@ -339,7 +339,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 var range = ranges [rangeIndex];
                 var startIntervalFuel = 0;//range.start.fuel;
                 var endIntervalFuel = 0;//range.stop.fuel;
-                var pointsCount = (range.stop_index - range.start_index) > 30 ? 10 : 2; 
+                var pointsCount = (range.stop_index - range.start_index) > 30 ? 10 : 1; 
                 for (var i = range.start_index; i < range.start_index + pointsCount; i++) {
                     startIntervalFuel += points [i].fuel;
                 }
@@ -388,25 +388,9 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 return travelDistance;
             };
             var getEventTypeStr = function (ranges, rangeIndex, points, systemParams) {
+                
                 var range = ranges [rangeIndex];
-                var fDDifference = (systemParams.fDDifference || 10) * -1;
-                var reDifference = systemParams.reDifference || 10;
-                var typeStr = (GeoGPS.isStop (range.start)) ? 's' : 'm';
-                //var typeStr = (range.type === 'MOVE') ? 'm' : 's';
-                var duration = 0;
-                if (typeStr == 's') {
-                    duration = getRangeDuration (range); 
-                    if (duration < systemParams.stopTime) {
-                        typeStr = 'ss';   
-                    }
-                    var fuelDifference = calculateFuelChanges (ranges, rangeIndex, points, systemParams);
-                    if (fuelDifference > reDifference) {
-                        typeStr = 're';
-                    } else if (fuelDifference < fDDifference) {
-                        typeStr = 'fD';
-                    }
-                }
-                return typeStr;
+                return range.eventTypeStr;
             };
             var getCoordinates = function (ranges, rangeIndex, points) {
                 var item = ranges [rangeIndex].start;
@@ -488,7 +472,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     fullRow.fuelChanges_analytically = Math.round (fullRow.fuelChanges_analytically * 100) / 100;
                     fullRow.averageSpeed = Math.round (fullRow.averageSpeed * 10) / 10;
                     fullRow.travelDistance = Math.round (fullRow.travelDistance * 100) / 100;
-                } else {
+                } else{
                     fullRow.averageSpeed = '';
                     fullRow.travelDistance = '';
                     fullRow.fuelChanges_analytically = '';
@@ -514,6 +498,77 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     }
                 }
                 return row;
+            };
+            
+            var getRangeEventTypeStr = function (range, points, systemParams) {
+                var eventTypeStr;
+                if (GeoGPS.isStop (range.start)) {
+                    var duration = getRangeDuration (range);
+                    
+                    if (duration < systemParams.stopTime) 
+                        eventTypeStr = 'ss';   
+                    else 
+                        eventTypeStr = 's';
+                    if (systemParams.hasFuelSensor) {
+                        var fDDifference = (systemParams.fDDifference || 10) * -1;
+                        var reDifference = systemParams.reDifference || 10;
+                        var startStopDt = range.stop.dt - range.start.dt;
+                        var fuelDifference = (range.stop.fuel - range.start.fuel);
+                        if (fuelDifference > reDifference) {
+                            eventTypeStr = 're';
+                        } else if (fuelDifference < fDDifference) {
+                            eventTypeStr = 'fD';
+                        }
+                    }
+                } else
+                  range.eventTypeStr = 'm'; 
+                return eventTypeStr;
+            };
+            
+            //разделяет один интервал на несколько если он содержит подинтервалы (сливы или заправки)
+            var splitTrackRange = function (range, points, systemParams) {
+                var rangesArr = [];
+                if (systemParams.hasFuelSensor && GeoGPS.isStop (range.start)) {
+                    var tmpRange = range;
+                    var fDDifference = (systemParams.fDDifference || 10) * -1;
+                    var reDifference = systemParams.reDifference || 10;
+                    for (var i = range.start_index + 1; i < range.stop_index; i++) {
+                        var fuelDifference = points[i].fuel - points[i - 1].fuel;
+                        if (fuelDifference > reDifference || fuelDifference < fDDifference) {
+                            var prevRange = angular.copy (tmpRange);
+                            prevRange.stop_index = i - 1;
+                            prevRange.stop = points [prevRange.stop_index];
+                            prevRange.eventTypeStr = getRangeEventTypeStr (prevRange, points, systemParams);
+                            rangesArr.push (prevRange);
+                            var newRange = angular.copy (tmpRange);
+                            newRange.start_index = i - 1;
+                            newRange.start = points [newRange.start_index];
+                            newRange.stop_index = i;
+                            newRange.stop = points [newRange.stop_index];
+                            newRange.eventTypeStr = getRangeEventTypeStr (newRange, points, systemParams);
+                            rangesArr.push (newRange);
+                            tmpRange.start_index = i;
+                            tmpRange.start = points [tmpRange.start_index];
+                        }
+                    }
+                    tmpRange.eventTypeStr = getRangeEventTypeStr (tmpRange, points, systemParams);
+                    rangesArr.push (tmpRange);
+                } else {
+                    range.eventTypeStr = getRangeEventTypeStr (range, points, systemParams);
+                    rangesArr.push (range);
+                }
+                return rangesArr;
+            };
+            
+            var checkAndCorrectTrackRanges = function (track, systemParams) {
+                var newRanges = [];
+                for (var i = 0; i < track.ranges.length; i++) {
+                    var tmpArr = splitTrackRange (track.ranges [i], track.points, systemParams);
+                    for (var j = 0; j < tmpArr.length; j++)
+                        newRanges.push (tmpArr [j]);
+                }
+                track.ranges = newRanges;
+                
             };
             
             
@@ -587,6 +642,9 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     systemParams.stopTime = (report.system.car.stop | 3) * 60 * 1000;
                     mHeaders = getMainHeaders (template, systemParams);
                     sHeaders = angular.copy (template.sD);
+                    
+                    //Здесь выполняется переразбиение промежутков с учетом сливов и заправок
+                    checkAndCorrectTrackRanges (track, systemParams);
                     
                     var ranges = track.ranges;
                     var item, i;
