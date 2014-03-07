@@ -472,7 +472,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     fullRow.fuelChanges_analytically = Math.round (fullRow.fuelChanges_analytically * 100) / 100;
                     fullRow.averageSpeed = Math.round (fullRow.averageSpeed * 10) / 10;
                     fullRow.travelDistance = Math.round (fullRow.travelDistance * 100) / 100;
-                } else{
+                } else {
                     fullRow.averageSpeed = '';
                     fullRow.travelDistance = '';
                     fullRow.fuelChanges_analytically = '';
@@ -521,7 +521,8 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                         }
                     }
                 } else
-                  range.eventTypeStr = 'm'; 
+                  eventTypeStr = 'm';
+                range.eventTypeStr = eventTypeStr;
                 return eventTypeStr;
             };
             
