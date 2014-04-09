@@ -19,7 +19,7 @@ angular.module('directives.loginform', ['i18n', 'http-auth-interceptor', 'resour
                 '                   <a href="#/register" target="_blank" class="close" type="button">{{\'register_cmd\' | translate}} &gt;&gt;&gt;</a>' +
                 '                   <h4 class="modal-title" translate>enter</h4>' +
                 '               </div>' +
-                '               <form name="form"  ng-submit="onLogin(user.name, user.password)"  style="width: auto">' +
+                '               <form id="loginForm" onSubmit="return false; name="form" ng-submit="onLogin(user.name, user.password)" style="width: auto">' +
                 '                   <div class="modal-body">' +
                 '                      <chooselang></chooselang>' +
                 '                       <div translate>enter_help</div>' +
@@ -28,13 +28,13 @@ angular.module('directives.loginform', ['i18n', 'http-auth-interceptor', 'resour
                 '                               <span class="add-on input-group-addon">' +
                 '                                   <i class="icon-user"></i>' +
                 '                               </span>' +
-                '                               <input class="form-control" type="text" placeholder="{{\'user_name\' | translate}}", ng-model="user.name" required autofocus focus-me="true" />' +
+                '                               <input name="username" class="form-control" type="text" placeholder="{{\'user_name\' | translate}}", ng-model="user.name" required autofocus focus-me="true" />' +
                 '                          </div><br />' +
                 '                           <div class="input-prepend input-group">' +
                 '                               <span class="add-on input-group-addon">' +
                 '                                   <i class="icon-key"></i>' +
                 '                               </span>' +
-                '                               <input class="form-control" type="password" placeholder="{{\'user_password\' | translate}}" ng-model="user.password" required />' +
+                '                               <input name="password" class="form-control" type="password" placeholder="{{\'user_password\' | translate}}" ng-model="user.password" required />' +
                 '                           </div><br />' +
                 '                  </div>' +
                 '                   <div class="modal-footer">' +
@@ -59,6 +59,10 @@ angular.module('directives.loginform', ['i18n', 'http-auth-interceptor', 'resour
 
                 scope.error = false;
                 scope.onLogin = function(name, password) {
+                    if (!name)
+                        name = $('input[name=username]').val();
+                    if (!password)
+                        password = $('input[name=password]').val();
                     Account.login(name, password).then(function() {
                         scope.error = false;
                         authService.loginConfirmed();
