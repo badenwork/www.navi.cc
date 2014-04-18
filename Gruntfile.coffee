@@ -98,7 +98,7 @@ module.exports = (grunt) ->
         packages:
           bootstrap: "~3.0"
           # jquery: ""  # TODO: Test with v2
-          jquery: "~1"
+          jquery: "v2.1.0"
           "jquery-ui": ""
           d3: ""
           # angular: ""
