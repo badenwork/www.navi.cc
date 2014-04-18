@@ -34,7 +34,7 @@ div.container
                 br
                 | Для того, чтобы начать пользоваться сервисом, необходимо добавить трекер введя его IMEI.
                 div.row.text-center
-                    addtracker(account="account", systems="systems")
+                    addtracker(account="account", systems="systems", showHelp="true")
 
     div.container(ng-hide="account.account.skeys.length === 0")
         h4 Основные действия:
