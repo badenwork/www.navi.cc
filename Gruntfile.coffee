@@ -141,7 +141,7 @@ module.exports = (grunt) ->
           "es5-shim": ""
 
           # Средства тестирования
-          "angular-mocks": ""
+          "angular-mocks": "v1.2.0"
           json3: ""
         store: 'components'
         # dest: 'public'
