@@ -173,13 +173,13 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
             var sheet = new XLSX.document('exportgps', worksheets);
             $scope.exporturl = sheet.url();
         };
-        
+
         var getTrack = function () {
             GeoGPS.select($scope.skey);
             // GeoGPS.setOptions({raw: true});
             if ($scope.disableFilters)
                 GeoGPS.options.raw = true;
-            else 
+            else
                 GeoGPS.options.raw = false;
             GeoGPS.getTrack(hourfrom, hourfrom + 23, $scope.disableFilters)
                 .then(function(data) {
@@ -203,7 +203,7 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
         };
 
         if ($scope.skey && ($scope.skey !== '') && ($scope.skey !== '+')) {
-            getTrack ();  
+            getTrack ();
         }
         $scope.$watch ('mapconfig.filtersOn', function (filtersOn) {
             $scope.disableFilters = !filtersOn;
@@ -243,6 +243,11 @@ angular.module('gps', ['ngRoute', 'resources.account', 'resources.params', 'reso
 
             // Нужен обратный порядок.
             var l = $scope.track.points.length;
+            // TODO: Грязный хак. Почему-то если точка всего одна, то данные не отображаются, впоследствии нужно разобраться
+            if(l === 1) {
+                items.push ($scope.track.points[0]);
+                return;
+            }
             var start = Math.max(0, l - offset - 1);
             var stop = Math.max(0, l - offset - 1 - ITEMS);
             if ((start === 0) && (stop === 0)) return;
