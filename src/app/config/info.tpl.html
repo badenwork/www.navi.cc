@@ -1,5 +1,18 @@
+<!--//Не самая лучшая идея вставлять слили в html, а темболее в шаблон-->
+<style>
+@-webkit-keyframes blink {
+  100% { color: rgba(34, 34, 34, 0); }
+}
+@keyframes blink {
+  100% { color: rgba(34, 34, 34, 0); }
+}
+.balance_warning {
+    color: red;
+    -webkit-animation: blink 1s linear infinite;
+    animation: blink 1s linear infinite;
+}
+</style>
 <h4><navtool></navtool> Информация о трекере</h4>
-
 <div class="scrollable">
 
 
@@ -16,7 +29,9 @@
             <dt>Зарегестрирован</dt><dd><datetime seconds="false" datetime="{{ system.date }}"></datetime></dd>
             <dt>Версия ПО</dt><dd>{{ system.swid || '?' }}<!--i class="icon-question-sign cmd" title="Проверить доступность обновления"></i--></dd>
 <!--             <dt>Расширеный режим</dt><dd><input type="checkbox" class="btn btn-primary" ng-model="system.params.notranslate" ng-change="system.$patch('params')" title="Старый сайт не будет получать данные."></dd>
- -->        </dl>
+ -->    
+            <dt>Баланс</dt><dd ng-class="{'balance_warning':system.balance <= 10}">{{system.balance || '?'}}</dd>
+        </dl>
 
         <!--button class="btn btn-small" ng-click="new()">Добавить произвольное поле</button-->
     </div>

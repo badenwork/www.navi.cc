@@ -4,7 +4,17 @@
     padding: 0;
     margin: 0;
 }*/
-
+@-webkit-keyframes blink {
+  100% { color: rgba(34, 34, 34, 0); }
+}
+@keyframes blink {
+  100% { color: rgba(34, 34, 34, 0); }
+}
+.balance_warning {
+    color: red;
+    -webkit-animation: blink 1s linear infinite;
+    animation: blink 1s linear infinite; 
+}
 
 .gmap {
     .gmap-container {

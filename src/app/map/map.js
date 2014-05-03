@@ -52,7 +52,6 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
         $scope.day = $routeParams.day || 0;
         $scope.track = null;
         $scope.points = 0;
-
         var dp = $('#datepicker').datepicker({
             language: i18n.shortLang(),
             beforeShowDay: function(date) {

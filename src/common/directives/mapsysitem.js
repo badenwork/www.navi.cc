@@ -74,7 +74,6 @@ angular.module('directives.main', ['newgps.services', 'services.tags'])
 
             controller: ['$element', '$scope',
                 function($element, $scope) {
-
                     $scope.popup = false;
                     $scope.$routeParams = $routeParams;
                     $scope.$freshmark = $freshmark;
