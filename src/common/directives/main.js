@@ -159,10 +159,12 @@ angular.module('directives.lists', ['app.services.imeicheck'])
         require: '?ngModel',
         scope: {
             account: '=',
-            systems: '='
+            systems: '=',
+            showhelp: '='
         },
         template:
             '<div><button class="btn btn-primary" ng-click="showForm()"><i class="icon-plus-sign"></i><span translate>add_system</span></button>' +
+            '&nbsp<a ng-show="showhelp" href="#/help" class="btn btn-primary"><i class="icon-medkit"></i><span translate>Help</span></a>' +
             '<span ng-show="addform">' +
             '   <br><form class="form-inline" style="display: inline-block; margin:0;" name="form" ng-submit="onAdd(newimei)">' +
             '        <label style="display:inline">IMEI</label>' +
@@ -176,7 +178,7 @@ angular.module('directives.lists', ['app.services.imeicheck'])
         controller: ['$scope', 'Account', '$timeout', 'System',
             function($scope, Account, $timeout, System) {
                 $scope.addform = false;
-
+                $scope.showhelp = $scope.showhelp || false;
                 var add = function(imeis) {
                     Account.systemadd(imeis, function(system) {
                         System.add(system);
