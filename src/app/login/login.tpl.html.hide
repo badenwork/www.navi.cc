@@ -25,7 +25,7 @@
 
     </div>
     <div ng-class="{hidden: !account.isAuthenticated}">
-        <h4>Вы вошли как <i>{{ account.account.title }}</i></h4>
+        <h4>Вы вошли как <i>{{ account.account.title }}</i><img style="float:right;" src="img/logo.png" title="MagnuM" class="logo" alt="MagnuM GPS"/></h4>
         <dl class="dl-horizontal">
             <dt>Язык (language)</dt><dd><select style="max-width:100px;" ng-model="blah" ng-options="item.id as item.title for item in langs"></select></dd>
             <dt>Имя входа</dt><dd contenteditable ng-model="account.account.name" ng-change="onChange(account.account.name)"></dd>
