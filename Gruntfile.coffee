@@ -98,7 +98,7 @@ module.exports = (grunt) ->
         packages:
           bootstrap: "~3.0"
           # jquery: ""  # TODO: Test with v2
-          jquery: "v2.1.0"
+          jquery: "~1"
           "jquery-ui": ""
           d3: ""
           # angular: ""
@@ -141,7 +141,7 @@ module.exports = (grunt) ->
           "es5-shim": ""
 
           # Средства тестирования
-          "angular-mocks": "v1.2.0"
+          "angular-mocks": ""
           json3: ""
         store: 'components'
         # dest: 'public'
@@ -190,7 +190,7 @@ module.exports = (grunt) ->
       conponents:
         files: [
           dest: '<%= distdir %>/components'
-          src: ['xlsx.js/xlsx.js','jsPDF/dist/jspdf.min.js','jszip/*.js','jquery/dist/jquery.js','jquery-ui/ui/jquery.ui.core.js','jquery-ui/ui/jquery.ui.widget.js','jquery-ui/ui/jquery.ui.mouse.js','jquery-ui/ui/jquery.ui.sortable.js','bootstrap/dist/js/bootstrap.js','bootstrap-datepicker/js/bootstrap-datepicker.js','bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js','angular/angular.js','angular-route/angular-route.js','angular-resource/angular-resource.js','angular-animate/angular-animate.js','angular-translate/angular-translate.js','angular-ui-sortable/src/sortable.js','angular-ui-bootstrap/src/buttons/buttons.js','angular-bindonce/bindonce.js','ngInfiniteScroll/build/ng-infinite-scroll.js','moment/moment.js','moment/lang/*.js','d3/d3.js','components-font-awesome/css/font-awesome.min.css','bootstrap/dist/css/bootstrap.min.css','components-font-awesome/font/*.*','bootstrap-timepicker/js/bootstrap-timepicker.min.js','bootstrap-timepicker/css/bootstrap-timepicker.min.css']
+          src: ['xlsx.js/xlsx.js','jsPDF/dist/jspdf.min.js','jszip/*.js','jquery/jquery.js','jquery-ui/ui/jquery.ui.core.js','jquery-ui/ui/jquery.ui.widget.js','jquery-ui/ui/jquery.ui.mouse.js','jquery-ui/ui/jquery.ui.sortable.js','bootstrap/dist/js/bootstrap.js','bootstrap-datepicker/js/bootstrap-datepicker.js','bootstrap-datepicker/js/locales/bootstrap-datepicker.ru.js','angular/angular.js','angular-route/angular-route.js','angular-resource/angular-resource.js','angular-animate/angular-animate.js','angular-translate/angular-translate.js','angular-ui-sortable/src/sortable.js','angular-ui-bootstrap/src/buttons/buttons.js','angular-bindonce/bindonce.js','ngInfiniteScroll/build/ng-infinite-scroll.js','moment/moment.js','moment/lang/*.js','d3/d3.js','components-font-awesome/css/font-awesome.min.css','bootstrap/dist/css/bootstrap.min.css','components-font-awesome/font/*.*','bootstrap-timepicker/js/bootstrap-timepicker.min.js','bootstrap-timepicker/css/bootstrap-timepicker.min.css']
           cwd: 'components/'
           expand: true
         ]
@@ -336,7 +336,7 @@ module.exports = (grunt) ->
             'components/jsPDF/dist/jspdf.min.js',
             'components/jszip/jszip.min.js',
             'components/jszip/jszip-deflate.js',
-            'components/jquery/dist/jquery.min.js',
+            'components/jquery/jquery.min.js',
             'components/jquery-ui/ui/jquery.ui.core.js',
             'components/jquery-ui/ui/jquery.ui.widget.js',
             'components/jquery-ui/ui/jquery.ui.mouse.js',
@@ -385,7 +385,7 @@ module.exports = (grunt) ->
             'components/jsPDF/dist/jspdf.min.js',
             'components/jszip/jszip.js',
             'components/jszip/jszip-deflate.js',
-            'components/jquery/dist/jquery.min.js',
+            'components/jquery/jquery.min.js',
             'components/jquery-ui/ui/jquery.ui.core.js',
             'components/jquery-ui/ui/jquery.ui.widget.js',
             'components/jquery-ui/ui/jquery.ui.mouse.js',

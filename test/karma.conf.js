@@ -6,7 +6,7 @@ module.exports = function(config){
       'components/angular/angular.js',
       // 'app/lib/angular/angular-*.js',
       'components/angular-mocks/angular-mocks.js',
-      'components/jquery/dist/jquery.js',
+      'components/jquery/jquery.js',
       'components/moment/moment.js',
       // 'src/app/**/*.js',
       'test/googlemaps.js',
