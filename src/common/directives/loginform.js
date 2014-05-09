@@ -1,11 +1,10 @@
 /* global angular:true */
-
 angular.module('directives.loginform', ['i18n', 'http-auth-interceptor', 'resources.account'])
+
 
 .directive('loginform', ['$timeout', 'authService', '$http', 'SERVER', 'Account',
     function($timeout, authService, $http, SERVER, Account) {
         'use strict';
-
         return {
             restrict: 'E',
             transclude: false,
@@ -28,31 +27,36 @@ angular.module('directives.loginform', ['i18n', 'http-auth-interceptor', 'resour
                 '                               <span class="add-on input-group-addon">' +
                 '                                   <i class="icon-user"></i>' +
                 '                               </span>' +
-                '                               <input class="form-control" type="text" placeholder="{{\'user_name\' | translate}}", ng-model="user.name" required autofocus focus-me="true" />' +
+                '                               <input id="login" name="login" class="form-control" type="text" placeholder="{{\'user_name\' | translate}}", ng-model="user.name" required autofocus focus-me="true" />' +
                 '                          </div><br />' +
                 '                           <div class="input-prepend input-group">' +
                 '                               <span class="add-on input-group-addon">' +
                 '                                   <i class="icon-key"></i>' +
                 '                               </span>' +
-                '                               <input class="form-control" type="password" placeholder="{{\'user_password\' | translate}}" ng-model="user.password" required />' +
+                '                               <input id="password" name="password" class="form-control" type="password" placeholder="{{\'user_password\' | translate}}" ng-model="user.password" required />' +
                 '                           </div><br />' +
                 '                  </div>' +
                 '                   <div class="modal-footer">' +
                 '                       <span class="alert alert-danger" ng-show="error" style="margin: -10px; float: left"><i class="icon-warning-sign icon-large"></i> {{\'error_auth\' | translate}}</span>' +
-                '                       <button class="btn btn-primary login" ng-disabled="form.$invalid" translate>enter_cmd</button>' +
+                '                       <button id="enterBtn" class="btn btn-primary login" ng-disabled="form.$invalid" translate>enter_cmd</button>' +
                 '                       <!--button class="btn login ng-click="onRegister(user.name, user.password)" ng-disabled="form.$invalid" translate>register_cmd</button-->' +
                 '                   </div>' +
                 '               </form>' +
                 '        </div><!-- /.modal-content -->' +
                 '    </div><!-- /.modal-dialog -->' +
                 '</div>',
-
             link: function(scope, elem) {
+                $(window).load(function() {
+                  // updates autofilled fields
+                  window.setTimeout(function() {
+                    $('input[ng-model]').trigger('input');
+                  }, 200);
+                });
                 scope.$on('event:auth-loginRequired', function() {
                     var options = {};
                     elem.modal(options);
                 });
-
+//form.$invalid"
                 scope.$on('event:auth-loginConfirmed', function() {
                     elem.modal('hide');
                 });
