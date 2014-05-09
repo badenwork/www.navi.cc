@@ -2,7 +2,13 @@
 <h5>{{ system.title }}</h5>
 <div class="row">
     <div class="col-lg-4">
-
+        Напряжение (<datetime datetime="{{ system.dynamic.lastping }}"></datetime>):
+        <i class="icon-question" title="Для входа 0..10В значения 22 и 10 соответственно. Для входа 0..9В значения 30 и 16 соответственно."></i>
+        <div class="row">
+            <div class="col-lg-6">
+                <label>{{(system.dynamic.fuelADC * 3.3 * (system.params.fuelR1 || 22 + system.params.fuelR2 || 10)) / (1024 * system.params.fuelR2 || 10)}}</label>
+            </div>
+        </div>
         Настройки делителя:
         <i class="icon-question" title="Для входа 0..10В значения 22 и 10 соответственно. Для входа 0..9В значения 30 и 16 соответственно."></i>
 

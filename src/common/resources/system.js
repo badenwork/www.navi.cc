@@ -20,7 +20,8 @@ angular.module('resources.system', ['services.connect'])
 
             var scale = d3.scale.linear()
                 .domain(fuel.map(function(d) {
-                    return d.voltage * 1024 * r2 / (vdd * (r1 + r2));
+                    var ret = d.voltage * 1024 * r2 / (vdd * (r1 + r2));
+                    return ret;
                 }))
                 .range(fuel.map(function(d) {
                     return d.liters;
@@ -79,6 +80,7 @@ angular.module('resources.system', ['services.connect'])
             if (this.dynamic && this.dynamic.fuel) {
                 var f = fuelfoo(this);
                 // this.dynamic.fuel = fuel(this.params.fuel, this.dynamic.fuel);
+                this.dynamic.fuelADC = this.dynamic.fuel;
                 this.dynamic.fuel = f(this.dynamic.fuel);
                 // console.log('===== this.dynamic.fuel =', this.dynamic.fuel);
             }
