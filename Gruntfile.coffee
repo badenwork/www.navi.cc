@@ -98,7 +98,7 @@ module.exports = (grunt) ->
         packages:
           bootstrap: "~3.0"
           # jquery: ""  # TODO: Test with v2
-          jquery: "~1"
+          jquery: "2.0.3"
           "jquery-ui": ""
           d3: ""
           # angular: ""
@@ -133,7 +133,7 @@ module.exports = (grunt) ->
           #   select: [ 'jszip.js', 'jszip-deflate.js' ]
           "https://github.com/MrRio/jsPDF.git": ""
           "https://github.com/stephen-hardy/xlsx.js.git": ""
-          "https://github.com/Stuk/jszip.git": ""
+          "https://github.com/Stuk/jszip.git": "2.0.0"
           # "sockjs-client": ""
 
           # Для поддержки старых браузеров. Проверить это вообще помогает?
@@ -331,6 +331,7 @@ module.exports = (grunt) ->
 
       conponents:
         files: [
+          nonull: true
           src: [
             'components/xlsx.js/xlsx.js',
             'components/jsPDF/dist/jspdf.min.js',
@@ -380,6 +381,7 @@ module.exports = (grunt) ->
 
       conponents_min:             # Minified versions
         files: [
+          nonull: true
           src: [
             'components/xlsx.js/xlsx.js',
             'components/jsPDF/dist/jspdf.min.js',
@@ -412,7 +414,7 @@ module.exports = (grunt) ->
             'components/moment/lang/ru.js',
             'components/moment/lang/uk.js',
             'components/moment/lang/pl.js',
-            'components/bootstrap-timepicker/js/bootstrap-timepicker.min.js',
+            # 'components/bootstrap-timepicker/js/bootstrap-timepicker.min.js',
             'components/d3/d3.min.js'
           ]
           dest: '<%= distdir %>/js/components.js'
