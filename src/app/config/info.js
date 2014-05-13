@@ -34,6 +34,7 @@ angular.module('config.system.info', ['ngRoute', '$strap', 'resources.params', '
         } else {
             $scope.dynamicAddress = '?';
         }
+        system.balance = system.balance || {value: undefined, dt: new Date()};
         var geocoder = new google.maps.Geocoder();
         var formatPosition = function () {
             if(system.dynamic && system.dynamic.latitude && system.dynamic.longitude) {

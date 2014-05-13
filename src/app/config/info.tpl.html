@@ -30,7 +30,7 @@
             <dt>Версия ПО</dt><dd>{{ system.swid || '?' }}<!--i class="icon-question-sign cmd" title="Проверить доступность обновления"></i--></dd>
 <!--             <dt>Расширеный режим</dt><dd><input type="checkbox" class="btn btn-primary" ng-model="system.params.notranslate" ng-change="system.$patch('params')" title="Старый сайт не будет получать данные."></dd>
  -->    
-            <dt>Баланс</dt><dd ng-class="{'balance_warning':system.balance <= 10}">{{system.balance || '?'}}</dd>
+            <dt>Баланс</dt><dd ng-class="{'balance_warning':system.balance.value <= 10}">{{system.balance.value || '?'}} <span ng-hide="system.balance.value === undefined">(<datetime datetime="{{ system.balance.dt }}"></datetime>)</span></dd>
         </dl>
 
         <!--button class="btn btn-small" ng-click="new()">Добавить произвольное поле</button-->
