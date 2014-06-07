@@ -34,7 +34,7 @@ angular.module('config.system.params.fuel', ['ngRoute', 'app.filters', 'directiv
                 };
                 return;
             }
-
+            /*
             for (var i = 1; i < fuel.length; i++) {
                 if (fuel[i].liters <= fuel[i - 1].liters) {
                     $scope.valid = {
@@ -50,7 +50,7 @@ angular.module('config.system.params.fuel', ['ngRoute', 'app.filters', 'directiv
                     };
                     return;
                 }
-            }
+            }*/
             $scope.valid = null;
         }, true);
 

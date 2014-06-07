@@ -39,6 +39,9 @@ angular.module('resources.system', ['services.connect'])
             var r1 = 22,
                 r2 = 10,
                 vdd = 3.3;
+            if (system.hwid === 'MT400-03') {
+                r1 = 100;
+            }
             if (system && system.params && system.params.fuel) {
                 if(system.params.fuelR1) {
                     r1 = system.params.fuelR1 * 1.0;

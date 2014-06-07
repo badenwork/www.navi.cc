@@ -335,7 +335,21 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 return fuelLevel;
             };
             var calculateFuelChanges = function (ranges, rangeIndex, points, systemParams) {
+                var prevFuelLevel = 0;
+                if (rangeIndex > 0)
+                    prevFuelLevel = calculateFuelLevel(ranges, rangeIndex - 1, points, systemParams);
+                var nextFuelLevel = 0;
+                var nextEventType = getEventTypeStr (ranges, rangeIndex, points, systemParams);
+                if (rangeIndex < ranges.length - 1 && (nextEventType === 's' || nextEventType === 'ss'))
+                    nextFuelLevel = calculateFuelLevel(ranges, rangeIndex + 1, points, systemParams);
+                else
+                    nextFuelLevel = calculateFuelLevel(ranges, rangeIndex, points, systemParams);
+                
                 var fuelChanges = 0;
+                fuelChanges = nextFuelLevel - prevFuelLevel;
+                return fuelChanges;
+                
+                
                 var range = ranges [rangeIndex];
                 var startIntervalFuel = 0;//range.start.fuel;
                 var endIntervalFuel = 0;//range.stop.fuel;
@@ -388,9 +402,10 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 return travelDistance;
             };
             var getEventTypeStr = function (ranges, rangeIndex, points, systemParams) {
-                
+                if (!ranges || rangeIndex < 0 || rangeIndex >= ranges.length)
+                    return undefined;
                 var range = ranges [rangeIndex];
-                return range.eventTypeStr;
+                return range.eventTypeStr || undefined;
             };
             var getCoordinates = function (ranges, rangeIndex, points) {
                 var item = ranges [rangeIndex].start;
@@ -470,6 +485,8 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 if (eventType === 'm') {
                     fullRow.coordinates = '';
                     fullRow.fuelChanges_analytically = Math.round (fullRow.fuelChanges_analytically * 100) / 100;
+                    fullRow.fuelLevel = '';
+                    fullRow.fuelChanges = '';
                     fullRow.averageSpeed = Math.round (fullRow.averageSpeed * 10) / 10;
                     fullRow.travelDistance = Math.round (fullRow.travelDistance * 100) / 100;
                 } else {
@@ -478,7 +495,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     fullRow.fuelChanges_analytically = '';
                 }
                 if (eventType === 's' || eventType === 'ss') {
-                    fullRow.fuelChanges = 0;
+                    fullRow.fuelChanges = '';
                 }
             };
             var getMainRow = function (row_fullData, template, systemParams) {
@@ -737,13 +754,19 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                     };
                     var calculateFuelConsumption_sensor = function (ranges, points, systemParams) {
                         var fuelConsumption = 0;
+                        var startRangeFule = calculateFuelLevel (ranges, 0, points, systemParams);
+                        var endRangeFuel = calculateFuelLevel (ranges, ranges.length - 1, points, systemParams);
+                        fuelConsumption = startRangeFule - endRangeFuel;
                         for (var i = 0; i < ranges.length; i++) {
                             var eventType = getEventTypeStr (ranges, i, points, systemParams);
-                            if (eventType === 'm')
+//                            if (eventType === 'm')
+//                                fuelConsumption += calculateFuelChanges (ranges, i, points, systemParams);
+                            if (eventType === 're')
                                 fuelConsumption += calculateFuelChanges (ranges, i, points, systemParams);
+                            else if (eventType === 'fD')
+                                fuelConsumption -= calculateFuelChanges (ranges, i, points, systemParams);
                         }
-                        fuelConsumption *= -1;
-                        return fuelConsumption;
+                        return Math.round (fuelConsumption * 10) / 10;
                     };
                     var calculateFuelConsumption_analytically = function (ranges, points, systemParams) {
                         var fuelConsumption = 0;
