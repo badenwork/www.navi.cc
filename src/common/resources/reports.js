@@ -349,7 +349,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 fuelChanges = nextFuelLevel - prevFuelLevel;
                 return fuelChanges;
                 
-                
+                /*
                 var range = ranges [rangeIndex];
                 var startIntervalFuel = 0;//range.start.fuel;
                 var endIntervalFuel = 0;//range.stop.fuel;
@@ -364,6 +364,7 @@ angular.module('resources.reports', ['resources.account', '$strap.directives', '
                 endIntervalFuel /= pointsCount;
                 fuelChanges = endIntervalFuel - startIntervalFuel;
                 return fuelChanges;
+                */
             };
             var calculateFuelChanges_analytically = function (ranges, rangeIndex, points, systemParams) {
                 var eventType, fuelConsumption = 0;
