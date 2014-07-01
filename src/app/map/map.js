@@ -225,6 +225,7 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             animation: false, // Анимация направления трека
             numbers: true, // Нумерация стоянок/остановок
             filtersOn: !$scope.disableFilters, //фильтры
+            enableSpeedLimit: false, // Показывать первышение лимита скорости
             centermarker: false // Не показывать маркер центра карты
         };
         

@@ -178,6 +178,35 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             var path = null,
                 select = null,
                 gmarker = null;
+            var speedLimitsPath = [];
+            var fragments = [];
+            var clearSpeedLimits = function() {
+                for(var i = 0, il = speedLimitsPath.length; i < il; i++) {
+                    speedLimitsPath[i].setMap(null);   
+                }
+                speedLimitsPath.length = 0;
+            };
+            
+            
+            var toggleEnableSpeedLimit = function(enable) {
+                if (enable) {
+                    for (var i = 0, il = fragments.length; i < il; i++) {
+                        speedLimitsPath.push(new google.maps.Polyline({
+                            path: fragments[i],
+                            strokeColor: 'red',
+                            strokeOpacity: 0.9,
+                            strokeWeight: 2.5,
+                            clickable: false,
+                            // editable: true,
+                            map: scope.map
+                        }));
+                    }
+                } else {
+                    clearSpeedLimits();
+                }
+            };
+            
+            
 
             if (!window.hasOwnProperty('google')) {
                 window.alert('Сервис Google Карт в данный момент недоступен. Попробуйте перезагрузить страницу.');
@@ -501,6 +530,10 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     }],
                     map: map
                 });
+                
+                
+                
+
     // console.log('data=', angular.copy(data));
                 if (data.select) {
                     var start = data.select.start_index;
@@ -539,6 +572,22 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                         map.fitBounds(data.bounds);
                     }
                 }
+                fragments.length = 0;
+                var speedLimit = ;
+                var startIndex = null;
+                for (var i = 0, il = data.points.length; i < il; i++) {
+                    var item = data.points[i];
+                    if (item.speed > speedLimit) {
+                        if (startIndex === null)
+                            startIndex = i;
+                    } else if (startIndex !== null) {
+                        fragments.push(data.track.slice(startIndex, i));
+                        startIndex = null;
+                    }
+                }
+                if (startIndex !== null)
+                    fragments.push(data.track.slice(startIndex, data.track.length - 1));
+                toggleEnableSpeedLimit(scope.config.enableSpeedLimit);
                 if (map.zoom > 17) {
                         map.setZoom(17);
                     }
@@ -546,6 +595,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             };
             
             var setTrack = function (data) {
+                clearSpeedLimits();
                 if (path) {
                     path.setMap(null);
                     path = null;
@@ -597,6 +647,10 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 });
                 lastmarker.setData(lastpos);
             };
+            
+            scope.$watch('config.enableSpeedLimit', function() {
+               toggleEnableSpeedLimit(scope.config.enableSpeedLimit); 
+            });
 
             scope.$watch('systems', function() {
                 updateLastMarkers();
