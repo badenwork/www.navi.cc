@@ -573,7 +573,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     }
                 }
                 fragments.length = 0;
-                var speedLimit = ;
+                var speedLimit = 65;
                 var startIndex = null;
                 for (var i = 0, il = data.points.length; i < il; i++) {
                     var item = data.points[i];
