@@ -574,6 +574,8 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 }
                 fragments.length = 0;
                 var speedLimit = 65;
+                if (scope.config.speedLimitValue > 0)
+                    speedLimit = scope.config.speedLimitValue;
                 var startIndex = null;
                 for (var i = 0, il = data.points.length; i < il; i++) {
                     var item = data.points[i];
@@ -746,6 +748,9 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             // console.log('gmapToolBar:link', scope);
 
             scope.showconfig = false;
+            scope.showMapParams = function() {
+                $('#changeMapParamsModal').modal('show');
+            };
 
             scope.$watch('config.numbers', function() {
                 if (scope.config.numbers) {

@@ -1,17 +1,35 @@
 <div class="map-toolbar">
-    <a title="Пользователь" href="#/"><i class="icon-user icon-large"></i> {{account.account.title}}</a>
-    <a title="{{'Display Settings' | translate}}" ng-click="showconfig = !showconfig"><i class="icon-wrench icon-large"></i></a>
+    <a href="#/" title="Пользователь"><i class="icon-user icon-large"></i> {{account.account.title}}</a>
+    <a href="javascript:void(0)" title="{{'Display Settings' | translate}}" ng-click="showconfig = !showconfig"><i class="icon-wrench icon-large"></i></a>
+    <a href="javascript:void(0)" title="Параметры карты" ng-click="showMapParams()"><i class="icon-gears"></i></a>
     <div class="map-toolbar-config" ng-show="showconfig">
         <ul class="list-unstyled">
-            <li config-map-item item="config.enableSpeedLimit" icon-off="forward" icon-on="forward">{{ 'Показывать превышение лимита скорости' | translate }}</li>
+            <li config-map-item item="config.enableSpeedLimit" icon-off="forward" icon-on="forward" >{{ 'Показывать превышение лимита скорости' | translate }}</li>
             <li config-map-item item="config.autobounds" icon-off="unlock" icon-on="lock">{{ 'AUTO_BOUND_TRACK' | translate }}</li>
             <li config-map-item item="config.animation" icon-off="play" icon-on="play">{{ 'ANIMATION_DIR' | translate}}</li>
             <li config-map-item item="config.numbers" icon-off="map-marker" icon-on="map-marker">{{ 'STOP_NUMBERS' | translate}}</li>
             <li config-map-item item="config.filtersOn" icon-off="filter" icon-on="filter">{{ 'FILTERS_ON' | translate}}</li>
         </ul>
     </div>
-    <a onclick="document.documentElement.webkitRequestFullScreen()" title="На весь экран"><i class="icon-fullscreen icon-large"></i></a>
+    <a href="javascript:void(0)" onclick="document.documentElement.webkitRequestFullScreen()" title="На весь экран"><i class="icon-fullscreen icon-large"></i></a>
     <button ng-click="hideTrack()" class="btn" translate>Hide track</button>
     <!-- {{'points_in_track' | translate:{value: points} }} -->
+    <div class="modal fade" id="changeMapParamsModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Введите новые значения параметров</h4>
+                </div>
+                <div class="modal-body">
+                    <label>Лимит скорости</label>
+                    <input class="form-control" ng-model="config.speedLimitValue" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 
