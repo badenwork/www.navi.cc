@@ -14,7 +14,7 @@
     <a href="javascript:void(0)" onclick="document.documentElement.webkitRequestFullScreen()" title="На весь экран"><i class="icon-fullscreen icon-large"></i></a>
     <button ng-click="hideTrack()" class="btn" translate>Hide track</button>
     <!-- {{'points_in_track' | translate:{value: points} }} -->
-    <div class="modal fade" id="changeMapParamsModal">
+    <div class="modal fade" id="changeMapParamsModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -32,4 +32,5 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 </div>
+
 

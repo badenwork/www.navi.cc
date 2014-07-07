@@ -748,8 +748,18 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
             // console.log('gmapToolBar:link', scope);
 
             scope.showconfig = false;
+            // грязный хак!!!!! (что бы исправить багу в некоторых браузерах. Модальное окно находится под затемнялкой)
+            $('#changeMapParamsModal').on('shown.bs.modal', function (e) {
+                var $fade = $('.modal-backdrop.fade.in');
+                $fade.remove();
+                var $this = $(this);
+                var $parent = $this.parent();
+                $this.remove();
+                $parent.append($fade);
+                $parent.append($this);
+            })
             scope.showMapParams = function() {
-                $('#changeMapParamsModal').modal('show');
+                $('#changeMapParamsModal').modal({keyboard: true, show: true});
             };
 
             scope.$watch('config.numbers', function() {
