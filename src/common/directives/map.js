@@ -757,7 +757,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 $this.remove();
                 $parent.append($fade);
                 $parent.append($this);
-            })
+            });
             scope.showMapParams = function() {
                 $('#changeMapParamsModal').modal({keyboard: true, show: true});
             };
