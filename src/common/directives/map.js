@@ -754,7 +754,7 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                 $fade.remove();
                 var $this = $(this);
                 var $parent = $this.parent();
-                $this.remove();
+                //$this.remove();
                 $parent.append($fade);
                 $parent.append($this);
             });
