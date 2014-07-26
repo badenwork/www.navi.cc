@@ -20,7 +20,7 @@ angular.module('i18n.ru', ['pascalprecht.translate'])
             'user_name': 'Имя пользователя',
             'user_password': 'Пароль',
             'enter_cmd': 'Войти',
-            'register_cmd': 'Зарегестритоваться',
+            'register_cmd': 'Зарегистритоваться',
             'enter_as': 'Вы вошли как {{ value }}',
             'Display name': 'Отображаемое имя',
             'Register date': 'Дата регистрации',

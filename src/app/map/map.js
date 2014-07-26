@@ -1,6 +1,6 @@
 /* global angular:true, $:true */
 
-angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'directives.main', 'directives.timeline', 'resources.geogps', 'i18n', 'directives.language', 'resources.system'])
+angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'directives.main', 'directives.timeline', 'resources.geogps', 'i18n', 'directives.language', 'resources.system', 'services.userDataStorage'])
 
 .config(['$routeProvider',
     function($routeProvider) {
@@ -43,8 +43,8 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
     }
 ])
 
-.controller('MapCtrl', ['$scope', '$location', '$route', '$routeParams', 'account', 'systems', 'GeoGPS', '$log', 'i18n',
-    function($scope, $location, $route, $routeParams, account, systems, GeoGPS, $log, i18n) {
+.controller('MapCtrl', ['$scope', '$location', '$route', '$routeParams', 'account', 'systems', 'GeoGPS', '$log', 'i18n', 'userDataStorage',
+    function($scope, $location, $route, $routeParams, account, systems, GeoGPS, $log, i18n, userDataStorage) {
         'use strict';
         $scope.account = account;
         $scope.systems = systems;
@@ -225,8 +225,8 @@ angular.module('map', ['ngRoute', 'resources.account', 'directives.gmap', 'direc
             animation: false, // Анимация направления трека
             numbers: true, // Нумерация стоянок/остановок
             filtersOn: !$scope.disableFilters, //фильтры
-            enableSpeedLimit: false, // Показывать первышение лимита скорости
-            speedLimitValue: 65,
+            enableSpeedLimit: userDataStorage.getItem ('enableSpeedLimit') === 'true' || false, // Показывать первышение лимита скорости
+            speedLimitValue: userDataStorage.getItem ('speedLimitValue') || 65,
             centermarker: false // Не показывать маркер центра карты
         };
         

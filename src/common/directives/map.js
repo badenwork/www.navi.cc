@@ -166,7 +166,7 @@ if (google && google.maps) {
     google.maps.visualRefresh = true;
 }
 
-angular.module('directives.gmap', ['services.connect', 'services.eventmarker', 'services.lastmarker', 'services.pointmarker'/*, 'ui'*/ ])
+angular.module('directives.gmap', ['services.connect', 'services.eventmarker', 'services.lastmarker', 'services.pointmarker', 'services.userDataStorage'/*, 'ui'*/ ])
 
 .directive('gmap', ['Connect', 'EventMarker', 'LastMarker', 'PointMarker', 'GeoGPS',
     function(Connect, EventMarker, LastMarker, PointMarker, GeoGPS) {
@@ -740,8 +740,8 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
     }
 ])
 
-.directive('gmapToolBar', [
-    function() {
+.directive('gmapToolBar', ['userDataStorage',
+    function(userDataStorage) {
         // 'use strict';
 
         var link = function(scope) {
@@ -770,6 +770,12 @@ angular.module('directives.gmap', ['services.connect', 'services.eventmarker', '
                     $('.eventmarker .track.STOP .eventmarker-nonumber').attr('style', 'display: initial');
                     $('.eventmarker .track.STOP .eventmarker-number').attr('style', 'display: none');
                 }
+            });
+            scope.$watch('config.enableSpeedLimit', function() {
+                userDataStorage.setItem('enableSpeedLimit', scope.config.enableSpeedLimit);
+            });
+            scope.$watch('config.speedLimitValue', function() {
+                userDataStorage.setItem('speedLimitValue', scope.config.speedLimitValue);
             });
 
             scope.hideTrack = function(){
